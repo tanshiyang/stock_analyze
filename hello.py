@@ -2,6 +2,7 @@ import tushare as ts
 import mysql.connector
 import re, time
 
+# check in test
 pro = pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
 
 
