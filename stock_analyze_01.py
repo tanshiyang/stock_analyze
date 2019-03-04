@@ -1,4 +1,5 @@
 import tushare as ts
+import pandas as pd
 import mysql.connector
 import re, time
 import mydate
@@ -7,7 +8,7 @@ import tradeday
 pro = pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
 
 
-def every_date(period, table_name):
+def every_date(period, table_name, rebuild):
     # 获取所有有股票
     # stock_info = ts.get_stock_basics()
     # codes = stock_info.index
@@ -19,25 +20,36 @@ def every_date(period, table_name):
     conn = mysql.connector.connect(user='root', password='123123', database='mystock')
     cursor = conn.cursor()
 
-    cursor.execute("drop table if exists %s;" % table_name)
-    cursor.execute(
-        "create table  %s "
-        "(ts_code varchar(32),"
-        "start_date varchar(32),"
-        "end_date varchar(32),"
-        "close1 float, close2 float,"
-        "total_revenue float, "
-        "accounts_receiv	float, "    # 应收帐款 
-        "n_income	float, "            # 利润
-        "adv_receipts	float, "        # 预收帐款
-        "roe float,"
-        "grossprofit_margin float,"
-        "pe float,"
-        "unique(ts_code))" % table_name)
+    if rebuild:
+        cursor.execute("drop table if exists %s;" % table_name)
+        cursor.execute(
+            "create table  %s "
+            "(ts_code varchar(32),"
+            "start_date varchar(32),"
+            "close1 float, "
+            "close_min float,"
+            "close_min_date varchar(32),"
+            "close_max float,"
+            "close_max_date varchar(32),"
+            "close2 float,"
+            "end_date varchar(32),"
+            "total_revenue float, "
+            "accounts_receiv	float, "    # 应收帐款 
+            "n_income	float, "            # 利润
+            "adv_receipts	float, "        # 预收帐款
+            "roe float,"
+            "grossprofit_margin float,"
+            "pe float,"
+            "unique(ts_code))" % table_name)
 
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in range(0, len(codes)):
         try:
+            exist_stocks = pd.read_sql("select * from %s" % table_name, conn, index_col="ts_code")
+            if len(exist_stocks) > 0 and len(exist_stocks[exist_stocks.index.str.contains(codes[x])]):
+                print('%s skipped' % codes[x])
+                continue
+
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
             if re.match('000', codes[x]) or re.match('002', codes[x]) or re.match('60', codes[x]):
                 times = 0
@@ -47,7 +59,7 @@ def every_date(period, table_name):
                     sql = one_stock(codes[x], period, times, table_name)
 
                 if sql == "" or sql.__contains__("None"):
-                    print('%s的数据异常' % codes[x])
+                    print('%s 的数据异常' % codes[x])
                 else:
                     print(sql)
                     cursor.execute(sql)
@@ -92,23 +104,30 @@ def one_stock(code, period, times, table_name):
 
         daily = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
         close1 = daily.close[len(daily) - 1]
+
         max_close_idx = daily.close.idxmax()
-        close2 = daily.close[max_close_idx]
-        end_date = daily.trade_date[max_close_idx]
+        min_close_idx = daily.close.idxmin()
+        close_max = daily.close[max_close_idx]
+        close_max_date = daily.trade_date[max_close_idx]
+        close_min = daily.close[min_close_idx]
+        close_min_date = daily.trade_date[min_close_idx]
+
+        close2 = daily.close[0]
+        end_date = daily.trade_date[0]
         print("close1:%s,close2:%s" % (close1, close2))
 
         daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_date)
         pe = daily_basic.pe[0]
         print("pe:%s" % pe)
 
-        sql = "insert into %s (ts_code,start_date,end_date,close1, close2,total_revenue, n_income, adv_receipts," \
-              "accounts_receiv,roe,grossprofit_margin,pe) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s') " % (
-                  table_name, ts_code, start_date, end_date, close1, close2, total_revenue, n_income, adv_receipts,accounts_receiv,roe,grossprofit_margin, pe)
+        sql = "insert into %s (ts_code,start_date,close1,close_min,close_min_date,close_max,close_max_date, close2,end_date,total_revenue, n_income, adv_receipts," \
+              "accounts_receiv,roe,grossprofit_margin,pe) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s') " % (
+                  table_name, ts_code, start_date,close1,close_min,close_min_date,close_max,close_max_date, close2, end_date, total_revenue, n_income, adv_receipts,accounts_receiv,roe,grossprofit_margin, pe)
 
         # print(sql)
         return sql
     except Exception as e:
-        time.sleep(0.6)
+        time.sleep(0.3)
         print(e)
         return ""
     finally:
@@ -126,5 +145,5 @@ def get_prev_tradeday(date):
     return date
 
 
-every_date('20180930','stock_analyze_1803')
+every_date('20180930','stock_analyze_1803', True)
 
