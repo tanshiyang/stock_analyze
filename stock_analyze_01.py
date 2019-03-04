@@ -34,9 +34,9 @@ def every_date(period, table_name, rebuild):
             "close2 float,"
             "end_date varchar(32),"
             "total_revenue float, "
-            "accounts_receiv	float, "    # 应收帐款 
-            "n_income	float, "            # 利润
-            "adv_receipts	float, "        # 预收帐款
+            "accounts_receiv	float, "  # 应收帐款 
+            "n_income	float, "  # 利润
+            "adv_receipts	float, "  # 预收帐款
             "roe float,"
             "grossprofit_margin float,"
             "pe float,"
@@ -79,8 +79,8 @@ def one_stock(code, period, times, table_name):
             market_code = ".SZ"
         elif re.match('60', code):
             market_code = ".SH"
-        if not("." in code):
-            ts_code = code +market_code
+        if not ("." in code):
+            ts_code = code + market_code
         else:
             ts_code = code
 
@@ -94,12 +94,12 @@ def one_stock(code, period, times, table_name):
         print("start:%s,end:%s" % (start_date, end_date))
 
         fina_indicator = pro.fina_indicator(ts_code=ts_code, end_date=period)
-        roe = fina_indicator.roe[0]                     # 净资产收益率
-        grossprofit_margin = fina_indicator.grossprofit_margin[0]   # 毛利率
+        roe = fina_indicator.roe[0]  # 净资产收益率
+        grossprofit_margin = fina_indicator.grossprofit_margin[0]  # 毛利率
 
         income = pro.income(ts_code=ts_code, end_date=period)
         total_revenue = income.total_revenue[0]  # 如取最早：len(income) - 1
-        n_income =  income.n_income[0]
+        n_income = income.n_income[0]
         print("total_revenue:%s" % total_revenue)
 
         daily = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
@@ -122,7 +122,8 @@ def one_stock(code, period, times, table_name):
 
         sql = "insert into %s (ts_code,start_date,close1,close_min,close_min_date,close_max,close_max_date, close2,end_date,total_revenue, n_income, adv_receipts," \
               "accounts_receiv,roe,grossprofit_margin,pe) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s') " % (
-                  table_name, ts_code, start_date,close1,close_min,close_min_date,close_max,close_max_date, close2, end_date, total_revenue, n_income, adv_receipts,accounts_receiv,roe,grossprofit_margin, pe)
+                  table_name, ts_code, start_date, close1, close_min, close_min_date, close_max, close_max_date, close2,
+                  end_date, total_revenue, n_income, adv_receipts, accounts_receiv, roe, grossprofit_margin, pe)
 
         # print(sql)
         return sql
@@ -133,17 +134,24 @@ def one_stock(code, period, times, table_name):
     finally:
         time.sleep(0.3)
 
+
 def get_next_tradeday(date):
-    while(tradeday.is_tradeday(date)==0):
+    while (tradeday.is_tradeday(date) == 0):
         date = mydate.string_to_next_day(date)
     return date
 
 
 def get_prev_tradeday(date):
-    while(tradeday.is_tradeday(date)==0):
+    while (tradeday.is_tradeday(date) == 0):
         date = mydate.string_to_prev_day(date)
     return date
 
-# 20180331 20180630 20180930 20181231
-every_date('20180630','stock_analyze_1802', True)
 
+# 20180331 20180630 20180930 20181231
+every_date('20180331', 'stock_analyze_1801', True)
+every_date('20180630', 'stock_analyze_1802', False)
+every_date('20181231', 'stock_analyze_1804', True)
+every_date('20170331', 'stock_analyze_1701', True)
+every_date('20170630', 'stock_analyze_1702', True)
+every_date('20170930', 'stock_analyze_1703', True)
+every_date('20171231', 'stock_analyze_1704', True)
