@@ -144,6 +144,6 @@ def get_prev_tradeday(date):
         date = mydate.string_to_prev_day(date)
     return date
 
-
-every_date('20180930','stock_analyze_1803', True)
+# 20180331 20180630 20180930 20181231
+every_date('20180630','stock_analyze_1802', True)
 
