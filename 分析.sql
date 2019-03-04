@@ -6,11 +6,11 @@ FROM
 	(
 SELECT
 	*,
-	( close2 - close1 ) / close1 * 100 AS up_rate,
+	( if(close_max>close1,close_max,close2) - close1 ) / close1 * 100 AS up_rate,
 	roe / grossprofit_margin  roe_gross,
 	adv_receipts / total_revenue AS rec_rev,
 	n_income / total_revenue AS inc_rev ,
-	(roe * (adv_receipts / total_revenue) * (n_income / total_revenue))  as order1
+	(abs(roe) * (adv_receipts / total_revenue) )  as order1
 FROM
 	stock_analyze_1803 a
 	) a
