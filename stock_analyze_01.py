@@ -92,8 +92,9 @@ def one_stock(code, period, times, table_name):
 
         daily = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
         close1 = daily.close[len(daily) - 1]
-        close2 = daily.close[0]
-        end_date = daily.trade_date[0]          # 以最后交易日为准
+        max_close_idx = daily.close.idxmax()
+        close2 = daily.close[max_close_idx]
+        end_date = daily.trade_date[max_close_idx]
         print("close1:%s,close2:%s" % (close1, close2))
 
         daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_date)
@@ -125,6 +126,5 @@ def get_prev_tradeday(date):
     return date
 
 
-# every_date('20180701', '20181001','stock_analyze_1803')
-every_date('20181231','stock_analyze_1804')
+every_date('20180930','stock_analyze_1803')
 
