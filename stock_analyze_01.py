@@ -87,8 +87,8 @@ def one_stock(code, period, times, table_name):
         balancesheet = pro.balancesheet(ts_code=ts_code, end_date=period)
         adv_receipts = balancesheet.adv_receipts[0]  # 如取最早：len(balancesheet) - 1
         accounts_receiv = balancesheet.accounts_receiv[0]
-        report_date = balancesheet.end_date[0]
-        start_date = get_prev_tradeday(report_date)
+        report_date = balancesheet.f_ann_date[0]
+        start_date = get_next_tradeday(report_date)
         end_date = mydate.string_to_next_quarter(start_date)
         end_date = get_prev_tradeday(end_date)
         print("start:%s,end:%s" % (start_date, end_date))
