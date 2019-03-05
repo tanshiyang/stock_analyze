@@ -148,10 +148,11 @@ def get_prev_tradeday(date):
 
 
 # 20180331 20180630 20180930 20181231
-every_date('20180331', 'stock_analyze_1801', True)
-every_date('20180630', 'stock_analyze_1802', False)
+# every_date('20180331', 'stock_analyze_1801', False)
+# every_date('20180630', 'stock_analyze_1802', False)
 every_date('20181231', 'stock_analyze_1804', True)
-every_date('20170331', 'stock_analyze_1701', True)
-every_date('20170630', 'stock_analyze_1702', True)
-every_date('20170930', 'stock_analyze_1703', True)
-every_date('20171231', 'stock_analyze_1704', True)
+# every_date('20170331', 'stock_analyze_1701', False)
+# every_date('20170630', 'stock_analyze_1702', False)
+# every_date('20170930', 'stock_analyze_1703', False)
+# every_date('20171231', 'stock_analyze_1704', False)
+every_date('20190331', 'stock_analyze_1901', True)
