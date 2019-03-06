@@ -22,25 +22,25 @@ def every_date(period, table_name, rebuild):
 
     if rebuild:
         cursor.execute("drop table if exists %s;" % table_name)
-        cursor.execute(
-            "create table  %s "
-            "(ts_code varchar(32),"
-            "start_date varchar(32),"
-            "close1 float, "
-            "close_min float,"
-            "close_min_date varchar(32),"
-            "close_max float,"
-            "close_max_date varchar(32),"
-            "close2 float,"
-            "end_date varchar(32),"
-            "total_revenue float, "
-            "accounts_receiv	float, "  # 应收帐款 
-            "n_income	float, "  # 利润
-            "adv_receipts	float, "  # 预收帐款
-            "roe float,"
-            "grossprofit_margin float,"
-            "pe float,"
-            "unique(ts_code))" % table_name)
+    cursor.execute(
+        "create table if not exists %s "
+        "(ts_code varchar(32),"
+        "start_date varchar(32),"
+        "close1 float, "
+        "close_min float,"
+        "close_min_date varchar(32),"
+        "close_max float,"
+        "close_max_date varchar(32),"
+        "close2 float,"
+        "end_date varchar(32),"
+        "total_revenue float, "
+        "accounts_receiv	float, "  # 应收帐款 
+        "n_income	float, "  # 利润
+        "adv_receipts	float, "  # 预收帐款
+        "roe float,"
+        "grossprofit_margin float,"
+        "pe float,"
+        "unique(ts_code))" % table_name)
 
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in range(0, len(codes)):
@@ -136,18 +136,19 @@ def one_stock(code, period, times, table_name):
 
 
 def get_next_tradeday(date):
-    while (tradeday.is_tradeday(date) == 0):
+    while tradeday.is_tradeday(date) == 0:
         date = mydate.string_to_next_day(date)
     return date
 
 
 def get_prev_tradeday(date):
-    while (tradeday.is_tradeday(date) == 0):
+    while tradeday.is_tradeday(date) == 0:
         date = mydate.string_to_prev_day(date)
     return date
 
 
 # 20180331 20180630 20180930 20181231
+'''
 every_date('20180331', 'stock_analyze_1801', True)
 every_date('20180630', 'stock_analyze_1802', True)
 every_date('20181231', 'stock_analyze_1804', True)
@@ -156,3 +157,9 @@ every_date('20170630', 'stock_analyze_1702', True)
 every_date('20170930', 'stock_analyze_1703', True)
 every_date('20171231', 'stock_analyze_1704', True)
 every_date('20190331', 'stock_analyze_1901', True)
+'''
+
+# 用于定时执行
+period = mydate.get_period_info()
+print(period[0], 'stock_analyze_' + period[1])
+every_date(period[0], 'stock_analyze_' + period[1], False)
