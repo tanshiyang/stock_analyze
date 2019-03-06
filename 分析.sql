@@ -38,12 +38,14 @@ SELECT
 	n_income / total_revenue AS inc_rev ,
 	(abs(roe) * (adv_receipts / total_revenue)) as order1
 FROM
-	stock_analyze_1804 a
+	stock_analyze_1801 a
 	) a
 WHERE
 	1 = 1
 	and total_revenue>accounts_receiv
 	and roe > 0
+	and roe_gross>0.5
 	and pe <65
+	and inc_rev > 0.3
 ORDER BY
 	order1  desc
