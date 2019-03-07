@@ -14,7 +14,7 @@ class MyTusharePro:
             return self.pro.disclosure_date(ts_code=ts_code, end_date=end_date, pre_date=pre_date,
                                             actual_date=actual_date)
         except Exception as e:
-            time.sleep(0.3)
+            time.sleep(1)
             return self.disclosure_date(ts_code, end_date, pre_date, actual_date, times + 1)
         finally:
             time.sleep(0.3)
@@ -28,7 +28,7 @@ class MyTusharePro:
                                    period=period, report_type=report_type, comp_type=comp_type
                                    )
         except Exception as e:
-            time.sleep(0.3)
+            time.sleep(1)
             return self.income(ts_code, ann_date, start_date, end_date, period, report_type, comp_type, times + 1)
         finally:
             time.sleep(0.3)
@@ -42,7 +42,7 @@ class MyTusharePro:
                                          period=period, report_type=report_type, comp_type=comp_type
                                          )
         except Exception as e:
-            time.sleep(0.3)
+            time.sleep(1)
             return self.balancesheet(ts_code=ts_code, ann_date=ann_date, start_date=start_date, end_date=end_date,
                                      period=period, report_type=report_type, comp_type=comp_type, times=times + 1)
         finally:
@@ -56,7 +56,7 @@ class MyTusharePro:
                                            period=period
                                            )
         except Exception as e:
-            time.sleep(0.3)
+            time.sleep(1)
             return self.fina_indicator(ts_code, ann_date, start_date, end_date, period, times + 1)
         finally:
             time.sleep(0.3)
