@@ -147,19 +147,21 @@ def get_prev_tradeday(date):
     return date
 
 
-# 20180331 20180630 20180930 20181231
-'''
-every_date('20180331', 'stock_analyze_1801', True)
-every_date('20180630', 'stock_analyze_1802', True)
-every_date('20181231', 'stock_analyze_1804', True)
-every_date('20170331', 'stock_analyze_1701', True)
-every_date('20170630', 'stock_analyze_1702', True)
-every_date('20170930', 'stock_analyze_1703', True)
-every_date('20171231', 'stock_analyze_1704', True)
-every_date('20190331', 'stock_analyze_1901', True)
-'''
+if __name__ == '__main__':
+    # 20180331 20180630 20180930 20181231
+    '''
+    every_date('20180331', 'stock_analyze_1801', True)
+    every_date('20180630', 'stock_analyze_1802', True)
+    every_date('20181231', 'stock_analyze_1804', True)
+    every_date('20170331', 'stock_analyze_1701', True)
+    every_date('20170630', 'stock_analyze_1702', True)
+    every_date('20170930', 'stock_analyze_1703', True)
+    every_date('20171231', 'stock_analyze_1704', True)
+    every_date('20190331', 'stock_analyze_1901', True)
+    '''
 
-# 用于定时执行
-period = mydate.get_period_info()
-print(period[0], 'stock_analyze_' + period[1])
-every_date(period[0], 'stock_analyze_' + period[1], False)
+    # 用于定时执行
+    period = mydate.get_period_info()
+    period_date = period[0]
+    table_name = 'stock_analyze_' + period[1]
+    every_date(period_date, table_name, False)
