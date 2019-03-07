@@ -40,3 +40,14 @@ class MyTusharePro:
         except Exception as e:
             time.sleep(0.3)
             return self.balancesheet(ts_code, ann_date, start_date, end_date, period, report_type, comp_type, time + 1)
+
+    def fina_indicator(self, ts_code=None, ann_date=None, start_date=None, end_date=None, period=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.fina_indicator(ts_code=ts_code, ann_date=ann_date, start_date=start_date, end_date=end_date,
+                                   period=period
+                                   )
+        except Exception as e:
+            time.sleep(0.3)
+            return self.fina_indicator(ts_code, ann_date, start_date, end_date, period, times + 1)

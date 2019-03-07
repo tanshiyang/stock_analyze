@@ -293,7 +293,7 @@ def collect_income(period):
     cursor.close()
 
 
-#资产负债表
+# 资产负债表
 def collect_balancesheet(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
     disclosure_date = pro.disclosure_date(end_date='%s' % period)
@@ -459,142 +459,142 @@ def collect_balancesheet(period):
 
             sql = ("insert into balancesheet("
                    "ts_code,"
-                    "ann_date,"
-                    "f_ann_date,"
-                    "end_date,"
-                    "report_type,"
-                    "comp_type,"
-                    "total_share,"
-                    "cap_rese,"
-                    "undistr_porfit,"
-                    "surplus_rese,"
-                    "special_rese,"
-                    "money_cap,"
-                    "trad_asset,"
-                    "notes_receiv,"
-                    "accounts_receiv,"
-                    "oth_receiv,"
-                    "prepayment,"
-                    "div_receiv,"
-                    "int_receiv,"
-                    "inventories,"
-                    "amor_exp,"
-                    "nca_within_1y,"
-                    "sett_rsrv,"
-                    "loanto_oth_bank_fi,"
-                    "premium_receiv,"
-                    "reinsur_receiv,"
-                    "reinsur_res_receiv,"
-                    "pur_resale_fa,"
-                    "oth_cur_assets,"
-                    "total_cur_assets,"
-                    "fa_avail_for_sale,"
-                    "htm_invest,"
-                    "lt_eqt_invest,"
-                    "invest_real_estate,"
-                    "time_deposits,"
-                    "oth_assets,"
-                    "lt_rec,"
-                    "fix_assets,"
-                    "cip,"
-                    "const_materials,"
-                    "fixed_assets_disp,"
-                    "produc_bio_assets,"
-                    "oil_and_gas_assets,"
-                    "intan_assets,"
-                    "r_and_d,"
-                    "goodwill,"
-                    "lt_amor_exp,"
-                    "defer_tax_assets,"
-                    "decr_in_disbur,"
-                    "oth_nca,"
-                    "total_nca,"
-                    "cash_reser_cb,"
-                    "depos_in_oth_bfi,"
-                    "prec_metals,"
-                    "deriv_assets,"
-                    "rr_reins_une_prem,"
-                    "rr_reins_outstd_cla,"
-                    "rr_reins_lins_liab,"
-                    "rr_reins_lthins_liab,"
-                    "refund_depos,"
-                    "ph_pledge_loans,"
-                    "refund_cap_depos,"
-                    "indep_acct_assets,"
-                    "client_depos,"
-                    "client_prov,"
-                    "transac_seat_fee,"
-                    "invest_as_receiv,"
-                    "total_assets,"
-                    "lt_borr,"
-                    "st_borr,"
-                    "cb_borr,"
-                    "depos_ib_deposits,"
-                    "loan_oth_bank,"
-                    "trading_fl,"
-                    "notes_payable,"
-                    "acct_payable,"
-                    "adv_receipts,"
-                    "sold_for_repur_fa,"
-                    "comm_payable,"
-                    "payroll_payable,"
-                    "taxes_payable,"
-                    "int_payable,"
-                    "div_payable,"
-                    "oth_payable,"
-                    "acc_exp,"
-                    "deferred_inc,"
-                    "st_bonds_payable,"
-                    "payable_to_reinsurer,"
-                    "rsrv_insur_cont,"
-                    "acting_trading_sec,"
-                    "acting_uw_sec,"
-                    "non_cur_liab_due_1y,"
-                    "oth_cur_liab,"
-                    "total_cur_liab,"
-                    "bond_payable,"
-                    "lt_payable,"
-                    "specific_payables,"
-                    "estimated_liab,"
-                    "defer_tax_liab,"
-                    "defer_inc_non_cur_liab,"
-                    "oth_ncl,"
-                    "total_ncl,"
-                    "depos_oth_bfi,"
-                    "deriv_liab,"
-                    "depos,"
-                    "agency_bus_liab,"
-                    "oth_liab,"
-                    "prem_receiv_adva,"
-                    "depos_received,"
-                    "ph_invest,"
-                    "reser_une_prem,"
-                    "reser_outstd_claims,"
-                    "reser_lins_liab,"
-                    "reser_lthins_liab,"
-                    "indept_acc_liab,"
-                    "pledge_borr,"
-                    "indem_payable,"
-                    "policy_div_payable,"
-                    "total_liab,"
-                    "treasury_share,"
-                    "ordin_risk_reser,"
-                    "forex_differ,"
-                    "invest_loss_unconf,"
-                    "minority_int,"
-                    "total_hldr_eqy_exc_min_int,"
-                    "total_hldr_eqy_inc_min_int,"
-                    "total_liab_hldr_eqy,"
-                    "lt_payroll_payable,"
-                    "oth_comp_income,"
-                    "oth_eqt_tools,"
-                    "oth_eqt_tools_p_shr,"
-                    "lending_funds,"
-                    "acc_receivable,"
-                    "st_fin_payable,"
-                    "payables,"
-                    "hfs_assets,"
-                    "hfs_sales"
+                   "ann_date,"
+                   "f_ann_date,"
+                   "end_date,"
+                   "report_type,"
+                   "comp_type,"
+                   "total_share,"
+                   "cap_rese,"
+                   "undistr_porfit,"
+                   "surplus_rese,"
+                   "special_rese,"
+                   "money_cap,"
+                   "trad_asset,"
+                   "notes_receiv,"
+                   "accounts_receiv,"
+                   "oth_receiv,"
+                   "prepayment,"
+                   "div_receiv,"
+                   "int_receiv,"
+                   "inventories,"
+                   "amor_exp,"
+                   "nca_within_1y,"
+                   "sett_rsrv,"
+                   "loanto_oth_bank_fi,"
+                   "premium_receiv,"
+                   "reinsur_receiv,"
+                   "reinsur_res_receiv,"
+                   "pur_resale_fa,"
+                   "oth_cur_assets,"
+                   "total_cur_assets,"
+                   "fa_avail_for_sale,"
+                   "htm_invest,"
+                   "lt_eqt_invest,"
+                   "invest_real_estate,"
+                   "time_deposits,"
+                   "oth_assets,"
+                   "lt_rec,"
+                   "fix_assets,"
+                   "cip,"
+                   "const_materials,"
+                   "fixed_assets_disp,"
+                   "produc_bio_assets,"
+                   "oil_and_gas_assets,"
+                   "intan_assets,"
+                   "r_and_d,"
+                   "goodwill,"
+                   "lt_amor_exp,"
+                   "defer_tax_assets,"
+                   "decr_in_disbur,"
+                   "oth_nca,"
+                   "total_nca,"
+                   "cash_reser_cb,"
+                   "depos_in_oth_bfi,"
+                   "prec_metals,"
+                   "deriv_assets,"
+                   "rr_reins_une_prem,"
+                   "rr_reins_outstd_cla,"
+                   "rr_reins_lins_liab,"
+                   "rr_reins_lthins_liab,"
+                   "refund_depos,"
+                   "ph_pledge_loans,"
+                   "refund_cap_depos,"
+                   "indep_acct_assets,"
+                   "client_depos,"
+                   "client_prov,"
+                   "transac_seat_fee,"
+                   "invest_as_receiv,"
+                   "total_assets,"
+                   "lt_borr,"
+                   "st_borr,"
+                   "cb_borr,"
+                   "depos_ib_deposits,"
+                   "loan_oth_bank,"
+                   "trading_fl,"
+                   "notes_payable,"
+                   "acct_payable,"
+                   "adv_receipts,"
+                   "sold_for_repur_fa,"
+                   "comm_payable,"
+                   "payroll_payable,"
+                   "taxes_payable,"
+                   "int_payable,"
+                   "div_payable,"
+                   "oth_payable,"
+                   "acc_exp,"
+                   "deferred_inc,"
+                   "st_bonds_payable,"
+                   "payable_to_reinsurer,"
+                   "rsrv_insur_cont,"
+                   "acting_trading_sec,"
+                   "acting_uw_sec,"
+                   "non_cur_liab_due_1y,"
+                   "oth_cur_liab,"
+                   "total_cur_liab,"
+                   "bond_payable,"
+                   "lt_payable,"
+                   "specific_payables,"
+                   "estimated_liab,"
+                   "defer_tax_liab,"
+                   "defer_inc_non_cur_liab,"
+                   "oth_ncl,"
+                   "total_ncl,"
+                   "depos_oth_bfi,"
+                   "deriv_liab,"
+                   "depos,"
+                   "agency_bus_liab,"
+                   "oth_liab,"
+                   "prem_receiv_adva,"
+                   "depos_received,"
+                   "ph_invest,"
+                   "reser_une_prem,"
+                   "reser_outstd_claims,"
+                   "reser_lins_liab,"
+                   "reser_lthins_liab,"
+                   "indept_acc_liab,"
+                   "pledge_borr,"
+                   "indem_payable,"
+                   "policy_div_payable,"
+                   "total_liab,"
+                   "treasury_share,"
+                   "ordin_risk_reser,"
+                   "forex_differ,"
+                   "invest_loss_unconf,"
+                   "minority_int,"
+                   "total_hldr_eqy_exc_min_int,"
+                   "total_hldr_eqy_inc_min_int,"
+                   "total_liab_hldr_eqy,"
+                   "lt_payroll_payable,"
+                   "oth_comp_income,"
+                   "oth_eqt_tools,"
+                   "oth_eqt_tools_p_shr,"
+                   "lending_funds,"
+                   "acc_receivable,"
+                   "st_fin_payable,"
+                   "payables,"
+                   "hfs_assets,"
+                   "hfs_sales"
                    ") values("
                    + "'%s'," % balancesheet.ts_code[0]
                    + "'%s'," % balancesheet.ann_date[0]
@@ -744,9 +744,556 @@ def collect_balancesheet(period):
     cursor.close()
 
 
+# 财务指标数据
+def collect_fina_indicator(period):
+    now = time.strftime('%Y%m%d', time.localtime(time.time()))
+    disclosure_date = pro.disclosure_date(end_date='%s' % period)
+    disclosure_date = disclosure_date[disclosure_date.actual_date < now]
+    ts_codes = disclosure_date.ts_code
+
+    # 连接数据库
+    conn = mydb.conn()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "create table if not exists fina_indicator ("
+        "ts_code varchar(200),"
+        "ann_date varchar(200),"
+        "end_date varchar(200),"
+        "eps float,"
+        "dt_eps float,"
+        "total_revenue_ps float,"
+        "revenue_ps float,"
+        "capital_rese_ps float,"
+        "surplus_rese_ps float,"
+        "undist_profit_ps float,"
+        "extra_item float,"
+        "profit_dedt float,"
+        "gross_margin float,"
+        "current_ratio float,"
+        "quick_ratio float,"
+        "cash_ratio float,"
+        "invturn_days float,"
+        "arturn_days float,"
+        "inv_turn float,"
+        "ar_turn float,"
+        "ca_turn float,"
+        "fa_turn float,"
+        "assets_turn float,"
+        "op_income float,"
+        "valuechange_income float,"
+        "interst_income float,"
+        "daa float,"
+        "ebit float,"
+        "ebitda float,"
+        "fcff float,"
+        "fcfe float,"
+        "current_exint float,"
+        "noncurrent_exint float,"
+        "interestdebt float,"
+        "netdebt float,"
+        "tangible_asset float,"
+        "working_capital float,"
+        "networking_capital float,"
+        "invest_capital float,"
+        "retained_earnings float,"
+        "diluted2_eps float,"
+        "bps float,"
+        "ocfps float,"
+        "retainedps float,"
+        "cfps float,"
+        "ebit_ps float,"
+        "fcff_ps float,"
+        "fcfe_ps float,"
+        "netprofit_margin float,"
+        "grossprofit_margin float,"
+        "cogs_of_sales float,"
+        "expense_of_sales float,"
+        "profit_to_gr float,"
+        "saleexp_to_gr float,"
+        "adminexp_of_gr float,"
+        "finaexp_of_gr float,"
+        "impai_ttm float,"
+        "gc_of_gr float,"
+        "op_of_gr float,"
+        "ebit_of_gr float,"
+        "roe float,"
+        "roe_waa float,"
+        "roe_dt float,"
+        "roa float,"
+        "npta float,"
+        "roic float,"
+        "roe_yearly float,"
+        "roa2_yearly float,"
+        "roe_avg float,"
+        "opincome_of_ebt float,"
+        "investincome_of_ebt float,"
+        "n_op_profit_of_ebt float,"
+        "tax_to_ebt float,"
+        "dtprofit_to_profit float,"
+        "salescash_to_or float,"
+        "ocf_to_or float,"
+        "ocf_to_opincome float,"
+        "capitalized_to_da float,"
+        "debt_to_assets float,"
+        "assets_to_eqt float,"
+        "dp_assets_to_eqt float,"
+        "ca_to_assets float,"
+        "nca_to_assets float,"
+        "tbassets_to_totalassets float,"
+        "int_to_talcap float,"
+        "eqt_to_talcapital float,"
+        "currentdebt_to_debt float,"
+        "longdeb_to_debt float,"
+        "ocf_to_shortdebt float,"
+        "debt_to_eqt float,"
+        "eqt_to_debt float,"
+        "eqt_to_interestdebt float,"
+        "tangibleasset_to_debt float,"
+        "tangasset_to_intdebt float,"
+        "tangibleasset_to_netdebt float,"
+        "ocf_to_debt float,"
+        "ocf_to_interestdebt float,"
+        "ocf_to_netdebt float,"
+        "ebit_to_interest float,"
+        "longdebt_to_workingcapital float,"
+        "ebitda_to_debt float,"
+        "turn_days float,"
+        "roa_yearly float,"
+        "roa_dp float,"
+        "fixed_assets float,"
+        "profit_prefin_exp float,"
+        "non_op_profit float,"
+        "op_to_ebt float,"
+        "nop_to_ebt float,"
+        "ocf_to_profit float,"
+        "cash_to_liqdebt float,"
+        "cash_to_liqdebt_withinterest float,"
+        "op_to_liqdebt float,"
+        "op_to_debt float,"
+        "roic_yearly float,"
+        "profit_to_op float,"
+        "q_opincome float,"
+        "q_investincome float,"
+        "q_dtprofit float,"
+        "q_eps float,"
+        "q_netprofit_margin float,"
+        "q_gsprofit_margin float,"
+        "q_exp_to_sales float,"
+        "q_profit_to_gr float,"
+        "q_saleexp_to_gr float,"
+        "q_adminexp_to_gr float,"
+        "q_finaexp_to_gr float,"
+        "q_impair_to_gr_ttm float,"
+        "q_gc_to_gr float,"
+        "q_op_to_gr float,"
+        "q_roe float,"
+        "q_dt_roe float,"
+        "q_npta float,"
+        "q_opincome_to_ebt float,"
+        "q_investincome_to_ebt float,"
+        "q_dtprofit_to_profit float,"
+        "q_salescash_to_or float,"
+        "q_ocf_to_sales float,"
+        "q_ocf_to_or float,"
+        "basic_eps_yoy float,"
+        "dt_eps_yoy float,"
+        "cfps_yoy float,"
+        "op_yoy float,"
+        "ebt_yoy float,"
+        "netprofit_yoy float,"
+        "dt_netprofit_yoy float,"
+        "ocf_yoy float,"
+        "roe_yoy float,"
+        "bps_yoy float,"
+        "assets_yoy float,"
+        "eqt_yoy float,"
+        "tr_yoy float,"
+        "or_yoy float,"
+        "q_gr_yoy float,"
+        "q_gr_qoq float,"
+        "q_sales_yoy float,"
+        "q_sales_qoq float,"
+        "q_op_yoy float,"
+        "q_op_qoq float,"
+        "q_profit_yoy float,"
+        "q_profit_qoq float,"
+        "q_netprofit_yoy float,"
+        "q_netprofit_qoq float,"
+        "equity_yoy float,"
+        "rd_exp float,"
+        "unique(ts_code,ann_date))")
+
+    # 通过for循环以及获取A股只数来遍历每一只股票
+    for x in ts_codes.index:
+        try:
+            df = pro.fina_indicator(ts_code=ts_codes[x], end_date=period)
+            if df is None or len(df) == 0:
+                continue
+
+            exist_stocks = pd.read_sql("select * from fina_indicator where ts_code='%s' and ann_date='%s'" %
+                                       (df.ts_code[0], df.ann_date[0]), conn,
+                                       index_col="ts_code")
+            if len(exist_stocks) > 0:
+                continue
+
+            sql = ("insert into fina_indicator("
+
+                   "ts_code,"
+                   "ann_date,"
+                   "end_date,"
+                   "eps,"
+                   "dt_eps,"
+                   "total_revenue_ps,"
+                   "revenue_ps,"
+                   "capital_rese_ps,"
+                   "surplus_rese_ps,"
+                   "undist_profit_ps,"
+                   "extra_item,"
+                   "profit_dedt,"
+                   "gross_margin,"
+                   "current_ratio,"
+                   "quick_ratio,"
+                   "cash_ratio,"
+                   "invturn_days,"
+                   "arturn_days,"
+                   "inv_turn,"
+                   "ar_turn,"
+                   "ca_turn,"
+                   "fa_turn,"
+                   "assets_turn,"
+                   "op_income,"
+                   "valuechange_income,"
+                   "interst_income,"
+                   "daa,"
+                   "ebit,"
+                   "ebitda,"
+                   "fcff,"
+                   "fcfe,"
+                   "current_exint,"
+                   "noncurrent_exint,"
+                   "interestdebt,"
+                   "netdebt,"
+                   "tangible_asset,"
+                   "working_capital,"
+                   "networking_capital,"
+                   "invest_capital,"
+                   "retained_earnings,"
+                   "diluted2_eps,"
+                   "bps,"
+                   "ocfps,"
+                   "retainedps,"
+                   "cfps,"
+                   "ebit_ps,"
+                   "fcff_ps,"
+                   "fcfe_ps,"
+                   "netprofit_margin,"
+                   "grossprofit_margin,"
+                   "cogs_of_sales,"
+                   "expense_of_sales,"
+                   "profit_to_gr,"
+                   "saleexp_to_gr,"
+                   "adminexp_of_gr,"
+                   "finaexp_of_gr,"
+                   "impai_ttm,"
+                   "gc_of_gr,"
+                   "op_of_gr,"
+                   "ebit_of_gr,"
+                   "roe,"
+                   "roe_waa,"
+                   "roe_dt,"
+                   "roa,"
+                   "npta,"
+                   "roic,"
+                   "roe_yearly,"
+                   "roa2_yearly,"
+                   "roe_avg,"
+                   "opincome_of_ebt,"
+                   "investincome_of_ebt,"
+                   "n_op_profit_of_ebt,"
+                   "tax_to_ebt,"
+                   "dtprofit_to_profit,"
+                   "salescash_to_or,"
+                   "ocf_to_or,"
+                   "ocf_to_opincome,"
+                   "capitalized_to_da,"
+                   "debt_to_assets,"
+                   "assets_to_eqt,"
+                   "dp_assets_to_eqt,"
+                   "ca_to_assets,"
+                   "nca_to_assets,"
+                   "tbassets_to_totalassets,"
+                   "int_to_talcap,"
+                   "eqt_to_talcapital,"
+                   "currentdebt_to_debt,"
+                   "longdeb_to_debt,"
+                   "ocf_to_shortdebt,"
+                   "debt_to_eqt,"
+                   "eqt_to_debt,"
+                   "eqt_to_interestdebt,"
+                   "tangibleasset_to_debt,"
+                   "tangasset_to_intdebt,"
+                   "tangibleasset_to_netdebt,"
+                   "ocf_to_debt,"
+                   "ocf_to_interestdebt,"
+                   "ocf_to_netdebt,"
+                   "ebit_to_interest,"
+                   "longdebt_to_workingcapital,"
+                   "ebitda_to_debt,"
+                   "turn_days,"
+                   "roa_yearly,"
+                   "roa_dp,"
+                   "fixed_assets,"
+                   "profit_prefin_exp,"
+                   "non_op_profit,"
+                   "op_to_ebt,"
+                   "nop_to_ebt,"
+                   "ocf_to_profit,"
+                   "cash_to_liqdebt,"
+                   "cash_to_liqdebt_withinterest,"
+                   "op_to_liqdebt,"
+                   "op_to_debt,"
+                   "roic_yearly,"
+                   "profit_to_op,"
+                   "q_opincome,"
+                   "q_investincome,"
+                   "q_dtprofit,"
+                   "q_eps,"
+                   "q_netprofit_margin,"
+                   "q_gsprofit_margin,"
+                   "q_exp_to_sales,"
+                   "q_profit_to_gr,"
+                   "q_saleexp_to_gr,"
+                   "q_adminexp_to_gr,"
+                   "q_finaexp_to_gr,"
+                   "q_impair_to_gr_ttm,"
+                   "q_gc_to_gr,"
+                   "q_op_to_gr,"
+                   "q_roe,"
+                   "q_dt_roe,"
+                   "q_npta,"
+                   "q_opincome_to_ebt,"
+                   "q_investincome_to_ebt,"
+                   "q_dtprofit_to_profit,"
+                   "q_salescash_to_or,"
+                   "q_ocf_to_sales,"
+                   "q_ocf_to_or,"
+                   "basic_eps_yoy,"
+                   "dt_eps_yoy,"
+                   "cfps_yoy,"
+                   "op_yoy,"
+                   "ebt_yoy,"
+                   "netprofit_yoy,"
+                   "dt_netprofit_yoy,"
+                   "ocf_yoy,"
+                   "roe_yoy,"
+                   "bps_yoy,"
+                   "assets_yoy,"
+                   "eqt_yoy,"
+                   "tr_yoy,"
+                   "or_yoy,"
+                   "q_gr_yoy,"
+                   "q_gr_qoq,"
+                   "q_sales_yoy,"
+                   "q_sales_qoq,"
+                   "q_op_yoy,"
+                   "q_op_qoq,"
+                   "q_profit_yoy,"
+                   "q_profit_qoq,"
+                   "q_netprofit_yoy,"
+                   "q_netprofit_qoq,"
+                   "equity_yoy,"
+                   "rd_exp"
+                   ") values("
+                   + "'%s'," % ("None" if "ts_code" not in df.columns.values else df.ts_code[0])
+                   + "'%s'," % ("None" if "ann_date" not in df.columns.values else df.ann_date[0])
+                   + "'%s'," % ("None" if "end_date" not in df.columns.values else df.end_date[0])
+                   + "'%s'," % ("None" if "eps" not in df.columns.values else df.eps[0])
+                   + "'%s'," % ("None" if "dt_eps" not in df.columns.values else df.dt_eps[0])
+                   + "'%s'," % ("None" if "total_revenue_ps" not in df.columns.values else df.total_revenue_ps[0])
+                   + "'%s'," % ("None" if "revenue_ps" not in df.columns.values else df.revenue_ps[0])
+                   + "'%s'," % ("None" if "capital_rese_ps" not in df.columns.values else df.capital_rese_ps[0])
+                   + "'%s'," % ("None" if "surplus_rese_ps" not in df.columns.values else df.surplus_rese_ps[0])
+                   + "'%s'," % ("None" if "undist_profit_ps" not in df.columns.values else df.undist_profit_ps[0])
+                   + "'%s'," % ("None" if "extra_item" not in df.columns.values else df.extra_item[0])
+                   + "'%s'," % ("None" if "profit_dedt" not in df.columns.values else df.profit_dedt[0])
+                   + "'%s'," % ("None" if "gross_margin" not in df.columns.values else df.gross_margin[0])
+                   + "'%s'," % ("None" if "current_ratio" not in df.columns.values else df.current_ratio[0])
+                   + "'%s'," % ("None" if "quick_ratio" not in df.columns.values else df.quick_ratio[0])
+                   + "'%s'," % ("None" if "cash_ratio" not in df.columns.values else df.cash_ratio[0])
+                   + "'%s'," % ("None" if "invturn_days" not in df.columns.values else df.invturn_days[0])
+                   + "'%s'," % ("None" if "arturn_days" not in df.columns.values else df.arturn_days[0])
+                   + "'%s'," % ("None" if "inv_turn" not in df.columns.values else df.inv_turn[0])
+                   + "'%s'," % ("None" if "ar_turn" not in df.columns.values else df.ar_turn[0])
+                   + "'%s'," % ("None" if "ca_turn" not in df.columns.values else df.ca_turn[0])
+                   + "'%s'," % ("None" if "fa_turn" not in df.columns.values else df.fa_turn[0])
+                   + "'%s'," % ("None" if "assets_turn" not in df.columns.values else df.assets_turn[0])
+                   + "'%s'," % ("None" if "op_income" not in df.columns.values else df.op_income[0])
+                   + "'%s'," % ("None" if "valuechange_income" not in df.columns.values else df.valuechange_income[0])
+                   + "'%s'," % ("None" if "interst_income" not in df.columns.values else df.interst_income[0])
+                   + "'%s'," % ("None" if "daa" not in df.columns.values else df.daa[0])
+                   + "'%s'," % ("None" if "ebit" not in df.columns.values else df.ebit[0])
+                   + "'%s'," % ("None" if "ebitda" not in df.columns.values else df.ebitda[0])
+                   + "'%s'," % ("None" if "fcff" not in df.columns.values else df.fcff[0])
+                   + "'%s'," % ("None" if "fcfe" not in df.columns.values else df.fcfe[0])
+                   + "'%s'," % ("None" if "current_exint" not in df.columns.values else df.current_exint[0])
+                   + "'%s'," % ("None" if "noncurrent_exint" not in df.columns.values else df.noncurrent_exint[0])
+                   + "'%s'," % ("None" if "interestdebt" not in df.columns.values else df.interestdebt[0])
+                   + "'%s'," % ("None" if "netdebt" not in df.columns.values else df.netdebt[0])
+                   + "'%s'," % ("None" if "tangible_asset" not in df.columns.values else df.tangible_asset[0])
+                   + "'%s'," % ("None" if "working_capital" not in df.columns.values else df.working_capital[0])
+                   + "'%s'," % ("None" if "networking_capital" not in df.columns.values else df.networking_capital[0])
+                   + "'%s'," % ("None" if "invest_capital" not in df.columns.values else df.invest_capital[0])
+                   + "'%s'," % ("None" if "retained_earnings" not in df.columns.values else df.retained_earnings[0])
+                   + "'%s'," % ("None" if "diluted2_eps" not in df.columns.values else df.diluted2_eps[0])
+                   + "'%s'," % ("None" if "bps" not in df.columns.values else df.bps[0])
+                   + "'%s'," % ("None" if "ocfps" not in df.columns.values else df.ocfps[0])
+                   + "'%s'," % ("None" if "retainedps" not in df.columns.values else df.retainedps[0])
+                   + "'%s'," % ("None" if "cfps" not in df.columns.values else df.cfps[0])
+                   + "'%s'," % ("None" if "ebit_ps" not in df.columns.values else df.ebit_ps[0])
+                   + "'%s'," % ("None" if "fcff_ps" not in df.columns.values else df.fcff_ps[0])
+                   + "'%s'," % ("None" if "fcfe_ps" not in df.columns.values else df.fcfe_ps[0])
+                   + "'%s'," % ("None" if "netprofit_margin" not in df.columns.values else df.netprofit_margin[0])
+                   + "'%s'," % ("None" if "grossprofit_margin" not in df.columns.values else df.grossprofit_margin[0])
+                   + "'%s'," % ("None" if "cogs_of_sales" not in df.columns.values else df.cogs_of_sales[0])
+                   + "'%s'," % ("None" if "expense_of_sales" not in df.columns.values else df.expense_of_sales[0])
+                   + "'%s'," % ("None" if "profit_to_gr" not in df.columns.values else df.profit_to_gr[0])
+                   + "'%s'," % ("None" if "saleexp_to_gr" not in df.columns.values else df.saleexp_to_gr[0])
+                   + "'%s'," % ("None" if "adminexp_of_gr" not in df.columns.values else df.adminexp_of_gr[0])
+                   + "'%s'," % ("None" if "finaexp_of_gr" not in df.columns.values else df.finaexp_of_gr[0])
+                   + "'%s'," % ("None" if "impai_ttm" not in df.columns.values else df.impai_ttm[0])
+                   + "'%s'," % ("None" if "gc_of_gr" not in df.columns.values else df.gc_of_gr[0])
+                   + "'%s'," % ("None" if "op_of_gr" not in df.columns.values else df.op_of_gr[0])
+                   + "'%s'," % ("None" if "ebit_of_gr" not in df.columns.values else df.ebit_of_gr[0])
+                   + "'%s'," % ("None" if "roe" not in df.columns.values else df.roe[0])
+                   + "'%s'," % ("None" if "roe_waa" not in df.columns.values else df.roe_waa[0])
+                   + "'%s'," % ("None" if "roe_dt" not in df.columns.values else df.roe_dt[0])
+                   + "'%s'," % ("None" if "roa" not in df.columns.values else df.roa[0])
+                   + "'%s'," % ("None" if "npta" not in df.columns.values else df.npta[0])
+                   + "'%s'," % ("None" if "roic" not in df.columns.values else df.roic[0])
+                   + "'%s'," % ("None" if "roe_yearly" not in df.columns.values else df.roe_yearly[0])
+                   + "'%s'," % ("None" if "roa2_yearly" not in df.columns.values else df.roa2_yearly[0])
+                   + "'%s'," % ("None" if "roe_avg" not in df.columns.values else df.roe_avg[0])
+                   + "'%s'," % ("None" if "opincome_of_ebt" not in df.columns.values else df.opincome_of_ebt[0])
+                   + "'%s'," % ("None" if "investincome_of_ebt" not in df.columns.values else df.investincome_of_ebt[0])
+                   + "'%s'," % ("None" if "n_op_profit_of_ebt" not in df.columns.values else df.n_op_profit_of_ebt[0])
+                   + "'%s'," % ("None" if "tax_to_ebt" not in df.columns.values else df.tax_to_ebt[0])
+                   + "'%s'," % ("None" if "dtprofit_to_profit" not in df.columns.values else df.dtprofit_to_profit[0])
+                   + "'%s'," % ("None" if "salescash_to_or" not in df.columns.values else df.salescash_to_or[0])
+                   + "'%s'," % ("None" if "ocf_to_or" not in df.columns.values else df.ocf_to_or[0])
+                   + "'%s'," % ("None" if "ocf_to_opincome" not in df.columns.values else df.ocf_to_opincome[0])
+                   + "'%s'," % ("None" if "capitalized_to_da" not in df.columns.values else df.capitalized_to_da[0])
+                   + "'%s'," % ("None" if "debt_to_assets" not in df.columns.values else df.debt_to_assets[0])
+                   + "'%s'," % ("None" if "assets_to_eqt" not in df.columns.values else df.assets_to_eqt[0])
+                   + "'%s'," % ("None" if "dp_assets_to_eqt" not in df.columns.values else df.dp_assets_to_eqt[0])
+                   + "'%s'," % ("None" if "ca_to_assets" not in df.columns.values else df.ca_to_assets[0])
+                   + "'%s'," % ("None" if "nca_to_assets" not in df.columns.values else df.nca_to_assets[0])
+                   + "'%s'," % (
+                       "None" if "tbassets_to_totalassets" not in df.columns.values else df.tbassets_to_totalassets[0])
+                   + "'%s'," % ("None" if "int_to_talcap" not in df.columns.values else df.int_to_talcap[0])
+                   + "'%s'," % ("None" if "eqt_to_talcapital" not in df.columns.values else df.eqt_to_talcapital[0])
+                   + "'%s'," % ("None" if "currentdebt_to_debt" not in df.columns.values else df.currentdebt_to_debt[0])
+                   + "'%s'," % ("None" if "longdeb_to_debt" not in df.columns.values else df.longdeb_to_debt[0])
+                   + "'%s'," % ("None" if "ocf_to_shortdebt" not in df.columns.values else df.ocf_to_shortdebt[0])
+                   + "'%s'," % ("None" if "debt_to_eqt" not in df.columns.values else df.debt_to_eqt[0])
+                   + "'%s'," % ("None" if "eqt_to_debt" not in df.columns.values else df.eqt_to_debt[0])
+                   + "'%s'," % ("None" if "eqt_to_interestdebt" not in df.columns.values else df.eqt_to_interestdebt[0])
+                   + "'%s'," % (
+                       "None" if "tangibleasset_to_debt" not in df.columns.values else df.tangibleasset_to_debt[0])
+                   + "'%s'," % (
+                       "None" if "tangasset_to_intdebt" not in df.columns.values else df.tangasset_to_intdebt[0])
+                   + "'%s'," % (
+                       "None" if "tangibleasset_to_netdebt" not in df.columns.values else df.tangibleasset_to_netdebt[
+                           0])
+                   + "'%s'," % ("None" if "ocf_to_debt" not in df.columns.values else df.ocf_to_debt[0])
+                   + "'%s'," % ("None" if "ocf_to_interestdebt" not in df.columns.values else df.ocf_to_interestdebt[0])
+                   + "'%s'," % ("None" if "ocf_to_netdebt" not in df.columns.values else df.ocf_to_netdebt[0])
+                   + "'%s'," % ("None" if "ebit_to_interest" not in df.columns.values else df.ebit_to_interest[0])
+                   + "'%s'," % ("None" if "longdebt_to_workingcapital" not in df.columns.values else
+                                df.longdebt_to_workingcapital[0])
+                   + "'%s'," % ("None" if "ebitda_to_debt" not in df.columns.values else df.ebitda_to_debt[0])
+                   + "'%s'," % ("None" if "turn_days" not in df.columns.values else df.turn_days[0])
+                   + "'%s'," % ("None" if "roa_yearly" not in df.columns.values else df.roa_yearly[0])
+                   + "'%s'," % ("None" if "roa_dp" not in df.columns.values else df.roa_dp[0])
+                   + "'%s'," % ("None" if "fixed_assets" not in df.columns.values else df.fixed_assets[0])
+                   + "'%s'," % ("None" if "profit_prefin_exp" not in df.columns.values else df.profit_prefin_exp[0])
+                   + "'%s'," % ("None" if "non_op_profit" not in df.columns.values else df.non_op_profit[0])
+                   + "'%s'," % ("None" if "op_to_ebt" not in df.columns.values else df.op_to_ebt[0])
+                   + "'%s'," % ("None" if "nop_to_ebt" not in df.columns.values else df.nop_to_ebt[0])
+                   + "'%s'," % ("None" if "ocf_to_profit" not in df.columns.values else df.ocf_to_profit[0])
+                   + "'%s'," % ("None" if "cash_to_liqdebt" not in df.columns.values else df.cash_to_liqdebt[0])
+                   + "'%s'," % ("None" if "cash_to_liqdebt_withinterest" not in df.columns.values else
+                                df.cash_to_liqdebt_withinterest[0])
+                   + "'%s'," % ("None" if "op_to_liqdebt" not in df.columns.values else df.op_to_liqdebt[0])
+                   + "'%s'," % ("None" if "op_to_debt" not in df.columns.values else df.op_to_debt[0])
+                   + "'%s'," % ("None" if "roic_yearly" not in df.columns.values else df.roic_yearly[0])
+                   + "'%s'," % ("None" if "profit_to_op" not in df.columns.values else df.profit_to_op[0])
+                   + "'%s'," % ("None" if "q_opincome" not in df.columns.values else df.q_opincome[0])
+                   + "'%s'," % ("None" if "q_investincome" not in df.columns.values else df.q_investincome[0])
+                   + "'%s'," % ("None" if "q_dtprofit" not in df.columns.values else df.q_dtprofit[0])
+                   + "'%s'," % ("None" if "q_eps" not in df.columns.values else df.q_eps[0])
+                   + "'%s'," % ("None" if "q_netprofit_margin" not in df.columns.values else df.q_netprofit_margin[0])
+                   + "'%s'," % ("None" if "q_gsprofit_margin" not in df.columns.values else df.q_gsprofit_margin[0])
+                   + "'%s'," % ("None" if "q_exp_to_sales" not in df.columns.values else df.q_exp_to_sales[0])
+                   + "'%s'," % ("None" if "q_profit_to_gr" not in df.columns.values else df.q_profit_to_gr[0])
+                   + "'%s'," % ("None" if "q_saleexp_to_gr" not in df.columns.values else df.q_saleexp_to_gr[0])
+                   + "'%s'," % ("None" if "q_adminexp_to_gr" not in df.columns.values else df.q_adminexp_to_gr[0])
+                   + "'%s'," % ("None" if "q_finaexp_to_gr" not in df.columns.values else df.q_finaexp_to_gr[0])
+                   + "'%s'," % ("None" if "q_impair_to_gr_ttm" not in df.columns.values else df.q_impair_to_gr_ttm[0])
+                   + "'%s'," % ("None" if "q_gc_to_gr" not in df.columns.values else df.q_gc_to_gr[0])
+                   + "'%s'," % ("None" if "q_op_to_gr" not in df.columns.values else df.q_op_to_gr[0])
+                   + "'%s'," % ("None" if "q_roe" not in df.columns.values else df.q_roe[0])
+                   + "'%s'," % ("None" if "q_dt_roe" not in df.columns.values else df.q_dt_roe[0])
+                   + "'%s'," % ("None" if "q_npta" not in df.columns.values else df.q_npta[0])
+                   + "'%s'," % ("None" if "q_opincome_to_ebt" not in df.columns.values else df.q_opincome_to_ebt[0])
+                   + "'%s'," % (
+                       "None" if "q_investincome_to_ebt" not in df.columns.values else df.q_investincome_to_ebt[0])
+                   + "'%s'," % (
+                       "None" if "q_dtprofit_to_profit" not in df.columns.values else df.q_dtprofit_to_profit[0])
+                   + "'%s'," % ("None" if "q_salescash_to_or" not in df.columns.values else df.q_salescash_to_or[0])
+                   + "'%s'," % ("None" if "q_ocf_to_sales" not in df.columns.values else df.q_ocf_to_sales[0])
+                   + "'%s'," % ("None" if "q_ocf_to_or" not in df.columns.values else df.q_ocf_to_or[0])
+                   + "'%s'," % ("None" if "basic_eps_yoy" not in df.columns.values else df.basic_eps_yoy[0])
+                   + "'%s'," % ("None" if "dt_eps_yoy" not in df.columns.values else df.dt_eps_yoy[0])
+                   + "'%s'," % ("None" if "cfps_yoy" not in df.columns.values else df.cfps_yoy[0])
+                   + "'%s'," % ("None" if "op_yoy" not in df.columns.values else df.op_yoy[0])
+                   + "'%s'," % ("None" if "ebt_yoy" not in df.columns.values else df.ebt_yoy[0])
+                   + "'%s'," % ("None" if "netprofit_yoy" not in df.columns.values else df.netprofit_yoy[0])
+                   + "'%s'," % ("None" if "dt_netprofit_yoy" not in df.columns.values else df.dt_netprofit_yoy[0])
+                   + "'%s'," % ("None" if "ocf_yoy" not in df.columns.values else df.ocf_yoy[0])
+                   + "'%s'," % ("None" if "roe_yoy" not in df.columns.values else df.roe_yoy[0])
+                   + "'%s'," % ("None" if "bps_yoy" not in df.columns.values else df.bps_yoy[0])
+                   + "'%s'," % ("None" if "assets_yoy" not in df.columns.values else df.assets_yoy[0])
+                   + "'%s'," % ("None" if "eqt_yoy" not in df.columns.values else df.eqt_yoy[0])
+                   + "'%s'," % ("None" if "tr_yoy" not in df.columns.values else df.tr_yoy[0])
+                   + "'%s'," % ("None" if "or_yoy" not in df.columns.values else df.or_yoy[0])
+                   + "'%s'," % ("None" if "q_gr_yoy" not in df.columns.values else df.q_gr_yoy[0])
+                   + "'%s'," % ("None" if "q_gr_qoq" not in df.columns.values else df.q_gr_qoq[0])
+                   + "'%s'," % ("None" if "q_sales_yoy" not in df.columns.values else df.q_sales_yoy[0])
+                   + "'%s'," % ("None" if "q_sales_qoq" not in df.columns.values else df.q_sales_qoq[0])
+                   + "'%s'," % ("None" if "q_op_yoy" not in df.columns.values else df.q_op_yoy[0])
+                   + "'%s'," % ("None" if "q_op_qoq" not in df.columns.values else df.q_op_qoq[0])
+                   + "'%s'," % ("None" if "q_profit_yoy" not in df.columns.values else df.q_profit_yoy[0])
+                   + "'%s'," % ("None" if "q_profit_qoq" not in df.columns.values else df.q_profit_qoq[0])
+                   + "'%s'," % ("None" if "q_netprofit_yoy" not in df.columns.values else df.q_netprofit_yoy[0])
+                   + "'%s'," % ("None" if "q_netprofit_qoq" not in df.columns.values else df.q_netprofit_qoq[0])
+                   + "'%s'," % ("None" if "equity_yoy" not in df.columns.values else df.equity_yoy[0])
+                   + "'%s'" % ("None" if "rd_exp" not in df.columns.values else df.rd_exp[0])
+                   + ")")
+            sql = sql.replace("'None'", "NULL").replace("'nan'", "NULL")
+            print(sql)
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print(e)
+    conn.close()
+    cursor.close()
+
+
 if __name__ == '__main__':
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     # collect_disclosure(period_date)
     # collect_income(period_date)
-    collect_balancesheet(period_date)
+    # collect_balancesheet(period_date)
+    collect_fina_indicator(period_date)

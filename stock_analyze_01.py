@@ -5,7 +5,7 @@ import re, time
 import mydate
 import tradeday
 
-pro = pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
+pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
 
 
 def every_date(period, table_name, rebuild):
