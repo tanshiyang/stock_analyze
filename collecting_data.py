@@ -1,3 +1,4 @@
+import traceback
 import mytusharepro
 import mydb
 import pandas as pd
@@ -739,7 +740,7 @@ def collect_balancesheet(period):
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
-            print(e)
+            print(e + traceback.format_exc())
     conn.close()
     cursor.close()
 
@@ -1295,5 +1296,13 @@ if __name__ == '__main__':
     period_date = period_info[0]
     # collect_disclosure(period_date)
     # collect_income(period_date)
-    # collect_balancesheet(period_date)
+    collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
+
+    for year in range(2015, 2018):
+        for md in ["0331", "0630", "0930", "1231"]:
+            period_date = year + md
+            collect_disclosure(period_date)
+            collect_income(period_date)
+            collect_balancesheet(period_date)
+            collect_fina_indicator(period_date)
