@@ -42,7 +42,7 @@ def collect_disclosure(period):
             exist_stocks = pd.read_sql("select * from disclosure where ts_code='%s' and ann_date='%s'" %
                                        (ts_codes[x], ann_dates[x]), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print('%s skipped' % ts_codes[x])
+                print('%s disclosure skipped' % ts_codes[x])
                 continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
@@ -149,6 +149,7 @@ def collect_income(period):
             exist_stocks = pd.read_sql("select * from income where ts_code='%s' and ann_date='%s'" %
                                        (income.ts_code[0], income.ann_date[0]), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
+                print("%s income skipped." % income.ts_code[0])
                 continue
 
             sql = ("insert into income("
@@ -456,6 +457,7 @@ def collect_balancesheet(period):
             exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and ann_date='%s'" %
                                        (balancesheet.ts_code[0], balancesheet.ann_date[0]), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
+                print("%s balancesheet skipped." % balancesheet.ts_code[0])
                 continue
 
             sql = ("insert into balancesheet("
@@ -936,6 +938,7 @@ def collect_fina_indicator(period):
                                        (df.ts_code[0], df.ann_date[0]), conn,
                                        index_col="ts_code")
             if len(exist_stocks) > 0:
+                print("%s fina_indicator skipped.")
                 continue
 
             sql = ("insert into fina_indicator("
