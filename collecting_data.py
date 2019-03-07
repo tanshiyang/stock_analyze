@@ -142,14 +142,14 @@ def collect_income(period):
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
         try:
-            income = pro.income(ts_code=ts_codes[x], end_date=period)
-            if income is None or len(income) == 0:
+            exist_stocks = pd.read_sql("select * from income where ts_code='%s' and end_date='%s'" %
+                                       (ts_codes[x], period), conn, index_col="ts_code")
+            if len(exist_stocks) > 0:
+                print("%s income skipped." % ts_codes[x])
                 continue
 
-            exist_stocks = pd.read_sql("select * from income where ts_code='%s' and ann_date='%s'" %
-                                       (income.ts_code[0], income.ann_date[0]), conn, index_col="ts_code")
-            if len(exist_stocks) > 0:
-                print("%s income skipped." % income.ts_code[0])
+            income = pro.income(ts_code=ts_codes[x], end_date=period)
+            if income is None or len(income) == 0:
                 continue
 
             sql = ("insert into income("
@@ -450,14 +450,15 @@ def collect_balancesheet(period):
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
         try:
-            balancesheet = pro.balancesheet(ts_code=ts_codes[x], end_date=period)
-            if balancesheet is None or len(balancesheet) == 0:
+            exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and end_date='%s'" %
+                                       (ts_codes[x], period), conn, index_col="ts_code")
+            if len(exist_stocks) > 0:
+                print("%s balancesheet skipped." % ts_codes[x])
                 continue
 
-            exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and ann_date='%s'" %
-                                       (balancesheet.ts_code[0], balancesheet.ann_date[0]), conn, index_col="ts_code")
-            if len(exist_stocks) > 0:
-                print("%s balancesheet skipped." % balancesheet.ts_code[0])
+
+            balancesheet = pro.balancesheet(ts_code=ts_codes[x], end_date=period)
+            if balancesheet is None or len(balancesheet) == 0:
                 continue
 
             sql = ("insert into balancesheet("
@@ -930,15 +931,15 @@ def collect_fina_indicator(period):
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
         try:
-            df = pro.fina_indicator(ts_code=ts_codes[x], end_date=period)
-            if df is None or len(df) == 0:
-                continue
-
-            exist_stocks = pd.read_sql("select * from fina_indicator where ts_code='%s' and ann_date='%s'" %
-                                       (df.ts_code[0], df.ann_date[0]), conn,
+            exist_stocks = pd.read_sql("select * from fina_indicator where ts_code='%s' and end_date='%s'" %
+                                       (ts_codes[x], period), conn,
                                        index_col="ts_code")
             if len(exist_stocks) > 0:
                 print("%s fina_indicator skipped.")
+                continue
+
+            df = pro.fina_indicator(ts_code=ts_codes[x], end_date=period)
+            if df is None or len(df) == 0:
                 continue
 
             sql = ("insert into fina_indicator("
