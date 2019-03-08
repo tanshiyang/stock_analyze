@@ -1295,6 +1295,7 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
+
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     price_period.collect_price(period_date)
@@ -1311,4 +1312,4 @@ if __name__ == '__main__':
             collect_income(period_date)
             collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
-    '''
+
