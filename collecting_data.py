@@ -34,7 +34,7 @@ def collect_disclosure(period):
         "pre_date  varchar(32),"
         "actual_date  varchar(32),"
         "modify_date  varchar(32),"
-        "unique(ts_code,ann_date))")
+        "unique(ts_code,end_date))")
 
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
@@ -445,7 +445,7 @@ def collect_balancesheet(period):
         "payables float,"
         "hfs_assets float,"
         "hfs_sales float,"
-        "unique(ts_code,ann_date))")
+        "unique(ts_code,end_date))")
 
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
@@ -926,7 +926,7 @@ def collect_fina_indicator(period):
         "q_netprofit_qoq float,"
         "equity_yoy float,"
         "rd_exp float,"
-        "unique(ts_code,ann_date))")
+        "unique(ts_code,end_date))")
 
     # 通过for循环以及获取A股只数来遍历每一只股票
     for x in ts_codes.index:
