@@ -7,14 +7,14 @@ FROM
 	(
 SELECT
 	a.ts_code,
-	a.start_date,
+	a.start_trade_date,
 	a.close1,
 	a.close_min,
 	a.close_min_date,
 	a.close_max,
 	a.close_max_date,
 	a.close2,
-	a.end_date,
+	a.end_trade_date,
 	a.pe,
 	f.roe,
 	f.grossprofit_margin 毛利率,
@@ -33,8 +33,9 @@ SELECT
 	b.total_hldr_eqy_inc_min_int/b.total_assets 股东权益比率,
 	(-(f.roe) * (b.adv_receipts / i.total_revenue) ) as order1
 FROM
-	stock_analyze_1804 a
+	price_period a
 	JOIN balancesheet b ON a.ts_code = b.ts_code
+	AND a.end_date = '20181231'
 	AND b.end_date = '20181231'
 	JOIN income i ON a.ts_code = i.ts_code
 	AND i.end_date = '20181231'
@@ -57,43 +58,15 @@ SELECT
 FROM
 	(
 SELECT
-	*,
-	( if(close_max>close1,close_max,close2) - close1 ) / close1 * 100 AS up_rate,
-	roe / grossprofit_margin  roe_gross,
-	adv_receipts / total_revenue AS rec_rev,
-	accounts_receiv / total_revenue AS acc_rev,
-	n_income / total_revenue AS inc_rev ,
-	(abs(roe) * (adv_receipts / total_revenue)) as order1
-FROM
-	stock_analyze_1801 a
-	) a
-WHERE
-	1 = 1
-	and total_revenue>accounts_receiv
-	and roe > 0
-	and roe_gross>0.5
-	and pe <65
-	and inc_rev > 0.3
-ORDER BY
-	order1  desc
-
--- ROE与预收款的反比例(ROE正)
--- ROE为负，证明历史收益率低
--- 预收款多了，证明业绩可能好转
-SELECT
-	*
-FROM
-	(
-SELECT
 	a.ts_code,
-	a.start_date,
+	a.start_trade_date,
 	a.close1,
 	a.close_min,
 	a.close_min_date,
 	a.close_max,
 	a.close_max_date,
 	a.close2,
-	a.end_date,
+	a.end_trade_date,
 	a.pe,
 	f.roe,
 	f.grossprofit_margin 毛利率,
@@ -109,11 +82,12 @@ SELECT
 	b.total_assets 总资产,
 	f.assets_turn 总资产周转率,
 	b.total_hldr_eqy_inc_min_int 股东权益,
-	b.total_assets/b.total_hldr_eqy_inc_min_int 杠杆比率,
+	b.total_hldr_eqy_inc_min_int/b.total_assets 股东权益比率,
 	( abs( f.roe ) * ( b.adv_receipts / i.total_revenue ) ) AS order1
 FROM
-	stock_analyze_1804 a
+	price_period a
 	JOIN balancesheet b ON a.ts_code = b.ts_code
+	AND a.end_date = '20181231'
 	AND b.end_date = '20181231'
 	JOIN income i ON a.ts_code = i.ts_code
 	AND i.end_date = '20181231'
