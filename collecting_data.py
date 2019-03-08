@@ -2,10 +2,9 @@ import traceback
 import mytusharepro
 import mydb
 import pandas as pd
-import mysql.connector
 import re, time
 import mydate
-import tradeday
+import price_period
 
 pro = mytusharepro.MyTusharePro()
 
@@ -1298,6 +1297,7 @@ def collect_fina_indicator(period):
 if __name__ == '__main__':
     period_info = mydate.get_period_info()
     period_date = period_info[0]
+    price_period.collect_price(period_date)
     collect_disclosure(period_date)
     collect_income(period_date)
     collect_balancesheet(period_date)
@@ -1306,7 +1306,9 @@ if __name__ == '__main__':
     for year in range(2015, 2018):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
+            price_period.collect_price(period_date)
             collect_disclosure(period_date)
             collect_income(period_date)
             collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
+    '''
