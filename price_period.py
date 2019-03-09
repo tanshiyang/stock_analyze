@@ -50,9 +50,7 @@ def collect_price(period):
             if re.match('000', ts_codes[x]) or re.match('002', ts_codes[x]) or re.match('60', ts_codes[x]):
                 times = 0
                 sql = ""
-                while times <= 5 and sql == "":
-                    times = times + 1
-                    sql = one_stock(ts_codes[x], period, table_name)
+                sql = one_stock(ts_codes[x], period, table_name)
 
                 if sql == "" or sql.__contains__("None"):
                     print('%s 的数据异常' % ts_codes[x])
