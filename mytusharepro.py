@@ -14,6 +14,7 @@ class MyTusharePro:
             return self.pro.disclosure_date(ts_code=ts_code, end_date=end_date, pre_date=pre_date,
                                             actual_date=actual_date)
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.disclosure_date(ts_code, end_date, pre_date, actual_date, times + 1)
@@ -29,6 +30,7 @@ class MyTusharePro:
                                    period=period, report_type=report_type, comp_type=comp_type
                                    )
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.income(ts_code, ann_date, start_date, end_date, period, report_type, comp_type, times + 1)
@@ -44,6 +46,7 @@ class MyTusharePro:
                                          period=period, report_type=report_type, comp_type=comp_type
                                          )
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.balancesheet(ts_code=ts_code, ann_date=ann_date, start_date=start_date, end_date=end_date,
@@ -59,6 +62,7 @@ class MyTusharePro:
                                            period=period
                                            )
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.fina_indicator(ts_code, ann_date, start_date, end_date, period, times + 1)
@@ -72,6 +76,7 @@ class MyTusharePro:
         try:
             return self.pro.daily(ts_code=ts_code, trade_date=trade_date, start_date=start_date, end_date=end_date)
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.daily(ts_code, trade_date, start_date, end_date, times + 1)
@@ -85,6 +90,7 @@ class MyTusharePro:
         try:
             return self.pro.daily_basic(ts_code=ts_code, trade_date=trade_date, start_date=start_date, end_date=end_date)
         except Exception as e:
+            print(e)
             print("休息 30s ")
             time.sleep(30)
             return self.daily_basic(ts_code, trade_date, start_date, end_date, times + 1)
