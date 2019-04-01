@@ -44,10 +44,10 @@ def get_period_info():
     day = time.strftime('%d', time.localtime(time.time()))
     quarter = get_quarter()
     if quarter == 2:
-        return year + "0331", year + "01"
+        return str(year) + "0331", str(year) + "01"
     if quarter == 3:
-        return year + "0630", year + "02"
+        return str(year) + "0630", str(year) + "02"
     if quarter == 4:
-        return year + "0930", year + "03"
+        return str(year) + "0930", str(year) + "03"
     if quarter == 1:
-        return str(year-1)+ "1231", str(year-1) + "04"
+        return str(year - 1) + "1231", str(year - 1) + "04"
