@@ -147,7 +147,9 @@ def collect_income(period):
                 print("%s income skipped." % ts_codes[x])
                 continue
 
-            income = pro.income(ts_code=ts_codes[x], end_date=period)
+            income = pro.income(ts_code=ts_codes[x])
+            income = income.loc[income["end_date"] == period]
+
             if income is None or len(income) == 0:
                 continue
 
@@ -456,7 +458,9 @@ def collect_balancesheet(period):
                 continue
 
 
-            balancesheet = pro.balancesheet(ts_code=ts_codes[x], end_date=period)
+            balancesheet = pro.balancesheet(ts_code=ts_codes[x])
+            balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
+
             if balancesheet is None or len(balancesheet) == 0:
                 continue
 
@@ -937,7 +941,9 @@ def collect_fina_indicator(period):
                 print("%s fina_indicator skipped.")
                 continue
 
-            df = pro.fina_indicator(ts_code=ts_codes[x], end_date=period)
+            df = pro.fina_indicator(ts_code=ts_codes[x])
+            df = df.loc[df["end_date"] == period]
+
             if df is None or len(df) == 0:
                 continue
 
@@ -1298,11 +1304,11 @@ if __name__ == '__main__':
 
     period_info = mydate.get_period_info()
     period_date = period_info[0]
-    price_period.collect_price(period_date)
-    collect_disclosure(period_date)
+    # price_period.collect_price(period_date)
+    # collect_disclosure(period_date)
     collect_income(period_date)
     collect_balancesheet(period_date)
-    collect_fina_indicator(period_date)
+    # collect_fina_indicator(period_date)
 
     '''
     for year in range(2015, 2018):
