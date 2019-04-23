@@ -47,7 +47,7 @@ def collect_disclosure(period):
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
             if re.match('000', ts_codes[x]) or re.match('002', ts_codes[x]) or re.match('60', ts_codes[x]):
                 sql = "insert into disclosure(ts_code,ann_date,end_date,pre_date,actual_date) values(" \
-                      "'%s','%s','%s','%s','%s','%s')" % (ts_codes[x], ann_dates[x], end_dates[x], pre_dates[x], \
+                      "'%s','%s','%s','%s','%s')" % (ts_codes[x], ann_dates[x], end_dates[x], pre_dates[x], \
                                                           actual_dates[x])
                 print(sql)
                 cursor.execute(sql)

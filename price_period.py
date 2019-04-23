@@ -43,7 +43,7 @@ def collect_price(period):
             exist_stocks = pd.read_sql("select * from %s where ts_code='%s' and end_date='%s'"
                                        % (table_name, ts_codes[x], period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print('%s skipped' % ts_codes[x])
+                print('%s price_period skipped' % ts_codes[x])
                 continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
