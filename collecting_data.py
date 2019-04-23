@@ -938,7 +938,7 @@ def collect_fina_indicator(period):
                                        (ts_codes[x], period), conn,
                                        index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s fina_indicator skipped.")
+                print("%s fina_indicator skipped." % ts_codes[x])
                 continue
 
             df = pro.fina_indicator(ts_code=ts_codes[x])
