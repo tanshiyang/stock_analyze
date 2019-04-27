@@ -9,7 +9,7 @@ import tradeday
 pro = mytusharepro.MyTusharePro()
 
 
-def collect_price(period):
+def collect_price(period, deleteolddata):
     table_name = "price_period"
     # 获取所有有股票
     # stock_info = ts.get_stock_basics()
@@ -43,8 +43,12 @@ def collect_price(period):
             exist_stocks = pd.read_sql("select * from %s where ts_code='%s' and end_date='%s'"
                                        % (table_name, ts_codes[x], period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print('%s price_period skipped' % ts_codes[x])
-                continue
+                if deleteolddata is True:
+                    sql = "delete from %s where ts_code='%s' and end_date='%s'" % (table_name, ts_codes[x], period)
+                    cursor.execute(sql)
+                else:
+                    print('%s price_period skipped' % ts_codes[x])
+                    continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
             if re.match('000', ts_codes[x]) or re.match('002', ts_codes[x]) or re.match('60', ts_codes[x]):
