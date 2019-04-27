@@ -63,20 +63,20 @@ FROM
 SELECT
 	a.ts_code,
 	d.actual_date,
-	-- a.start_trade_date,
+	a.start_trade_date,
 	-- a.close1,
 	-- a.close_min,
 	-- a.close_min_date,
 	-- a.close_max,
 	-- a.close_max_date,
 	-- a.close2,
-	-- a.end_trade_date,
+	a.end_trade_date,
+	( IF ( close_max > close1, close_max, close2 ) - close1 ) / close1 * 100 AS up_rate,
 	a.pe,
 	f.roe,
 	f.grossprofit_margin 毛利率,
 	-- b.accounts_receiv,
 	-- b.adv_receipts,
-	( IF ( close_max > close1, close_max, close2 ) - close1 ) / close1 * 100 AS up_rate,
 	b.adv_receipts / i.total_revenue AS 预收款率,
 	-- b.accounts_receiv 应收账款,
 	b.accounts_receiv / i.total_revenue AS 应收账款率,
@@ -101,6 +101,6 @@ FROM
 	) a
 WHERE
 	1 = 1
-  and a.ts_code in ('603309.SH','002038.SZ','000590.SZ','002287.SZ','601958.SH','002932.SZ','002320.SZ','600317.SH','002393.SZ')
+  -- and a.ts_code in ('603309.SH','002038.SZ','000590.SZ','002287.SZ','601958.SH','002932.SZ','002320.SZ','600317.SH','002393.SZ')
 ORDER BY
 	up_rate DESC
