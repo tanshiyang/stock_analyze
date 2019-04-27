@@ -80,8 +80,9 @@ def one_stock(code, period, table_name):
         else:
             ts_code = code
 
-        balancesheet = pro.balancesheet(ts_code=ts_code, end_date=period)
-        report_date = balancesheet.f_ann_date[0]
+        balancesheet = pro.balancesheet(ts_code=ts_code)
+        balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
+        report_date = balancesheet.f_ann_date.values[0]
         start_trade_date = get_next_tradeday(report_date)
         next_quarter_date = mydate.string_to_next_quarter(start_trade_date)
         end_trade_date = get_prev_tradeday(next_quarter_date)
@@ -96,12 +97,12 @@ def one_stock(code, period, table_name):
         close_min = daily.close[min_close_idx]
         close_min_date = daily.trade_date[min_close_idx]
 
-        close2 = daily.close[0]
-        end_trade_date = daily.trade_date[0]
+        close2 = daily.close.values[0]
+        end_trade_date = daily.trade_date.values[0]
         print("close1:%s,close2:%s" % (close1, close2))
 
         daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_trade_date)
-        pe = daily_basic.pe[0]
+        pe = daily_basic.pe.values[0]
         print("pe:%s" % pe)
 
         sql = ("insert into %s (" % table_name
@@ -150,7 +151,6 @@ if __name__ == '__main__':
     every_date('20190331', 'stock_analyze_1901', True)
     '''
 
-    # 用于定时执行
-    period = mydate.get_period_info()
-    period_date = period[0]
-    collect_price(period_date)
+    collect_price("20180331", False)
+
+
