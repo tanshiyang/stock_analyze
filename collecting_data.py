@@ -1233,8 +1233,7 @@ def collect_fina_indicator(period):
                    + "'%s'," % (
                        "None" if "tangasset_to_intdebt" not in df.columns.values else df.tangasset_to_intdebt.values[0])
                    + "'%s'," % (
-                       "None" if "tangibleasset_to_netdebt" not in df.columns.values else df.tangibleasset_to_netdebt[
-                           0])
+                       "None" if "tangibleasset_to_netdebt" not in df.columns.values else df.tangibleasset_to_netdebt.values[0])
                    + "'%s'," % ("None" if "ocf_to_debt" not in df.columns.values else df.ocf_to_debt.values[0])
                    + "'%s'," % (
                        "None" if "ocf_to_interestdebt" not in df.columns.values else df.ocf_to_interestdebt.values[0])
@@ -1332,6 +1331,7 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
+    '''
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     price_period.collect_price(period_date)
@@ -1339,14 +1339,14 @@ if __name__ == '__main__':
     collect_income(period_date)
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
-
+    '''
     # '''
     for year in range(2018, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
-            price_period.collect_price(period_date)
-            collect_disclosure(period_date)
-            collect_income(period_date)
-            collect_balancesheet(period_date)
+            # price_period.collect_price(period_date)
+            # collect_disclosure(period_date)
+            # collect_income(period_date)
+            # collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
     # '''
