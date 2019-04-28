@@ -82,7 +82,7 @@ def one_stock(code, period, table_name):
 
         balancesheet = pro.balancesheet(ts_code=ts_code)
         balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
-        report_date = balancesheet.f_ann_date.values[len(balancesheet)-1]
+        report_date = balancesheet.ann_date.values[len(balancesheet)-1]
         start_trade_date = get_next_tradeday(report_date)
         next_quarter_date = mydate.string_to_next_quarter(start_trade_date)
         end_trade_date = get_prev_tradeday(next_quarter_date)
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     every_date('20171231', 'stock_analyze_1704', True)
     every_date('20190331', 'stock_analyze_1901', True)
     '''
-    collect_price("20190331", False)
+    collect_price("20170331", False)
     for year in range(2017, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
