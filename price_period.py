@@ -82,7 +82,7 @@ def one_stock(code, period, table_name):
 
         balancesheet = pro.balancesheet(ts_code=ts_code)
         balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
-        report_date = balancesheet.f_ann_date.values[0]
+        report_date = balancesheet.f_ann_date.values[len(balancesheet)-1]
         start_trade_date = get_next_tradeday(report_date)
         next_quarter_date = mydate.string_to_next_quarter(start_trade_date)
         end_trade_date = get_prev_tradeday(next_quarter_date)
