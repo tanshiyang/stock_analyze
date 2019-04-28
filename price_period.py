@@ -150,7 +150,7 @@ if __name__ == '__main__':
     every_date('20171231', 'stock_analyze_1704', True)
     every_date('20190331', 'stock_analyze_1901', True)
     '''
-    collect_price("20170331", False)
+    collect_price("20190331", False)
     for year in range(2017, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
