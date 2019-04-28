@@ -1338,7 +1338,8 @@ if __name__ == '__main__':
     collect_income(period_date)
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
-    # '''
+
+    '''
     for year in range(2018, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
@@ -1347,4 +1348,4 @@ if __name__ == '__main__':
             collect_income(period_date)
             collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
-    # '''
+     '''
