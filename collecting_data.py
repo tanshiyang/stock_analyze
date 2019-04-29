@@ -41,7 +41,7 @@ def collect_disclosure(period):
             exist_stocks = pd.read_sql("select * from disclosure where ts_code='%s' and ann_date='%s'" %
                                        (ts_codes[x], ann_dates[x]), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print('%s disclosure skipped' % ts_codes[x])
+                print('%s %s disclosure skipped' % (ts_codes[x], period))
                 continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
@@ -144,7 +144,7 @@ def collect_income(period):
             exist_stocks = pd.read_sql("select * from income where ts_code='%s' and end_date='%s'" %
                                        (ts_codes[x], period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s income skipped." % ts_codes[x])
+                print("%s %s income skipped." % (ts_codes[x], period))
                 continue
 
             income = pro.income(ts_code=ts_codes[x])
@@ -454,7 +454,7 @@ def collect_balancesheet(period):
             exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and end_date='%s'" %
                                        (ts_codes[x], period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s balancesheet skipped." % ts_codes[x])
+                print("%s %s balancesheet skipped." % (ts_codes[x], period))
                 continue
 
 
@@ -938,7 +938,7 @@ def collect_fina_indicator(period):
                                        (ts_codes[x], period), conn,
                                        index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s fina_indicator skipped." % ts_codes[x])
+                print("%s %s fina_indicator skipped." % (ts_codes[x], period))
                 continue
 
             df = pro.fina_indicator(ts_code=ts_codes[x])
@@ -1331,6 +1331,7 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
+    '''
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     price_period.collect_price(period_date, False)
@@ -1343,9 +1344,9 @@ if __name__ == '__main__':
     for year in range(2018, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
-            price_period.collect_price(period_date, False)
+            # price_period.collect_price(period_date, False)
             collect_disclosure(period_date)
             collect_income(period_date)
-            collect_balancesheet(period_date)
-            collect_fina_indicator(period_date)
-     '''
+            # collect_balancesheet(period_date)
+            # collect_fina_indicator(period_date)
+

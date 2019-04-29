@@ -47,7 +47,7 @@ def collect_price(period, deleteolddata):
                     sql = "delete from %s where ts_code='%s' and end_date='%s'" % (table_name, ts_codes[x], period)
                     cursor.execute(sql)
                 else:
-                    print('%s price_period skipped' % ts_codes[x])
+                    print('%s %s price_period skipped' % (ts_codes[x], period))
                     continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
