@@ -1331,6 +1331,7 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
+
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     price_period.collect_price(period_date, False)
@@ -1348,7 +1349,7 @@ if __name__ == '__main__':
             collect_income(period_date)
             collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
-    '''    '''
+    '''
 
     # period_date = "20180930"
     # price_period.collect_price(period_date, False)
@@ -1356,3 +1357,11 @@ if __name__ == '__main__':
     # collect_income(period_date)
     # collect_balancesheet(period_date)
     # collect_fina_indicator(period_date)
+
+    price_period.collect_price("20190331", False)
+    for year in range(2017, 2019):
+        for md in ["0331", "0630", "0930", "1231"]:
+            period_date = str(year) + md
+            price_period.collect_price(period_date, False)
+            
+    '''
