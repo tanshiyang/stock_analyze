@@ -34,7 +34,19 @@ def collect_price(period, deleteolddata):
         "close_max_date varchar(32),"
         "close2 float,"
         "end_trade_date varchar(32),"
+        "turnover_rate float,"
+        "turnover_rate_f float,"
+        "volume_ratio float,"
         "pe float,"
+        "pe_ttm float,"
+        "pb float,"
+        "ps float,"
+        "ps_ttm float,"
+        "total_share float,"
+        "float_share float,"
+        "free_share float,"
+        "total_mv float,"
+        "circ_mv float,"
         "unique(ts_code,end_date))" % table_name)
 
     # 通过for循环以及获取A股只数来遍历每一只股票
@@ -102,11 +114,22 @@ def one_stock(code, period, table_name):
         print("close1:%s,close2:%s" % (close1, close2))
 
         daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_trade_date)
+        turnover_rate = daily_basic.turnover_rate.values[0]
+        turnover_rate_f = daily_basic.turnover_rate_f.values[0]
+        volume_ratio = daily_basic.volume_ratio.values[0]
         pe = daily_basic.pe.values[0]
-        print("pe:%s" % pe)
+        pe_ttm = daily_basic.pe_ttm.values[0]
+        pb = daily_basic.pb.values[0]
+        ps = daily_basic.ps.values[0]
+        ps_ttm = daily_basic.ps_ttm.values[0]
+        total_share = daily_basic.total_share.values[0]
+        float_share = daily_basic.float_share.values[0]
+        free_share = daily_basic.free_share.values[0]
+        total_mv = daily_basic.total_mv.values[0]
+        circ_mv = daily_basic.circ_mv.values[0]
 
         sql = ("insert into %s (" % table_name
-               + "ts_code,end_date,start_trade_date,close1,close_min,close_min_date,close_max,close_max_date,close2,end_trade_date,pe"
+               + "ts_code,end_date,start_trade_date,close1,close_min,close_min_date,close_max,close_max_date,close2,end_trade_date,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,free_share,total_mv,circ_mv"
                ")values("
                + "'%s'," % ts_code
                + "'%s'," % period
@@ -118,7 +141,19 @@ def one_stock(code, period, table_name):
                + "'%s'," % close_max_date
                + "'%s'," % close2
                + "'%s'," % end_trade_date
-               + "'%s'" % pe
+               + "'%s'," % turnover_rate
+               + "'%s'," % turnover_rate_f
+               + "'%s'," % volume_ratio
+               + "'%s'," % pe
+               + "'%s'," % pe_ttm
+               + "'%s'," % pb
+               + "'%s'," % ps
+               + "'%s'," % ps_ttm
+               + "'%s'," % total_share
+               + "'%s'," % float_share
+               + "'%s'," % free_share
+               + "'%s'," % total_mv
+               + "'%s'" % circ_mv
                + ")")
 
         return sql
