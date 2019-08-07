@@ -14,7 +14,7 @@ def get_day_type(query_date):
     content = resp.read()
     if content:
         try:
-            day_type = int(content)
+            day_type = int(str(content, encoding = "utf-8").replace("\"",""))
         except ValueError:
             return -1
         else:
