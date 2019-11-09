@@ -40,7 +40,7 @@ def collect_daily(last_date):
         last_date = "20150101"
 
     last_date = mydate.string_to_next_day(last_date)
-    last_date = tradeday.get_next_tradeday(last_date)
+    #last_date = tradeday.get_next_tradeday(last_date)
     today = time.strftime('%Y%m%d')
     while last_date <= today:
         print(last_date)
@@ -51,7 +51,7 @@ def collect_daily(last_date):
             daily_df.to_sql('daily', engine, index=False, if_exists='append')
 
         last_date = mydate.string_to_next_day(last_date)
-        last_date = tradeday.get_next_tradeday(last_date)
+        #last_date = tradeday.get_next_tradeday(last_date)
 
 if __name__ == '__main__':
-    collect_daily("20180101")
+    collect_daily("20150101")
