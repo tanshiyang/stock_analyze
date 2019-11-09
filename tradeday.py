@@ -1,5 +1,6 @@
 import urllib.request as request
 import datetime
+import mydate
 
 '''
 @query a single date: string '20170401';
@@ -35,6 +36,16 @@ def today_is_tradeday():
     query_date = datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d')
     return is_tradeday(query_date)
 
+def get_next_tradeday(date):
+    while is_tradeday(date) == 0:
+        date = mydate.string_to_next_day(date)
+    return date
+
+
+def get_prev_tradeday(date):
+    while is_tradeday(date) == 0:
+        date = mydate.string_to_prev_day(date)
+    return date
 
 if __name__ == '__main__':
     print(is_tradeday('20170406'))
