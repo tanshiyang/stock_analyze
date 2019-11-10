@@ -54,4 +54,4 @@ def collect_daily(last_date):
         #last_date = tradeday.get_next_tradeday(last_date)
 
 if __name__ == '__main__':
-    collect_daily("20150101")
+    collect_daily("")
