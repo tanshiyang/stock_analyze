@@ -27,7 +27,7 @@ def init_table(tablename):
     metadata.create_all(engine)
 
 
-def calc_uprate(ts_code, m):
+def calc_uprate(m):
     tablename = 'extrs_%s' % m
     init_table(tablename)
 
@@ -92,6 +92,6 @@ def batch_normalization(last_date, m):
         last_date = mydate.string_to_next_day(last_date)
 
 if __name__ == '__main__':
-    # calc_uprate('300300.SZ', 50)
+    calc_uprate(50)
     batch_normalization('20150101', 50)
     print('')
