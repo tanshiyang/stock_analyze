@@ -55,3 +55,4 @@ def collect_daily(last_date):
 
 if __name__ == '__main__':
     collect_daily("")
+
