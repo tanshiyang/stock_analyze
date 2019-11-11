@@ -10,9 +10,6 @@ import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 
 
-def calc_rps(m):
-    print('')
-
 def init_table(tablename):
     engine = mydb.engine()
     # 获取元数据
@@ -40,7 +37,8 @@ def calc_uprate(m):
     for index, row in stocks.iterrows():
         ts_code = row["ts_code"]
         print(ts_code)
-        df = pd.read_sql("select ts_code,trade_date,close from daily where ts_code = '%s' order by trade_date" % ts_code, conn)
+        df = pd.read_sql(
+            "select ts_code,trade_date,close from daily where ts_code = '%s' order by trade_date" % ts_code, conn)
 
         c = df.close.to_list()
         c_ref_n = df.close.to_list()
@@ -55,6 +53,7 @@ def calc_uprate(m):
         cursor.execute("delete from %s where ts_code='%s'" % (tablename, ts_code))
         conn.commit()
         df.to_sql(tablename, engine, index=False, if_exists='append')
+
 
 def normalization(trade_date, m):
     tablename = 'standardization_extrs_%s' % m
@@ -77,11 +76,12 @@ def normalization(trade_date, m):
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
 
-def batch_normalization(last_date, m):
+
+def batch_normalization(m, last_date=None):
     tablename = 'standardization_extrs_%s' % m
     conn = mydb.conn()
     cursor = conn.cursor()
-    if last_date == "":
+    if last_date is None:
         cursor.execute("select  max(trade_date) from %s" % tablename)
         last_date = cursor.fetchone()[0]
     last_date = mydate.string_to_next_day(last_date)
@@ -91,7 +91,8 @@ def batch_normalization(last_date, m):
         normalization(last_date, m)
         last_date = mydate.string_to_next_day(last_date)
 
+
 if __name__ == '__main__':
     calc_uprate(50)
     batch_normalization('20150101', 50)
-    print('')
+
