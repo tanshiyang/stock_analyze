@@ -10,7 +10,7 @@ import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 
 
-def init_table(tablename):
+def init_extrs_table(tablename):
     engine = mydb.engine()
     # 获取元数据
     metadata = MetaData()
@@ -23,10 +23,22 @@ def init_table(tablename):
     # 创建数据表，如果数据表存在，则忽视
     metadata.create_all(engine)
 
+def init_std_extrs_table(tablename):
+    engine = mydb.engine()
+    # 获取元数据
+    metadata = MetaData()
+    # 定义表
+    daily = Table(tablename, metadata,
+                  Column('ts_code', String(20), primary_key=True),
+                  Column('trade_date', String(20), primary_key=True, index=True),
+                  Column('extrs', Float),
+                  )
+    # 创建数据表，如果数据表存在，则忽视
+    metadata.create_all(engine)
 
 def calc_uprate(m):
     tablename = 'extrs_%s' % m
-    init_table(tablename)
+    init_extrs_table(tablename)
 
     engine = mydb.engine()
     conn = mydb.conn()
@@ -66,7 +78,7 @@ def calc_uprate(m):
 
 def normalization(trade_date, m):
     tablename = 'standardization_extrs_%s' % m
-    init_table(tablename)
+    init_std_extrs_table(tablename)
 
     engine = mydb.engine()
     conn = mydb.conn()
@@ -91,7 +103,7 @@ def batch_normalization(m, last_date=None):
     conn = mydb.conn()
     cursor = conn.cursor()
     if last_date is None:
-        init_table(tablename)
+        init_std_extrs_table(tablename)
         cursor.execute("select  max(trade_date) from %s" % tablename)
         last_date = cursor.fetchone()[0]
 
