@@ -94,6 +94,10 @@ def batch_normalization(m, last_date=None):
         init_table(tablename)
         cursor.execute("select  max(trade_date) from %s" % tablename)
         last_date = cursor.fetchone()[0]
+
+    if last_date is None:
+        last_date = "20150101"
+
     last_date = mydate.string_to_next_day(last_date)
     today = time.strftime('%Y%m%d')
     while last_date <= today:
@@ -103,6 +107,6 @@ def batch_normalization(m, last_date=None):
 
 
 if __name__ == '__main__':
-    calc_uprate(50)
-    batch_normalization(50)
+    calc_uprate(120)
+    batch_normalization(120)
 
