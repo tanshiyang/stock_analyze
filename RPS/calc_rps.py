@@ -16,7 +16,7 @@ def init_table(tablename):
     metadata = MetaData()
     # 定义表
     daily = Table(tablename, metadata,
-                  Column('ts_code', String(20), primary_key=True),
+                  Column('ts_code', String(20), primary_key=True, index=True),
                   Column('trade_date', String(20), primary_key=True),
                   Column('extrs', Float),
                   )
@@ -36,9 +36,18 @@ def calc_uprate(m):
 
     for index, row in stocks.iterrows():
         ts_code = row["ts_code"]
-        print(ts_code)
+        print("calc_uprate: %s" % ts_code)
         df = pd.read_sql(
             "select ts_code,trade_date,close from daily where ts_code = '%s' order by trade_date" % ts_code, conn)
+
+        if len(df) == 0:
+            continue
+
+        last_date = df.trade_date.max()
+        today = time.strftime('%Y%m%d')
+
+        if last_date == today:
+            continue
 
         c = df.close.to_list()
         c_ref_n = df.close.to_list()
@@ -82,17 +91,18 @@ def batch_normalization(m, last_date=None):
     conn = mydb.conn()
     cursor = conn.cursor()
     if last_date is None:
+        init_table(tablename)
         cursor.execute("select  max(trade_date) from %s" % tablename)
         last_date = cursor.fetchone()[0]
     last_date = mydate.string_to_next_day(last_date)
     today = time.strftime('%Y%m%d')
     while last_date <= today:
-        print(last_date)
+        print("normalization: %s" % last_date)
         normalization(last_date, m)
         last_date = mydate.string_to_next_day(last_date)
 
 
 if __name__ == '__main__':
     calc_uprate(50)
-    batch_normalization('20150101', 50)
+    batch_normalization(50)
 

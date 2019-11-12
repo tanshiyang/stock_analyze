@@ -18,7 +18,7 @@ def collect_daily(last_date=None):
     # 定义表
     daily = Table('daily', metadata,
                   Column('ts_code', String(20), primary_key=True),
-                  Column('trade_date', String(20), primary_key=True),
+                  Column('trade_date', String(20), primary_key=True, index=True),
                   Column('open', Float),
                   Column('high', Float),
                   Column('low', Float),
@@ -44,7 +44,7 @@ def collect_daily(last_date=None):
     # last_date = tradeday.get_next_tradeday(last_date)
     today = time.strftime('%Y%m%d')
     while last_date <= today:
-        print(last_date)
+        print("collect_daily： %s" % last_date)
         cursor.execute("select count(0) from daily where trade_date='" + last_date + "'")
 
         if cursor.fetchone()[0] == 0:
