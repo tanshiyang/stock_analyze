@@ -73,7 +73,7 @@ def send_result_mail():
         if df.__len__() == 0:
             continue
 
-        html += "{0}，RPS{0}排名：".format(today, m)
+        html += "{0}，RPS{1}排名：".format(today, m)
         html += "<table border='1'>"
         html += "<tr>"
         html += "<td>序号</td>"
