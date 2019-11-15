@@ -8,6 +8,7 @@ import mydb
 import mytusharepro
 import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
+import my_email.sendmail as sm
 
 def init_rps_top_table(tablename):
     engine = mydb.engine()
@@ -45,7 +46,7 @@ def batch_query_top_n(m, last_date=None, top_n=20):
     cursor = conn.cursor()
     if last_date is None:
         init_rps_top_table(tablename)
-        cursor.execute("select  max(trade_date) from %s where top_type='m%s'" % tablename, m)
+        cursor.execute("select  max(trade_date) from %s where top_type='m%s'" % (tablename, m))
         last_date = cursor.fetchone()[0]
 
     if last_date is None:
@@ -58,9 +59,68 @@ def batch_query_top_n(m, last_date=None, top_n=20):
         query_top_n(m, last_date, top_n)
         last_date = mydate.string_to_next_day(last_date)
 
+def send_result_mail():
+    conn = mydb.conn()
+    cursor = conn.cursor()
+    today = time.strftime('%Y%m%d')
+    html = ""
+    sql_template = """
+    SELECT * from rps_tops where top_type='m{0}' and trade_date='{1}' order by extrs desc 
+    """
+    for m in [50, 120, 250]:
+        sql = sql_template.format(m, today)
+        df = pd.read_sql(sql, conn)
+        if df.__len__() == 0:
+            continue
+
+        html += "{0}，RPS{0}排名：".format(today, m)
+        html += "<table border='1'>"
+        html += "<tr>"
+        html += "<td>序号</td>"
+        html += "<td>日期</td>"
+        html += "<td>代码</td>"
+        html += "<td>得分</td>"
+        html += "</tr>"
+        for index, row in df.iterrows():
+            html += "<tr>"
+            html += "<td>{0}</td>".format(index)
+            html += "<td>{0}</td>".format(row["trade_date"])
+            html += "<td>{0}</td>".format(row["ts_code"])
+            html += "<td>{0}</td>".format(row["extrs"])
+            html += "</tr>"
+        html += "</table>"
+
+    relative_day = mydate.string_to_relative_days(today, -5)
+    sql_template = """
+    SELECT ts_code,sum(extrs) 总分,count(0) 出现次数 from rps_tops where top_type='m{0}' and trade_date>'{1}'
+group by ts_code order by sum(extrs) desc;
+    """
+    for m in [50, 120, 250]:
+        sql = sql_template.format(m, relative_day)
+        df = pd.read_sql(sql, conn)
+        if df.__len__() == 0:
+            continue
+
+        html += "近5日RPS{0}排名：".format(m)
+        html += "<table border='1'>"
+        html += "<tr>"
+        html += "<td>序号</td>"
+        html += "<td>代码</td>"
+        html += "<td>总分</td>"
+        html += "<td>出现次数</td>"
+        html += "</tr>"
+        for index, row in df.iterrows():
+            html += "<tr>"
+            html += "<td>{0}</td>".format(index)
+            html += "<td>{0}</td>".format(row["ts_code"])
+            html += "<td>{0}</td>".format(row["总分"])
+            html += "<td>{0}</td>".format(row["出现次数"])
+            html += "</tr>"
+        html += "</table>"
+
+    if html.__len__() > 0:
+        sm.send_rps_mail(html)
 
 if __name__ == '__main__':
     #query_today_top(50, '20191113', 20)
-    batch_query_top_n(50, '20191001')
-    batch_query_top_n(120, '20191001')
-    batch_query_top_n(250, '20191001')
+    send_result_mail()
