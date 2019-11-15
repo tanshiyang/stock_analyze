@@ -9,3 +9,5 @@ if __name__ == '__main__':
         cr.calc_uprate(m)
         cr.batch_normalization(m)
         qr.batch_query_top_n(m)
+
+    qr.send_result_mail()
