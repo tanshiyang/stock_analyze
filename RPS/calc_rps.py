@@ -84,7 +84,7 @@ def normalization(trade_date, m):
     conn = mydb.conn()
     cursor = conn.cursor()
 
-    df = pd.read_sql("select ts_code,trade_date,extrs from extrs_50 where trade_date='%s'" % trade_date, conn)
+    df = pd.read_sql("select ts_code,trade_date,extrs from extrs_%s where trade_date='%s'" % (m,trade_date), conn)
     if len(df) == 0:
         return
     if len(df[df['extrs'].isnull()].index) >= len(df):
@@ -119,6 +119,7 @@ def batch_normalization(m, last_date=None):
 
 
 if __name__ == '__main__':
-    calc_uprate(120)
-    batch_normalization(120)
+    normalization('20191112',50)
+    normalization('20191112', 120)
+    normalization('20191112', 250)
 
