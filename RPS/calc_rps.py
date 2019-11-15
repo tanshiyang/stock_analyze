@@ -58,8 +58,8 @@ def calc_uprate(m):
         last_date = df.trade_date.max()
         today = time.strftime('%Y%m%d')
 
-        if last_date == today:
-            continue
+        # if last_date == today:
+        #    continue
 
         c = df.close.to_list()
         c_ref_n = df.close.to_list()
@@ -119,7 +119,5 @@ def batch_normalization(m, last_date=None):
 
 
 if __name__ == '__main__':
-    normalization('20191112',50)
-    normalization('20191112', 120)
-    normalization('20191112', 250)
+    calc_uprate(50)
 
