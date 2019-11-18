@@ -121,6 +121,7 @@ group by ts_code order by sum(extrs) desc;
     if html.__len__() > 0:
         sm.send_rps_mail(html)
 
+
 if __name__ == '__main__':
     #query_today_top(50, '20191113', 20)
     send_result_mail()
