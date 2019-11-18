@@ -96,3 +96,17 @@ class MyTusharePro:
             return self.daily_basic(ts_code, trade_date, start_date, end_date, times + 1)
         finally:
             time.sleep(0.3)
+
+
+    def trade_cal(self, exchange=None, start_date=None, end_date=None, is_open=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.trade_cal(exchange=exchange, start_date=start_date, end_date=end_date, is_open=is_open)
+        except Exception as e:
+            print(e)
+            print("休息 30s ")
+            time.sleep(30)
+            return self.trade_cal(exchange, start_date, end_date, is_open, times + 1)
+        finally:
+            time.sleep(0.3)

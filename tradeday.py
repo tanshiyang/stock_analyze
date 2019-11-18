@@ -1,6 +1,7 @@
 import urllib.request as request
 import datetime
 import mydate
+import mytusharepro
 
 '''
 @query a single date: string '20170401';
@@ -25,12 +26,18 @@ def get_day_type(query_date):
 
 
 def is_tradeday(query_date):
+    '''
     weekday = datetime.datetime.strptime(query_date, '%Y%m%d').isoweekday()
     if weekday <= 5 and get_day_type(query_date) == 0:
         return 1
     else:
         return 0
-
+    '''
+    pro = mytusharepro.MyTusharePro()
+    cal = pro.trade_cal(start_date=query_date, end_date=query_date)
+    if len(cal) == 0:
+        return 0
+    return cal.is_open[0]
 
 def today_is_tradeday():
     query_date = datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d')
