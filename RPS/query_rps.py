@@ -55,7 +55,7 @@ def batch_query_top_n(m, last_date=None, top_n=20):
     last_date = mydate.string_to_next_day(last_date)
     today = time.strftime('%Y%m%d')
     while last_date <= today:
-        print("normalization: %s" % last_date)
+        print("query_top_n: %s" % last_date)
         query_top_n(m, last_date, top_n)
         last_date = mydate.string_to_next_day(last_date)
 
@@ -123,5 +123,7 @@ group by ts_code order by sum(extrs) desc;
 
 
 if __name__ == '__main__':
-    #query_today_top(50, '20191113', 20)
-    send_result_mail()
+    batch_query_top_n(50, '20150101')
+    batch_query_top_n(120, '20150101')
+    batch_query_top_n(250, '20150101')
+    #send_result_mail()
