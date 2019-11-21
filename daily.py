@@ -55,5 +55,47 @@ def collect_daily(last_date=None):
         # last_date = tradeday.get_next_tradeday(last_date)
 
 
+def collect_daily_qfq(start_date=None):
+    engine = mydb.engine()
+    conn = mydb.conn()
+    # 获取元数据
+    metadata = MetaData()
+    # 定义表
+    daily = Table('daily', metadata,
+                  Column('ts_code', String(20), primary_key=True),
+                  Column('trade_date', String(20), primary_key=True, index=True),
+                  Column('open', Float),
+                  Column('high', Float),
+                  Column('low', Float),
+                  Column('close', Float),
+                  Column('pre_close', Float),
+                  Column('change', Float),
+                  Column('pct_chg', Float),
+                  Column('vol', Float),
+                  Column('amount', Float),
+                  )
+    # 创建数据表，如果数据表存在，则忽视
+    metadata.create_all(engine)
+
+    cursor = conn.cursor()
+
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
+    today = time.strftime('%Y%m%d')
+    for index, row in stocks.iterrows():
+        ts_code = row["ts_code"]
+        list_date = row["list_date"]
+        print("collect_daily_qfq:"+ts_code)
+        daily_df = pro.pro_bar(ts_code=ts_code, adj='qfq', start_date=list_date, end_date=today)
+
+        if daily_df is None:
+            continue
+        if len(daily_df) == 0:
+            continue
+
+        cursor.execute("delete from daily where ts_code='" + ts_code + "'")
+        conn.commit()
+        daily_df.to_sql('daily', engine, index=False, if_exists='append')
+
+
 if __name__ == '__main__':
-    collect_daily()
+    collect_daily_qfq()

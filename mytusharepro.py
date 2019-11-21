@@ -4,6 +4,7 @@ import time
 
 class MyTusharePro:
     def __init__(self):
+        ts.set_token("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
         self.pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
         self.max_call_times = 5
 
@@ -108,5 +109,31 @@ class MyTusharePro:
             print("休息 30s ")
             time.sleep(30)
             return self.trade_cal(exchange, start_date, end_date, is_open, times + 1)
+        finally:
+            time.sleep(0.3)
+
+    def pro_bar(self, ts_code=None, start_date=None,end_date=None,adj=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return ts.pro_bar(ts_code=ts_code,start_date=start_date,end_date=end_date,adj=adj)
+        except Exception as e:
+            print(e)
+            print("休息 30s ")
+            time.sleep(30)
+            return self.pro_bar(ts_code=ts_code,start_date=start_date,end_date=end_date,adj=adj, times=times + 1)
+        finally:
+            time.sleep(0.3)
+
+    def stock_basic(self, is_hs=None, list_status=None,exchange=None, fields=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange,fields=fields)
+        except Exception as e:
+            print(e)
+            print("休息 60s ")
+            time.sleep(60)
+            return self.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange, fields=fields,times=times + 1)
         finally:
             time.sleep(0.3)
