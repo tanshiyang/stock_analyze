@@ -29,8 +29,11 @@ def analyze():
     """
     df = pd.read_sql(sql, conn)
     df = append_price(df, 0)
+    df = append_price(df, 100)
     df = track_n_percent(df, 5)
     df = track_n_percent(df, -5)
+    df = track_n_percent(df, 10)
+    df = track_n_percent(df, -10)
     df.to_csv('d:/temp/df.csv')
 
 
