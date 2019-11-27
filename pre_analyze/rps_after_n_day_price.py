@@ -60,11 +60,11 @@ def append_price(df, relative_days):
 
 
 def track_n_percent(df, n_percent):
-    column_price = 'percent_%s_price' % n_percent
-    column_date = 'percent_%s_date' % n_percent
+    column_min_or_max_rate = 'percent_%s_min_or_max_rate' % n_percent
+    column_min_or_max_days = 'percent_%s_min_or_max_days' % n_percent
     column_days = 'percent_%s_days' % n_percent
-    df_util.append_column(df, column_price)
-    df_util.append_column(df, column_date)
+    df_util.append_column(df, column_min_or_max_rate)
+    df_util.append_column(df, column_min_or_max_days)
     df_util.append_column(df, column_days)
     for index, row in df.iterrows():
         ts_code = row["ts_code"]
@@ -78,18 +78,29 @@ def track_n_percent(df, n_percent):
             continue
 
         sql = str.format("select * from `daily_{0}` where trade_date>='{1}' order by trade_date", ts_code, trade_date)
-        # cursor.execute(sql)
         daily_rows = pd.read_sql(sql, conn)
-        # daily_rows = cursor.fetchall()
+
+        min_or_max_price = close0
+        min_or_max_days = 0
         for daily_index, daily_row in daily_rows.iterrows():
             daily_close = daily_row["close"]
             daily_date = daily_row["trade_date"]
+
+            if n_percent<0:
+                if daily_close > min_or_max_price:
+                    min_or_max_price = daily_close
+                    min_or_max_days = daily_index
+            else:
+                if daily_close < min_or_max_price:
+                    min_or_max_price = daily_close
+                    min_or_max_days = daily_index
+
             rate = (daily_close - close0) * 100 / close0
             found = (0 < n_percent <= rate) or (0 > n_percent >= rate)
             if found:
-                df.loc[index, column_price] = daily_close
-                df.loc[index, column_date] = daily_date
                 df.loc[index, column_days] = daily_index
+                df.loc[index, column_min_or_max_rate] = (min_or_max_price- close0) * 100 / close0
+                df.loc[index, column_min_or_max_days] = min_or_max_days
                 break
 
     return df
