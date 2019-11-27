@@ -20,3 +20,4 @@ if __name__ == '__main__':
 
     qr.send_result_mail()
     daily_basic.collect_daily_basic()
+    daily.collect_daily_qfq()
