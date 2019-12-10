@@ -137,7 +137,7 @@ group by ts_code order by sum(extrs) desc;
             html += "<td>{0}</td>".format(row["ts_code"])
             html += "<td>{0}</td>".format(row["总分"])
             html += "<td>{0}</td>".format(row["出现次数"])
-            html += "<td>{0}</td>".format(row["最近日期"])
+            html += "<td>{0}</td>".format(row["trade_date"])
             html += "<td>{0}</td>".format(row["财报周期"])
             html += "<td>{0}</td>".format(row["净利润增长率"])
             html += "<td>{0}</td>".format(row["加权净资产收益率"])
@@ -152,7 +152,4 @@ group by ts_code order by sum(extrs) desc;
 
 
 if __name__ == '__main__':
-    batch_query_top_n(50, '20150101')
-    batch_query_top_n(120, '20150101')
-    batch_query_top_n(250, '20150101')
-    #send_result_mail()
+    send_result_mail()
