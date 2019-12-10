@@ -85,16 +85,16 @@ class MyTusharePro:
             time.sleep(0.3)
 
 
-    def daily_basic(self, ts_code=None, trade_date=None, start_date=None, end_date=None, times=1):
+    def daily_basic(self, ts_code=None, trade_date=None, start_date=None, end_date=None, fields=None, times=1):
         if times > self.max_call_times:
             raise Exception("尝试调用Tushare超出最大次数!", 1)
         try:
-            return self.pro.daily_basic(ts_code=ts_code, trade_date=trade_date, start_date=start_date, end_date=end_date)
+            return self.pro.daily_basic(ts_code=ts_code, trade_date=trade_date, start_date=start_date, end_date=end_date, fields=fields)
         except Exception as e:
             print(e)
             print("休息 30s ")
             time.sleep(30)
-            return self.daily_basic(ts_code, trade_date, start_date, end_date, times + 1)
+            return self.daily_basic(ts_code, trade_date, start_date, end_date, fields, times + 1)
         finally:
             time.sleep(0.3)
 

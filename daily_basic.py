@@ -53,7 +53,10 @@ def collect_daily_basic(last_date=None):
         cursor.execute("select count(0) from daily_basic where trade_date='" + last_date + "'")
 
         if cursor.fetchone()[0] == 0:
-            daily_df = pro.daily_basic(trade_date=last_date)
+            daily_df = pro.daily_basic(trade_date=last_date, fields='ts_code,trade_date,close,turnover_rate,'
+                                                                    'turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
+                                                                    'ps_ttm,total_share,float_share,free_share,'
+                                                                    'total_mv,circ_mv')
             daily_df.to_sql('daily_basic', engine, index=False, if_exists='append')
 
         last_date = mydate.string_to_next_day(last_date)
