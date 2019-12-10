@@ -19,22 +19,23 @@ def analyze():
     SELECT a.*,b.pe from (
     select min(trade_date) trade_date,min(ts_code) ts_code from (
     SELECT a.trade_date,ts_code,count(0) from rps_tops a where 
-    a.extrs >800 
+    a.extrs >750 
     group by trade_date,ts_code
     HAVING count(0)>1
     )a
-    group by ts_code
+    group BY a.ts_code, LEFT(a.trade_date,4)
     ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
-    order by trade_date
+    order by trade_date;
     """
     df = pd.read_sql(sql, conn)
+    df = df_util.append_fina_indicator(df)
     df = append_price(df, 0)
     df = append_price(df, 100)
     df = track_n_percent(df, 5)
     df = track_n_percent(df, -5)
     df = track_n_percent(df, 10)
     df = track_n_percent(df, -10)
-    df.to_csv('d:/temp/df.csv')
+    df.to_csv('d:/temp/df.csv',encoding="utf_8_sig")
 
 
 def append_price(df, relative_days):

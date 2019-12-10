@@ -9,6 +9,7 @@ import mytusharepro
 import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 import my_email.sendmail as sm
+import util.df_util as df_util
 
 def init_rps_top_table(tablename):
     engine = mydb.engine()
@@ -70,6 +71,7 @@ def send_result_mail():
     for m in [50, 120, 250]:
         sql = sql_template.format(m, today)
         df = pd.read_sql(sql, conn)
+        df = df_util.append_fina_indicator(df)
         if df.__len__() == 0:
             continue
 
@@ -80,6 +82,12 @@ def send_result_mail():
         html += "<td>日期</td>"
         html += "<td>代码</td>"
         html += "<td>得分</td>"
+        html += "<td>财报周期</td>"
+        html += "<td>净利润增长率</td>"
+        html += "<td>加权净资产收益率</td>"
+        html += "<td>资产负债比率</td>"
+        html += "<td>流动比率</td>"
+        html += "<td>速动比率</td>"
         html += "</tr>"
         for index, row in df.iterrows():
             html += "<tr>"
@@ -87,17 +95,24 @@ def send_result_mail():
             html += "<td>{0}</td>".format(row["trade_date"])
             html += "<td>{0}</td>".format(row["ts_code"])
             html += "<td>{0}</td>".format(row["extrs"])
+            html += "<td>{0}</td>".format(row["财报周期"])
+            html += "<td>{0}</td>".format(row["净利润增长率"])
+            html += "<td>{0}</td>".format(row["加权净资产收益率"])
+            html += "<td>{0}</td>".format(row["资产负债比率"])
+            html += "<td>{0}</td>".format(row["流动比率"])
+            html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
 
     relative_day = mydate.string_to_relative_days(today, -5)
     sql_template = """
-    SELECT ts_code,sum(extrs) 总分,count(0) 出现次数 from rps_tops where top_type='m{0}' and trade_date>'{1}'
+    SELECT ts_code,sum(extrs) 总分,count(0) 出现次数, MAX(trade_date) AS trade_date from rps_tops where top_type='m{0}' and trade_date>'{1}'
 group by ts_code order by sum(extrs) desc;
     """
     for m in [50, 120, 250]:
         sql = sql_template.format(m, relative_day)
         df = pd.read_sql(sql, conn)
+        df = df_util.append_fina_indicator(df)
         if df.__len__() == 0:
             continue
 
@@ -108,6 +123,13 @@ group by ts_code order by sum(extrs) desc;
         html += "<td>代码</td>"
         html += "<td>总分</td>"
         html += "<td>出现次数</td>"
+        html += "<td>最近日期</td>"
+        html += "<td>财报周期</td>"
+        html += "<td>净利润增长率</td>"
+        html += "<td>加权净资产收益率</td>"
+        html += "<td>资产负债比率</td>"
+        html += "<td>流动比率</td>"
+        html += "<td>速动比率</td>"
         html += "</tr>"
         for index, row in df.iterrows():
             html += "<tr>"
@@ -115,6 +137,13 @@ group by ts_code order by sum(extrs) desc;
             html += "<td>{0}</td>".format(row["ts_code"])
             html += "<td>{0}</td>".format(row["总分"])
             html += "<td>{0}</td>".format(row["出现次数"])
+            html += "<td>{0}</td>".format(row["最近日期"])
+            html += "<td>{0}</td>".format(row["财报周期"])
+            html += "<td>{0}</td>".format(row["净利润增长率"])
+            html += "<td>{0}</td>".format(row["加权净资产收益率"])
+            html += "<td>{0}</td>".format(row["资产负债比率"])
+            html += "<td>{0}</td>".format(row["流动比率"])
+            html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
 
