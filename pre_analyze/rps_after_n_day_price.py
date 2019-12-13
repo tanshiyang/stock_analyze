@@ -32,14 +32,14 @@ def analyze():
     df = append_price(df, 0)
     df = append_price(df, 100)
     df = track_n_percent(df, 5)
-    df = track_n_percent(df, -5)
+    # df = track_n_percent(df, -5)
     df = track_n_percent(df, 10)
-    df = track_n_percent(df, -10)
+    # df = track_n_percent(df, -10)
     df.to_csv('d:/temp/df.csv',encoding="utf_8_sig")
 
 
 def append_price(df, relative_days):
-    column_name = 'close%s' % relative_days
+    column_name = '收盘价%s' % relative_days
     df_util.append_column(df, column_name)
     for index, row in df.iterrows():
         ts_code = row["ts_code"]
@@ -61,16 +61,20 @@ def append_price(df, relative_days):
 
 
 def track_n_percent(df, n_percent):
-    column_min_or_max_rate = 'percent_%s_min_or_max_rate' % n_percent
-    column_min_or_max_days = 'percent_%s_min_or_max_days' % n_percent
-    column_days = 'percent_%s_days' % n_percent
-    df_util.append_column(df, column_min_or_max_rate)
-    df_util.append_column(df, column_min_or_max_days)
-    df_util.append_column(df, column_days)
+    column_target_days = '%s目标天数' % n_percent
+    column_max_rate = '%s最大涨幅' % n_percent
+    column_max_days = '%s最大涨幅用时' % n_percent
+    column_min_rate = '%s最小涨幅' % n_percent
+    column_min_days = '%s最小涨幅用时' % n_percent
+    df_util.append_column(df, column_target_days)
+    df_util.append_column(df, column_max_rate)
+    df_util.append_column(df, column_max_days)
+    df_util.append_column(df, column_min_rate)
+    df_util.append_column(df, column_min_days)
     for index, row in df.iterrows():
         ts_code = row["ts_code"]
         trade_date = row["trade_date"]
-        close0 = row["close0"]
+        close0 = row["收盘价0"]
         sql = str.format("show tables  like 'daily_{0}'", ts_code)
         cursor.execute(sql)
         table_exists = cursor.fetchall().__len__() > 0
@@ -81,27 +85,28 @@ def track_n_percent(df, n_percent):
         sql = str.format("select * from `daily_{0}` where trade_date>='{1}' order by trade_date", ts_code, trade_date)
         daily_rows = pd.read_sql(sql, conn)
 
-        min_or_max_price = close0
-        min_or_max_days = 0
+        max_price = min_price = close0
+        max_days = min_days = 0
         for daily_index, daily_row in daily_rows.iterrows():
             daily_close = daily_row["close"]
             daily_date = daily_row["trade_date"]
 
-            if n_percent<0:
-                if daily_close > min_or_max_price:
-                    min_or_max_price = daily_close
-                    min_or_max_days = daily_index
-            else:
-                if daily_close < min_or_max_price:
-                    min_or_max_price = daily_close
-                    min_or_max_days = daily_index
+            if daily_close > max_price:
+                max_price = daily_close
+                max_days = daily_index
+
+            if daily_close < min_price:
+                min_price = daily_close
+                min_days = daily_index
 
             rate = (daily_close - close0) * 100 / close0
             found = (0 < n_percent <= rate) or (0 > n_percent >= rate)
             if found:
-                df.loc[index, column_days] = daily_index
-                df.loc[index, column_min_or_max_rate] = (min_or_max_price- close0) * 100 / close0
-                df.loc[index, column_min_or_max_days] = min_or_max_days
+                df.loc[index, column_target_days] = daily_index
+                df.loc[index, column_max_rate] = (max_price - close0) * 100 / close0
+                df.loc[index, column_max_days] = max_days
+                df.loc[index, column_min_rate] = (min_price - close0) * 100 / close0
+                df.loc[index, column_min_days] = min_days
                 break
 
     return df
