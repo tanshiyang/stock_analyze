@@ -43,7 +43,7 @@ def collect_daily_basic(last_date=None):
         last_date = cursor.fetchone()[0]
 
     if last_date is None:
-        last_date = "20150101"
+        last_date = "20050101"
 
     last_date = mydate.string_to_next_day(last_date)
     # last_date = tradeday.get_next_tradeday(last_date)
