@@ -1347,7 +1347,7 @@ if __name__ == '__main__':
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
 
-    for year in range(2018, 2019):
+    for year in range(2000, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
             price_period.collect_price(period_date, False)
