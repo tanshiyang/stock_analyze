@@ -94,7 +94,7 @@ def one_stock(code, period, table_name):
 
         balancesheet = pro.balancesheet(ts_code=ts_code)
         balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
-        report_date = balancesheet.ann_date.values[len(balancesheet)-1]
+        report_date = balancesheet.ann_date.values[len(balancesheet) - 1]
         start_trade_date = get_next_tradeday(report_date)
         next_quarter_date = mydate.string_to_next_quarter(start_trade_date)
         end_trade_date = get_prev_tradeday(next_quarter_date)
@@ -113,7 +113,11 @@ def one_stock(code, period, table_name):
         end_trade_date = daily.trade_date.values[0]
         print("close1:%s,close2:%s" % (close1, close2))
 
-        daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_trade_date)
+        daily_basic = pro.daily_basic(ts_code=ts_code, trade_date=start_trade_date,
+                                      fields='ts_code,trade_date,close,turnover_rate,'
+                                             'turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
+                                             'ps_ttm,total_share,float_share,free_share,'
+                                             'total_mv,circ_mv')
         turnover_rate = daily_basic.turnover_rate.values[0]
         turnover_rate_f = daily_basic.turnover_rate_f.values[0]
         volume_ratio = daily_basic.volume_ratio.values[0]
@@ -130,7 +134,7 @@ def one_stock(code, period, table_name):
 
         sql = ("insert into %s (" % table_name
                + "ts_code,end_date,start_trade_date,close1,close_min,close_min_date,close_max,close_max_date,close2,end_trade_date,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,free_share,total_mv,circ_mv"
-               ")values("
+                 ")values("
                + "'%s'," % ts_code
                + "'%s'," % period
                + "'%s'," % start_trade_date
@@ -161,6 +165,7 @@ def one_stock(code, period, table_name):
         print(e)
         return ""
 
+
 def get_next_tradeday(date):
     while tradeday.is_tradeday(date) == 0:
         date = mydate.string_to_next_day(date)
@@ -190,6 +195,3 @@ if __name__ == '__main__':
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
             collect_price(period_date, False)
-
-
-

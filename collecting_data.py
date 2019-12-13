@@ -5,6 +5,10 @@ import pandas as pd
 import re, time
 import mydate
 import price_period
+import daily
+import daily_basic
+import RPS.calc_rps as cr
+import RPS.query_rps as qr
 
 pro = mytusharepro.MyTusharePro()
 
@@ -1339,6 +1343,10 @@ if __name__ == '__main__':
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
 
+    daily.collect_daily()
+    qr.send_result_mail()
+    daily_basic.collect_daily_basic()
+    daily.collect_daily_qfq()
 
     for year in range(2018, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
