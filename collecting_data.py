@@ -1335,18 +1335,17 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
+    daily.collect_daily()
+    daily_basic.collect_daily_basic()
+    daily.collect_daily_qfq()
+
     period_info = mydate.get_period_info()
     period_date = period_info[0]
-    price_period.collect_price(period_date, False)
+    # price_period.collect_price(period_date, False)
     collect_disclosure(period_date)
     collect_income(period_date)
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
-
-    daily.collect_daily()
-    qr.send_result_mail()
-    daily_basic.collect_daily_basic()
-    daily.collect_daily_qfq()
 
     for year in range(2018, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
