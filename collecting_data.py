@@ -16,14 +16,6 @@ pro = mytusharepro.MyTusharePro()
 # 公告计划
 def collect_disclosure(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
-    disclosure_date = pro.disclosure_date(end_date='%s' % period)
-    disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-    ts_codes = disclosure_date.ts_code
-    ann_dates = disclosure_date.ann_date
-    end_dates = disclosure_date.end_date
-    pre_dates = disclosure_date.pre_date
-    actual_dates = disclosure_date.actual_date
-    # modify_dates = disclosure_date.modify_date
 
     # 连接数据库
     conn = mydb.conn()
@@ -39,20 +31,32 @@ def collect_disclosure(period):
         "modify_date  varchar(32),"
         "unique(ts_code,end_date))")
 
-    # 通过for循环以及获取A股只数来遍历每一只股票
-    for x in ts_codes.index:
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
+    today = time.strftime('%Y%m%d')
+    for index, row in stocks.iterrows():
         try:
+            ts_code = row["ts_code"]
+            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
+            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
+
+            if len(disclosure_date) == 0:
+                continue
+            ann_date = disclosure_date.iloc[0].ann_date
+            end_date = disclosure_date.iloc[0].end_date
+            pre_date = disclosure_date.iloc[0].pre_date
+            actual_date = disclosure_date.iloc[0].actual_date
+            # modify_dates = disclosure_date.modify_date
+
             exist_stocks = pd.read_sql("select * from disclosure where ts_code='%s' and ann_date='%s'" %
-                                       (ts_codes[x], ann_dates[x]), conn, index_col="ts_code")
+                                       (ts_code, ann_date), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print('%s %s disclosure skipped' % (ts_codes[x], period))
+                print('%s %s disclosure skipped' % (ts_code, period))
                 continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
-            if re.match('000', ts_codes[x]) or re.match('002', ts_codes[x]) or re.match('60', ts_codes[x]):
-                sql = "insert into disclosure(ts_code,ann_date,end_date,pre_date,actual_date) values(" \
-                      "'%s','%s','%s','%s','%s')" % (ts_codes[x], ann_dates[x], end_dates[x], pre_dates[x], \
-                                                          actual_dates[x])
+            if re.match('000', ts_code) or re.match('002', ts_code) or re.match('60', ts_code):
+                sql = "insert into disclosure(ts_code,ann_date,end_date,pre_date,actual_date) values('%s','%s','%s'," \
+                      "'%s','%s')" % (ts_code, ann_date, end_date, pre_date, actual_date)
                 print(sql)
                 cursor.execute(sql)
                 conn.commit()
@@ -65,9 +69,6 @@ def collect_disclosure(period):
 # 利润表
 def collect_income(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
-    disclosure_date = pro.disclosure_date(end_date='%s' % period)
-    disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-    ts_codes = disclosure_date.ts_code
 
     # 连接数据库
     conn = mydb.conn()
@@ -142,16 +143,22 @@ def collect_income(period):
         "distable_profit float,"
         "unique(ts_code,ann_date))")
 
-    # 通过for循环以及获取A股只数来遍历每一只股票
-    for x in ts_codes.index:
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
+    today = time.strftime('%Y%m%d')
+    for index, row in stocks.iterrows():
         try:
+            ts_code = row["ts_code"]
+            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
+            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
+            ts_codes = disclosure_date.ts_code
+
             exist_stocks = pd.read_sql("select * from income where ts_code='%s' and end_date='%s'" %
-                                       (ts_codes[x], period), conn, index_col="ts_code")
+                                       (ts_code, period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s %s income skipped." % (ts_codes[x], period))
+                print("%s %s income skipped." % (ts_code, period))
                 continue
 
-            income = pro.income(ts_code=ts_codes[x])
+            income = pro.income(ts_code=ts_code)
             income = income.loc[income["end_date"] == period]
 
             if income is None or len(income) == 0:
@@ -303,9 +310,6 @@ def collect_income(period):
 # 资产负债表
 def collect_balancesheet(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
-    disclosure_date = pro.disclosure_date(end_date='%s' % period)
-    disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-    ts_codes = disclosure_date.ts_code
 
     # 连接数据库
     conn = mydb.conn()
@@ -453,16 +457,23 @@ def collect_balancesheet(period):
         "unique(ts_code,end_date))")
 
     # 通过for循环以及获取A股只数来遍历每一只股票
-    for x in ts_codes.index:
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
+    today = time.strftime('%Y%m%d')
+    for index, row in stocks.iterrows():
         try:
+            ts_code = row["ts_code"]
+            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
+            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
+            ts_codes = disclosure_date.ts_code
+            
             exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and end_date='%s'" %
-                                       (ts_codes[x], period), conn, index_col="ts_code")
+                                       (ts_code, period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s %s balancesheet skipped." % (ts_codes[x], period))
+                print("%s %s balancesheet skipped." % (ts_code, period))
                 continue
 
 
-            balancesheet = pro.balancesheet(ts_code=ts_codes[x])
+            balancesheet = pro.balancesheet(ts_code=ts_code)
             balancesheet = balancesheet.loc[balancesheet["end_date"] == period]
 
             if balancesheet is None or len(balancesheet) == 0:
@@ -758,9 +769,6 @@ def collect_balancesheet(period):
 # 财务指标数据
 def collect_fina_indicator(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
-    disclosure_date = pro.disclosure_date(end_date='%s' % period)
-    disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-    ts_codes = disclosure_date.ts_code
 
     # 连接数据库
     conn = mydb.conn()
@@ -936,16 +944,23 @@ def collect_fina_indicator(period):
         "unique(ts_code,end_date))")
 
     # 通过for循环以及获取A股只数来遍历每一只股票
-    for x in ts_codes.index:
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
+    today = time.strftime('%Y%m%d')
+    for index, row in stocks.iterrows():
         try:
+            ts_code = row["ts_code"]
+            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
+            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
+            ts_codes = disclosure_date.ts_code
+
             exist_stocks = pd.read_sql("select * from fina_indicator where ts_code='%s' and end_date='%s'" %
-                                       (ts_codes[x], period), conn,
+                                       (ts_code, period), conn,
                                        index_col="ts_code")
             if len(exist_stocks) > 0:
-                print("%s %s fina_indicator skipped." % (ts_codes[x], period))
+                print("%s %s fina_indicator skipped." % (ts_code, period))
                 continue
 
-            df = pro.fina_indicator(ts_code=ts_codes[x])
+            df = pro.fina_indicator(ts_code=ts_code)
             df = df.loc[df["end_date"] == period]
 
             if df is None or len(df) == 0:
@@ -1335,9 +1350,9 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
-    daily.collect_daily()
-    daily_basic.collect_daily_basic()
-    daily.collect_daily_qfq()
+    # daily.collect_daily()
+    # daily_basic.collect_daily_basic()
+    # daily.collect_daily_qfq()
 
     period_info = mydate.get_period_info()
     period_date = period_info[0]
