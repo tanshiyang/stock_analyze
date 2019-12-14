@@ -36,6 +36,12 @@ def collect_disclosure(period):
     for index, row in stocks.iterrows():
         try:
             ts_code = row["ts_code"]
+            exist_stocks = pd.read_sql("select * from disclosure where ts_code='%s' and end_date='%s'" %
+                                       (ts_code, period), conn, index_col="ts_code")
+            if len(exist_stocks) > 0:
+                print('%s %s disclosure skipped' % (ts_code, period))
+                continue
+
             disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
             disclosure_date = disclosure_date[disclosure_date.actual_date < now]
 
@@ -46,12 +52,6 @@ def collect_disclosure(period):
             pre_date = disclosure_date.iloc[0].pre_date
             actual_date = disclosure_date.iloc[0].actual_date
             # modify_dates = disclosure_date.modify_date
-
-            exist_stocks = pd.read_sql("select * from disclosure where ts_code='%s' and ann_date='%s'" %
-                                       (ts_code, ann_date), conn, index_col="ts_code")
-            if len(exist_stocks) > 0:
-                print('%s %s disclosure skipped' % (ts_code, period))
-                continue
 
             # 匹配深圳股票（因为整个A股太多，所以我选择深圳股票做个筛选）
             if re.match('000', ts_code) or re.match('002', ts_code) or re.match('60', ts_code):
@@ -148,10 +148,6 @@ def collect_income(period):
     for index, row in stocks.iterrows():
         try:
             ts_code = row["ts_code"]
-            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
-            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-            ts_codes = disclosure_date.ts_code
-
             exist_stocks = pd.read_sql("select * from income where ts_code='%s' and end_date='%s'" %
                                        (ts_code, period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
@@ -462,10 +458,7 @@ def collect_balancesheet(period):
     for index, row in stocks.iterrows():
         try:
             ts_code = row["ts_code"]
-            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
-            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-            ts_codes = disclosure_date.ts_code
-            
+
             exist_stocks = pd.read_sql("select * from balancesheet where ts_code='%s' and end_date='%s'" %
                                        (ts_code, period), conn, index_col="ts_code")
             if len(exist_stocks) > 0:
@@ -949,9 +942,6 @@ def collect_fina_indicator(period):
     for index, row in stocks.iterrows():
         try:
             ts_code = row["ts_code"]
-            disclosure_date = pro.disclosure_date(end_date=period, ts_code=ts_code)
-            disclosure_date = disclosure_date[disclosure_date.actual_date < now]
-            ts_codes = disclosure_date.ts_code
 
             exist_stocks = pd.read_sql("select * from fina_indicator where ts_code='%s' and end_date='%s'" %
                                        (ts_code, period), conn,
@@ -1357,7 +1347,7 @@ if __name__ == '__main__':
     period_info = mydate.get_period_info()
     period_date = period_info[0]
     # price_period.collect_price(period_date, False)
-    collect_disclosure(period_date)
+    # collect_disclosure(period_date)
     collect_income(period_date)
     collect_balancesheet(period_date)
     collect_fina_indicator(period_date)
@@ -1365,8 +1355,8 @@ if __name__ == '__main__':
     for year in range(2000, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
-            price_period.collect_price(period_date, False)
-            collect_disclosure(period_date)
+            # price_period.collect_price(period_date, False)
+            # collect_disclosure(period_date)
             collect_income(period_date)
             collect_balancesheet(period_date)
             collect_fina_indicator(period_date)
