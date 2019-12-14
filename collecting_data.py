@@ -1348,18 +1348,18 @@ if __name__ == '__main__':
     period_date = period_info[0]
     # price_period.collect_price(period_date, False)
     # collect_disclosure(period_date)
+    collect_fina_indicator(period_date)
     collect_income(period_date)
     collect_balancesheet(period_date)
-    collect_fina_indicator(period_date)
 
     for year in range(2000, 2019):
         for md in ["0331", "0630", "0930", "1231"]:
             period_date = str(year) + md
             # price_period.collect_price(period_date, False)
             # collect_disclosure(period_date)
+            collect_fina_indicator(period_date)
             collect_income(period_date)
             collect_balancesheet(period_date)
-            collect_fina_indicator(period_date)
     '''
     period_date = "20180930"
     price_period.collect_price(period_date, False)
