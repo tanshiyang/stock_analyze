@@ -9,6 +9,8 @@ import mytusharepro
 import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 
+pro = mytusharepro.MyTusharePro()
+
 
 def init_extrs_table(tablename):
     engine = mydb.engine()
@@ -44,13 +46,13 @@ def calc_uprate(m):
     conn = mydb.conn()
     cursor = conn.cursor()
 
-    stocks = pd.read_sql("select distinct ts_code from daily", conn)
-
+    # stocks = pd.read_sql("select distinct ts_code from daily", conn)
+    stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
     for index, row in stocks.iterrows():
         ts_code = row["ts_code"]
         print("calc_uprate: %s" % ts_code)
         df = pd.read_sql(
-            "select ts_code,trade_date,close from daily where ts_code = '%s' order by trade_date" % ts_code, conn)
+            str.format("select ts_code,trade_date,close from `daily_{0}` where ts_code = '{0}' order by trade_date", ts_code), conn)
 
         if len(df) == 0:
             continue
@@ -120,4 +122,5 @@ def batch_normalization(m, last_date=None):
 
 if __name__ == '__main__':
     calc_uprate(50)
+    batch_normalization(50)
 
