@@ -1,3 +1,9 @@
+import os
+import sys
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+
 import pandas as pd
 import numpy as np
 import copy
@@ -135,5 +141,5 @@ def batch_normalization(m, last_date=None):
 
 if __name__ == '__main__':
     # calc_uprate(50)
-    batch_normalization(50,'20150101')
+    batch_normalization(50,'19950101')
 

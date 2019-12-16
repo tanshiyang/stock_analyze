@@ -29,7 +29,7 @@ def analyze():
     group by trade_date,ts_code
     HAVING count(0)>1
     )a
-    group BY a.ts_code, LEFT(a.trade_date,4)
+    group BY a.ts_code, LEFT(a.trade_date,6)
     ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
     AND LEFT(a.trade_date,4)-LEFT((select MIN(trade_date) FROM daily_basic WHERE ts_code = a.ts_code),4)>2
     order by trade_date;
