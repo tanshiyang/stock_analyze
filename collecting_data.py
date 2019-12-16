@@ -1340,9 +1340,9 @@ def collect_fina_indicator(period):
 
 
 if __name__ == '__main__':
-    # daily.collect_daily()
-    # daily_basic.collect_daily_basic()
-    # daily.collect_daily_qfq()
+    daily.collect_daily()
+    daily_basic.collect_daily_basic()
+    daily.collect_daily_qfq()
 
     period_info = mydate.get_period_info()
     period_date = period_info[0]
