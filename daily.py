@@ -64,10 +64,7 @@ def collect_daily_qfq(start_date=None):
     today = time.strftime('%Y%m%d')
     for index, row in stocks.iterrows():
         ts_code = row["ts_code"]
-        list_date = row["list_date"]
         table_name = "daily_" + str.lower(ts_code)
-        print("collect_daily_qfq:"+ts_code)
-        daily_df = pro.pro_bar(ts_code=ts_code, adj='qfq', start_date=list_date, end_date=today)
 
         # 获取元数据
         metadata = MetaData()
@@ -88,12 +85,25 @@ def collect_daily_qfq(start_date=None):
         # 创建数据表，如果数据表存在，则忽视
         metadata.create_all(engine)
 
+        cursor.execute("select  max(trade_date) from `%s`" % table_name)
+        start_date = cursor.fetchone()[0]
+        if start_date is None:
+            start_date = row["list_date"]
+        else:
+            start_date = mydate.string_to_next_day(start_date)
+
+        if start_date > today:
+            continue
+
+        print("collect_daily_qfq:"+ts_code + ",start_date:"+start_date)
+        daily_df = pro.pro_bar(ts_code=ts_code, adj='qfq', start_date=start_date, end_date=today)
+
         if daily_df is None:
             continue
         if len(daily_df) == 0:
             continue
 
-        cursor.execute("delete from `" + table_name + "`")
+        cursor.execute(str.format("delete from `" + table_name + "` where trade_date>='{0}'", start_date))
         conn.commit()
         daily_df.to_sql(table_name, engine, index=False, if_exists='append')
 
