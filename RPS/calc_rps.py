@@ -78,6 +78,18 @@ def calc_uprate(m):
         df.to_sql(tablename, engine, index=False, if_exists='append')
 
 
+def np_normalization(data):
+    data = data.rank()
+    _range = np.max(data) - np.min(data)
+    return (data - np.min(data)) / _range
+
+
+def np_standardization(data):
+    mu = np.mean(data, axis=0)
+    sigma = np.std(data, axis=0)
+    return (data - mu) / sigma
+
+
 def normalization(trade_date, m):
     tablename = 'standardization_extrs_%s' % m
     init_std_extrs_table(tablename)
@@ -91,10 +103,11 @@ def normalization(trade_date, m):
         return
     if len(df[df['extrs'].isnull()].index) >= len(df):
         return
-    ma = np.max(df.extrs)
-    mi = np.min(df.extrs)
-    up_rate_standardization = (df.extrs - mi) * 1000 / (ma - mi)
-    df["extrs"] = up_rate_standardization
+    # ma = np.max(df.extrs)
+    # mi = np.min(df.extrs)
+    # up_rate_standardization = (df.extrs - mi) * 1000 / (ma - mi)
+    # df["extrs"] = up_rate_standardization
+    df["extrs"] = np_normalization(df["extrs"]) * 1000
     cursor.execute("delete from %s where trade_date='%s'" % (tablename, trade_date))
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
@@ -121,6 +134,6 @@ def batch_normalization(m, last_date=None):
 
 
 if __name__ == '__main__':
-    calc_uprate(50)
-    batch_normalization(50)
+    # calc_uprate(50)
+    batch_normalization(50,'20150101')
 
