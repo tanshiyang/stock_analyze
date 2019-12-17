@@ -48,7 +48,7 @@ def init_std_extrs_table(tablename):
     metadata.create_all(engine)
 
 def calc_upgrate_work(m, ts_code):
-    print("calc_uprate: %s" % ts_code)
+    print(str.format("calc_uprate: m{0},{1}", m, ts_code))
 
     engine = mydb.engine()
     conn = mydb.conn()
@@ -89,7 +89,7 @@ def calc_uprate(m):
 
     # stocks = pd.read_sql("select distinct ts_code from daily", conn)
     stocks = pro.stock_basic(exchange='', list_status='L', fields='ts_code,list_date')
-    with ThreadPoolExecutor(10) as executor:
+    with ThreadPoolExecutor(20) as executor:
         for index, row in stocks.iterrows():
             ts_code = row["ts_code"]
             executor.submit(calc_upgrate_work, m, ts_code)
