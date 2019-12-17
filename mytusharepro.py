@@ -135,8 +135,8 @@ class MyTusharePro:
             return self.pro.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange,fields=fields)
         except Exception as e:
             print(e)
-            print("休息 60s ")
-            time.sleep(60)
+            print(str.format("休息{0}s", self.sleep_time))
+            time.sleep(self.sleep_time)
             return self.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange, fields=fields,times=times + 1)
         finally:
             time.sleep(0.3)

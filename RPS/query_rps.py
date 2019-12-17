@@ -10,6 +10,7 @@ import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 import my_email.sendmail as sm
 import util.df_util as df_util
+from concurrent.futures import ThreadPoolExecutor
 
 def init_rps_top_table(tablename):
     engine = mydb.engine()
@@ -26,6 +27,8 @@ def init_rps_top_table(tablename):
     metadata.create_all(engine)
 
 def query_top_n(m, trade_date, top_n):
+    print(str.format("m{0}, query_top_{1}: {2}", m, top_n, trade_date))
+
     tablename = "rps_tops"
     init_rps_top_table(tablename)
 
@@ -55,10 +58,11 @@ def batch_query_top_n(m, last_date=None, top_n=20):
 
     last_date = mydate.string_to_next_day(last_date)
     today = time.strftime('%Y%m%d')
-    while last_date <= today:
-        print(str.format("m{0}, query_top_{1}: {2}", m, top_n, last_date))
-        query_top_n(m, last_date, top_n)
-        last_date = mydate.string_to_next_day(last_date)
+    with ThreadPoolExecutor(10) as executor:
+        while last_date <= today:
+            executor.submit(query_top_n, m, last_date, top_n)
+            # query_top_n(m, last_date, top_n)
+            last_date = mydate.string_to_next_day(last_date)
 
 def send_result_mail():
     conn = mydb.conn()
