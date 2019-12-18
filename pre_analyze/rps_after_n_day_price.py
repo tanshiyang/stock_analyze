@@ -35,12 +35,11 @@ def analyze():
     order by trade_date;
     """
     df = pd.read_sql(sql, conn)
-    df = df_util.append_fina_indicator(df)
     df = append_price(df, 0)
-    df = append_price(df, 100)
-    df = track_n_percent(df, 5)
-    # df = track_n_percent(df, -5)
+    df = df_util.append_fina_indicator(df)
     df = track_n_percent(df, 10)
+    # df = track_n_percent(df, -5)
+    df = track_n_percent(df, 30)
     # df = track_n_percent(df, -10)
     df.to_csv('d:/temp/df.csv',encoding="utf_8_sig")
 
@@ -71,8 +70,8 @@ def track_n_percent(df, n_percent):
     column_target_days = '%s目标天数' % n_percent
     column_max_rate = '%s最大涨幅' % n_percent
     column_max_days = '%s最大涨幅用时' % n_percent
-    column_min_rate = '%s最小涨幅' % n_percent
-    column_min_days = '%s最小涨幅用时' % n_percent
+    column_min_rate = '%s最大跌幅' % n_percent
+    column_min_days = '%s最大跌幅用时' % n_percent
     df_util.append_column(df, column_target_days)
     df_util.append_column(df, column_max_rate)
     df_util.append_column(df, column_max_days)

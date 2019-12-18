@@ -6,8 +6,25 @@ import mydb
 import mytusharepro
 import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
+from concurrent.futures import ThreadPoolExecutor
 
 pro = mytusharepro.MyTusharePro()
+
+
+def collect_daily_basic_work(last_date):
+    engine = mydb.engine()
+    conn = mydb.conn()
+    cursor = conn.cursor()
+
+    print("collect_daily_basic： %s" % last_date)
+    cursor.execute("select count(0) from daily_basic where trade_date='" + last_date + "'")
+
+    if cursor.fetchone()[0] == 0:
+        daily_df = pro.daily_basic(trade_date=last_date, fields='ts_code,trade_date,close,turnover_rate,'
+                                                                'turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
+                                                                'ps_ttm,total_share,float_share,free_share,'
+                                                                'total_mv,circ_mv')
+        daily_df.to_sql('daily_basic', engine, index=False, if_exists='append')
 
 
 def collect_daily_basic(last_date=None):
@@ -43,25 +60,17 @@ def collect_daily_basic(last_date=None):
         last_date = cursor.fetchone()[0]
 
     if last_date is None:
-        last_date = "20050101"
+        last_date = "20000101"
 
     last_date = mydate.string_to_next_day(last_date)
     # last_date = tradeday.get_next_tradeday(last_date)
     today = time.strftime('%Y%m%d')
-    while last_date <= today:
-        print("collect_daily_basic： %s" % last_date)
-        cursor.execute("select count(0) from daily_basic where trade_date='" + last_date + "'")
-
-        if cursor.fetchone()[0] == 0:
-            daily_df = pro.daily_basic(trade_date=last_date, fields='ts_code,trade_date,close,turnover_rate,'
-                                                                    'turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
-                                                                    'ps_ttm,total_share,float_share,free_share,'
-                                                                    'total_mv,circ_mv')
-            daily_df.to_sql('daily_basic', engine, index=False, if_exists='append')
-
-        last_date = mydate.string_to_next_day(last_date)
-        # last_date = tradeday.get_next_tradeday(last_date)
+    with ThreadPoolExecutor(20) as executor:
+        while last_date <= today:
+            executor.submit(collect_daily_basic_work, last_date)
+            last_date = mydate.string_to_next_day(last_date)
+            # last_date = tradeday.get_next_tradeday(last_date)
 
 
 if __name__ == '__main__':
-    collect_daily_basic()
+    collect_daily_basic('20000101')

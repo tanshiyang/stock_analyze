@@ -156,6 +156,6 @@ group by ts_code order by sum(extrs) desc;
 
 
 if __name__ == '__main__':
-    batch_query_top_n(50, '20150101', 20)
-    batch_query_top_n(120, '20150101', 20)
-    batch_query_top_n(250, '20150101', 20)
+    batch_query_top_n(50, '20000101', 20)
+    batch_query_top_n(120, '20000101', 20)
+    batch_query_top_n(250, '20000101', 20)

@@ -7,7 +7,7 @@ class MyTusharePro:
         ts.set_token("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
         self.pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
         self.max_call_times = 2
-        self.sleep_time = 20
+        self.sleep_time = 30
 
     def disclosure_date(self, ts_code=None, end_date=None, pre_date=None, actual_date=None, times=1):
         if times > self.max_call_times:

@@ -47,6 +47,7 @@ def init_std_extrs_table(tablename):
     # 创建数据表，如果数据表存在，则忽视
     metadata.create_all(engine)
 
+
 def calc_upgrate_work(m, ts_code):
     print(str.format("calc_uprate: m{0},{1}", m, ts_code))
 
@@ -83,6 +84,7 @@ def calc_upgrate_work(m, ts_code):
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
 
+
 def calc_uprate(m):
     tablename = 'extrs_%s' % m
     init_extrs_table(tablename)
@@ -93,7 +95,6 @@ def calc_uprate(m):
         for index, row in stocks.iterrows():
             ts_code = row["ts_code"]
             executor.submit(calc_upgrate_work, m, ts_code)
-
 
 
 def np_normalization(data):
@@ -155,10 +156,10 @@ def batch_normalization(m, last_date=None):
 
 
 if __name__ == '__main__':
-    calc_uprate(50)
-    calc_uprate(120)
-    calc_uprate(250)
-    batch_normalization(50)
-    batch_normalization(120)
-    batch_normalization(250)
+    # calc_uprate(50)
+    # calc_uprate(120)
+    # calc_uprate(250)
+    batch_normalization(50, '20000101')
+    batch_normalization(120, '20000101')
+    batch_normalization(250, '20000101')
     # batch_normalization(50,'19950101')
