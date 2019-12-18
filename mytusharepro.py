@@ -120,6 +120,7 @@ class MyTusharePro:
             result = ts.pro_bar(ts_code=ts_code,start_date=start_date,end_date=end_date,adj=adj)
             if result is None:
                 raise Exception("结果为None.")
+            return result
         except Exception as e:
             print(e)
             print(str.format("休息{0}s", self.sleep_time))
