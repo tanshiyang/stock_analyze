@@ -151,20 +151,29 @@ group by ts_code order by sum(extrs) desc;
             html += "</tr>"
         html += "</table>"
 
+    html += get_day_recommand(today)
+
+    if html.__len__() > 0:
+        sm.send_rps_mail(html)
+
+def get_day_recommand(trade_date):
+    conn = mydb.conn()
+    cursor = conn.cursor()
+    html = ""
     sql_template = """
-    SELECT a.*,b.pe from (
-    select min(trade_date) trade_date,min(ts_code) ts_code from (
-    SELECT a.trade_date,ts_code,count(0) from rps_tops a 
-    group by trade_date,ts_code
-    HAVING count(0)>1 AND avg(extrs) >870 
-    )a
-    group BY a.ts_code, LEFT(a.trade_date,6)
-    ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
-    AND LEFT(a.trade_date,4)-LEFT((select MIN(trade_date) FROM daily_basic WHERE ts_code = a.ts_code),4)>2
-    AND a.trade_date='{0}'
-    order by trade_date;
-    """
-    sql_template = str.format(sql_template, today)
+        SELECT a.*,b.pe from (
+        select min(trade_date) trade_date,min(ts_code) ts_code from (
+        SELECT a.trade_date,ts_code,count(0) from rps_tops a 
+        group by trade_date,ts_code
+        HAVING count(0)>1 AND avg(extrs) >870 
+        )a
+        group BY a.ts_code, LEFT(a.trade_date,6)
+        ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
+        AND LEFT(a.trade_date,4)-LEFT((select MIN(trade_date) FROM daily_basic WHERE ts_code = a.ts_code),4)>2
+        AND a.trade_date='{0}'
+        order by trade_date;
+        """
+    sql = str.format(sql_template, trade_date)
     df = pd.read_sql(sql, conn)
     df = df_util.append_fina_indicator(df)
     if df.__len__() > 0:
@@ -196,12 +205,10 @@ group by ts_code order by sum(extrs) desc;
             html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
-
-    if html.__len__() > 0:
-        sm.send_rps_mail(html)
-
+        return  html
 
 if __name__ == '__main__':
-    batch_query_top_n(50, '20000101', 20)
-    batch_query_top_n(120, '20000101', 20)
-    batch_query_top_n(250, '20000101', 20)
+    # batch_query_top_n(50, '20000101', 20)
+    # batch_query_top_n(120, '20000101', 20)
+    # batch_query_top_n(250, '20000101', 20)
+    print(get_day_recommand('20200109'))
