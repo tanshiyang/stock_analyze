@@ -205,10 +205,12 @@ def get_day_recommand(trade_date):
             html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
-        return  html
+    return html if html is not None else ""
+
 
 if __name__ == '__main__':
     # batch_query_top_n(50, '20000101', 20)
     # batch_query_top_n(120, '20000101', 20)
     # batch_query_top_n(250, '20000101', 20)
-    print(get_day_recommand('20200109'))
+    # print(get_day_recommand('20200110'))
+    send_result_mail()
