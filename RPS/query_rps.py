@@ -151,6 +151,52 @@ group by ts_code order by sum(extrs) desc;
             html += "</tr>"
         html += "</table>"
 
+    sql_template = """
+    SELECT a.*,b.pe from (
+    select min(trade_date) trade_date,min(ts_code) ts_code from (
+    SELECT a.trade_date,ts_code,count(0) from rps_tops a 
+    group by trade_date,ts_code
+    HAVING count(0)>1 AND avg(extrs) >870 
+    )a
+    group BY a.ts_code, LEFT(a.trade_date,6)
+    ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
+    AND LEFT(a.trade_date,4)-LEFT((select MIN(trade_date) FROM daily_basic WHERE ts_code = a.ts_code),4)>2
+    AND a.trade_date='{0}'
+    order by trade_date;
+    """
+    sql_template = str.format(sql_template, today)
+    df = pd.read_sql(sql, conn)
+    df = df_util.append_fina_indicator(df)
+    if df.__len__() > 0:
+        html += "今日优选："
+        html += "<table border='1'>"
+        html += "<tr>"
+        html += "<td>序号</td>"
+        html += "<td>日期</td>"
+        html += "<td>代码</td>"
+        html += "<td>pe</td>"
+        html += "<td>财报周期</td>"
+        html += "<td>净利润增长率</td>"
+        html += "<td>加权净资产收益率</td>"
+        html += "<td>资产负债比率</td>"
+        html += "<td>流动比率</td>"
+        html += "<td>速动比率</td>"
+        html += "</tr>"
+        for index, row in df.iterrows():
+            html += "<tr>"
+            html += "<td>{0}</td>".format(index)
+            html += "<td>{0}</td>".format(row["trade_date"])
+            html += "<td>{0}</td>".format(row["ts_code"])
+            html += "<td>{0}</td>".format(row["pe"])
+            html += "<td>{0}</td>".format(row["财报周期"])
+            html += "<td>{0}</td>".format(row["净利润增长率"])
+            html += "<td>{0}</td>".format(row["加权净资产收益率"])
+            html += "<td>{0}</td>".format(row["资产负债比率"])
+            html += "<td>{0}</td>".format(row["流动比率"])
+            html += "<td>{0}</td>".format(row["速动比率"])
+            html += "</tr>"
+        html += "</table>"
+
     if html.__len__() > 0:
         sm.send_rps_mail(html)
 
