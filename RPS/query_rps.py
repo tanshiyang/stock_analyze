@@ -212,5 +212,5 @@ if __name__ == '__main__':
     # batch_query_top_n(50, '20000101', 20)
     # batch_query_top_n(120, '20000101', 20)
     # batch_query_top_n(250, '20000101', 20)
-    # print(get_day_recommand('20200110'))
-    send_result_mail()
+    print(get_day_recommand('20200107'))
+    # send_result_mail()

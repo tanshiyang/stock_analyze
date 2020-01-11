@@ -21,6 +21,7 @@ cursor = conn.cursor()
 
 
 def analyze():
+    today = time.strftime('%Y%m%d')
     sql = """
     SELECT a.*,b.pe from (
     select min(trade_date) trade_date,min(ts_code) ts_code from (
@@ -40,7 +41,8 @@ def analyze():
     # df = track_n_percent(df, -5)
     df = track_n_percent(df, 30)
     # df = track_n_percent(df, -10)
-    df.to_csv('d:/temp/df.csv',encoding="utf_8_sig")
+    file_name = "d:/temp/df{0}.csv".format(today)
+    df.to_csv(file_name, encoding="utf_8_sig")
 
 
 def append_price(df, relative_days):
