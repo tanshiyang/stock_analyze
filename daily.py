@@ -54,6 +54,8 @@ def collect_daily(last_date=None):
 
         last_date = mydate.string_to_next_day(last_date)
         # last_date = tradeday.get_next_tradeday(last_date)
+    conn.close()
+    cursor.close()
 
 
 def collect_daily_qfq_work(ts_code, start_date, row):
@@ -103,6 +105,8 @@ def collect_daily_qfq_work(ts_code, start_date, row):
     cursor.execute(str.format("delete from `" + table_name + "` where trade_date>='{0}'", start_date))
     conn.commit()
     daily_df.to_sql(table_name, engine, index=False, if_exists='append')
+    conn.close()
+    cursor.close()
 
 
 def collect_daily_qfq(start_date=None):

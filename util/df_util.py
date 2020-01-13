@@ -1,9 +1,6 @@
 import pandas as pd
 import mydb
 
-conn = mydb.conn()
-cursor = conn.cursor()
-
 
 def append_column(df, column_name):
     col_name = df.columns.tolist()
@@ -12,6 +9,8 @@ def append_column(df, column_name):
     
 
 def append_fina_indicator(df):
+    conn = mydb.conn()
+    cursor = conn.cursor()
     append_column(df, '财报周期')
     append_column(df, '净利润增长率')
     append_column(df, '加权净资产收益率')
@@ -34,4 +33,5 @@ def append_fina_indicator(df):
             df.loc[index, '资产负债比率'] = price_row[3]
             df.loc[index, '流动比率'] = price_row[4]
             df.loc[index, '速动比率'] = price_row[5]
+    conn.close()
     return df

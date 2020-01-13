@@ -25,6 +25,8 @@ def collect_daily_basic_work(last_date):
                                                                 'ps_ttm,total_share,float_share,free_share,'
                                                                 'total_mv,circ_mv')
         daily_df.to_sql('daily_basic', engine, index=False, if_exists='append')
+    conn.close()
+    cursor.close()
 
 
 def collect_daily_basic(last_date=None):
@@ -70,6 +72,8 @@ def collect_daily_basic(last_date=None):
             executor.submit(collect_daily_basic_work, last_date)
             last_date = mydate.string_to_next_day(last_date)
             # last_date = tradeday.get_next_tradeday(last_date)
+    conn.close()
+    cursor.close()
 
 
 if __name__ == '__main__':

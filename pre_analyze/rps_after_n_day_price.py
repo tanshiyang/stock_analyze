@@ -16,11 +16,10 @@ import mytusharepro
 import tradeday
 import util.df_util as df_util
 
-conn = mydb.conn()
-cursor = conn.cursor()
-
 
 def analyze():
+    conn = mydb.conn()
+    cursor = conn.cursor()
     today = time.strftime('%Y%m%d')
     sql = """
     SELECT a.*,b.pe from (
@@ -43,9 +42,13 @@ def analyze():
     # df = track_n_percent(df, -10)
     file_name = "d:/temp/df{0}.csv".format(today)
     df.to_csv(file_name, encoding="utf_8_sig")
+    conn.close()
+    cursor.close()
 
 
 def append_price(df, relative_days):
+    conn = mydb.conn()
+    cursor = conn.cursor()
     column_name = '收盘价%s' % relative_days
     df_util.append_column(df, column_name)
     for index, row in df.iterrows():
@@ -64,10 +67,14 @@ def append_price(df, relative_days):
         price_row = cursor.fetchone()
         if price_row is not None:
             df.loc[index, column_name] = price_row[0]
+    conn.close()
+    cursor.close()
     return df
 
 
 def track_n_percent(df, n_percent):
+    conn = mydb.conn()
+    cursor = conn.cursor()
     column_target_days = '%s目标天数' % n_percent
     column_max_rate = '%s最大涨幅' % n_percent
     column_max_days = '%s最大涨幅用时' % n_percent
@@ -115,7 +122,8 @@ def track_n_percent(df, n_percent):
                 df.loc[index, column_min_rate] = (min_price - close0) * 100 / close0
                 df.loc[index, column_min_days] = min_days
                 break
-
+    conn.close()
+    cursor.close()
     return df
 
 

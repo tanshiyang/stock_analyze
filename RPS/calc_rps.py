@@ -83,6 +83,8 @@ def calc_upgrate_work(m, ts_code):
     cursor.execute("delete from %s where ts_code='%s'" % (tablename, ts_code))
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
+    conn.close()
+    cursor.close()
 
 
 def calc_uprate(m):
@@ -132,6 +134,8 @@ def normalization(trade_date, m):
     cursor.execute("delete from %s where trade_date='%s'" % (tablename, trade_date))
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
+    conn.close()
+    cursor.close()
 
 
 def batch_normalization(m, last_date=None):
@@ -153,6 +157,8 @@ def batch_normalization(m, last_date=None):
             executor.submit(normalization, last_date, m)
             # normalization(last_date, m)
             last_date = mydate.string_to_next_day(last_date)
+    conn.close()
+    cursor.close()
 
 
 if __name__ == '__main__':

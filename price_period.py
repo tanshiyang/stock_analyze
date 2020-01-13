@@ -164,6 +164,8 @@ def one_stock(code, period, table_name):
     except Exception as e:
         print(e)
         return ""
+    conn.close()
+    cursor.close()
 
 
 def get_next_tradeday(date):

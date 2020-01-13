@@ -42,6 +42,8 @@ def query_top_n(m, trade_date, top_n):
     cursor.execute("delete from %s where top_type='m%s' and trade_date='%s'" % (tablename, m, trade_date))
     conn.commit()
     df.to_sql(tablename, engine, index=False, if_exists='append')
+    conn.close()
+    cursor.close()
 
 
 def batch_query_top_n(m, last_date=None, top_n=20):
@@ -63,6 +65,9 @@ def batch_query_top_n(m, last_date=None, top_n=20):
             executor.submit(query_top_n, m, last_date, top_n)
             # query_top_n(m, last_date, top_n)
             last_date = mydate.string_to_next_day(last_date)
+    conn.close()
+    cursor.close()
+
 
 def send_result_mail():
     conn = mydb.conn()
@@ -150,11 +155,14 @@ group by ts_code order by sum(extrs) desc;
             html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
+    conn.close()
+    cursor.close()
 
     html += get_day_recommand(today)
 
     if html.__len__() > 0:
         sm.send_rps_mail(html)
+
 
 def get_day_recommand(trade_date):
     conn = mydb.conn()
@@ -205,6 +213,8 @@ def get_day_recommand(trade_date):
             html += "<td>{0}</td>".format(row["速动比率"])
             html += "</tr>"
         html += "</table>"
+    conn.close()
+    cursor.close()
     return html if html is not None else ""
 
 
@@ -212,5 +222,5 @@ if __name__ == '__main__':
     # batch_query_top_n(50, '20000101', 20)
     # batch_query_top_n(120, '20000101', 20)
     # batch_query_top_n(250, '20000101', 20)
-    print(get_day_recommand('20200107'))
-    # send_result_mail()
+    # print(get_day_recommand('20200110'))
+    send_result_mail()

@@ -1161,6 +1161,8 @@ def collect_fina_indicator_work(period, row):
         conn.commit()
     except Exception as e:
         print(e)
+    conn.close()
+    cursor.close()
 
 def collect_fina_indicator(period):
     now = time.strftime('%Y%m%d', time.localtime(time.time()))
