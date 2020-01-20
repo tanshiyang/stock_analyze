@@ -18,6 +18,13 @@ def get_rolling_bull_arrange(ts_code, trade_date, m_days):
     conn = mydb.conn()
     cursor = conn.cursor()
 
+    sql = str.format("show tables  like 'daily_{0}'", ts_code)
+    cursor.execute(sql)
+    table_exists = cursor.fetchall().__len__() > 0
+
+    if not table_exists:
+        return 0
+
     sql = """
     SELECT ma_10.trade_date,ma_10.ma ma_10,ma_20.ma ma_20,ma_30.ma ma_30,ma_60.ma ma_60,ma_100.ma ma_100,ma_250.ma ma_250,daily.close
     FROM ma_10 
