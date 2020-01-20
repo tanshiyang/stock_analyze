@@ -9,6 +9,7 @@ import mytusharepro
 import tradeday
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 import my_email.sendmail as sm
+import util.df_appender
 import util.df_util as df_util
 from concurrent.futures import ThreadPoolExecutor
 
@@ -83,7 +84,8 @@ def send_result_mail():
     for m in [50, 120, 250]:
         sql = sql_template.format(m, today)
         df = pd.read_sql(sql, conn)
-        df = df_util.append_fina_indicator(df)
+        df = util.df_appender.append_fina_indicator(df)
+        df = util.df_appender.append_ma_bull_arrange(df)
         if df.__len__() == 0:
             continue
 
@@ -100,6 +102,7 @@ def send_result_mail():
         html += "<td>资产负债比率</td>"
         html += "<td>流动比率</td>"
         html += "<td>速动比率</td>"
+        html += "<td>多头排列数</td>"
         html += "</tr>"
         for index, row in df.iterrows():
             html += "<tr>"
@@ -113,6 +116,7 @@ def send_result_mail():
             html += "<td>{0}</td>".format(row["资产负债比率"])
             html += "<td>{0}</td>".format(row["流动比率"])
             html += "<td>{0}</td>".format(row["速动比率"])
+            html += "<td>{0}</td>".format(row["多头排列数"])
             html += "</tr>"
         html += "</table>"
 
@@ -124,7 +128,8 @@ group by ts_code order by sum(extrs) desc;
     for m in [50, 120, 250]:
         sql = sql_template.format(m, relative_day)
         df = pd.read_sql(sql, conn)
-        df = df_util.append_fina_indicator(df)
+        df = util.df_appender.append_fina_indicator(df)
+        df = util.df_appender.append_ma_bull_arrange(df)
         if df.__len__() == 0:
             continue
 
@@ -142,6 +147,7 @@ group by ts_code order by sum(extrs) desc;
         html += "<td>资产负债比率</td>"
         html += "<td>流动比率</td>"
         html += "<td>速动比率</td>"
+        html += "<td>多头排列数</td>"
         html += "</tr>"
         for index, row in df.iterrows():
             html += "<tr>"
@@ -156,6 +162,7 @@ group by ts_code order by sum(extrs) desc;
             html += "<td>{0}</td>".format(row["资产负债比率"])
             html += "<td>{0}</td>".format(row["流动比率"])
             html += "<td>{0}</td>".format(row["速动比率"])
+            html += "<td>{0}</td>".format(row["多头排列数"])
             html += "</tr>"
         html += "</table>"
     conn.close()
@@ -184,7 +191,8 @@ def get_day_recommand(trade_date):
         """
     sql = str.format(sql_template, trade_date)
     df = pd.read_sql(sql, conn)
-    df = df_util.append_fina_indicator(df)
+    df = util.df_appender.append_fina_indicator(df)
+    df = util.df_appender.append_ma_bull_arrange(df)
     if df.__len__() > 0:
         html += "今日优选："
         html += "<table border='1'>"
@@ -199,6 +207,7 @@ def get_day_recommand(trade_date):
         html += "<td>资产负债比率</td>"
         html += "<td>流动比率</td>"
         html += "<td>速动比率</td>"
+        html += "<td>多头排列数</td>"
         html += "</tr>"
         for index, row in df.iterrows():
             html += "<tr>"
@@ -212,6 +221,7 @@ def get_day_recommand(trade_date):
             html += "<td>{0}</td>".format(row["资产负债比率"])
             html += "<td>{0}</td>".format(row["流动比率"])
             html += "<td>{0}</td>".format(row["速动比率"])
+            html += "<td>{0}</td>".format(row["多头排列数"])
             html += "</tr>"
         html += "</table>"
     conn.close()

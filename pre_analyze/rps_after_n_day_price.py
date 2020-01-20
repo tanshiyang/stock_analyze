@@ -1,5 +1,8 @@
 import os
 import sys
+
+import util.df_appender
+
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
@@ -35,7 +38,8 @@ def analyze():
     """
     df = pd.read_sql(sql, conn)
     df = append_price(df, 0)
-    df = df_util.append_fina_indicator(df)
+    df = util.df_appender.append_fina_indicator(df)
+    df = util.df_appender.append_ma_bull_arrange(df)
     df = track_n_percent(df, 10)
     # df = track_n_percent(df, -5)
     df = track_n_percent(df, 30)
