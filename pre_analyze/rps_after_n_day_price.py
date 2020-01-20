@@ -27,9 +27,13 @@ def analyze():
     sql = """
     SELECT a.*,b.pe from (
     select min(trade_date) trade_date,min(ts_code) ts_code from (
-    SELECT a.trade_date,ts_code,count(0) from rps_tops a 
+    SELECT a.trade_date,ts_code,count(0) FROM 
+	 (SELECT * FROM standardization_extrs_50 WHERE extrs>870
+	  UNION SELECT * FROM standardization_extrs_120 WHERE extrs>870
+	  UNION SELECT * FROM standardization_extrs_250 WHERE extrs>870
+	 ) a 
     group by trade_date,ts_code
-    HAVING count(0)>1 AND avg(extrs) >870  AND trade_date > '20150101'
+    HAVING trade_date > '20150101'
     )a
     group BY a.ts_code, LEFT(a.trade_date,6)
     ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
