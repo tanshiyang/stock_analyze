@@ -35,3 +35,10 @@ def append_fina_indicator(df):
             df.loc[index, '速动比率'] = price_row[5]
     conn.close()
     return df
+
+
+def try_fetch_one(self):
+    if self.fetchone() is None:
+        return None
+    return self.fetchone[0]
+

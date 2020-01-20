@@ -74,6 +74,9 @@ def send_result_mail():
     cursor = conn.cursor()
     today = time.strftime('%Y%m%d')
     html = ""
+
+    html += get_day_recommand(today)
+
     sql_template = """
     SELECT * from rps_tops where top_type='m{0}' and trade_date='{1}' order by extrs desc 
     """
@@ -158,8 +161,6 @@ group by ts_code order by sum(extrs) desc;
     conn.close()
     cursor.close()
 
-    html += get_day_recommand(today)
-
     if html.__len__() > 0:
         sm.send_rps_mail(html)
 
@@ -223,5 +224,5 @@ if __name__ == '__main__':
     # batch_query_top_n(50, '20000101', 20)
     # batch_query_top_n(120, '20000101', 20)
     # batch_query_top_n(250, '20000101', 20)
-    print(get_day_recommand(today))
+    print(get_day_recommand('20200114'))
     # send_result_mail()
