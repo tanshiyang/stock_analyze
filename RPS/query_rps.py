@@ -79,7 +79,7 @@ def send_result_mail():
     html += get_day_recommand(today)
 
     sql_template = """
-    SELECT * from rps_tops where top_type='m{0}' and trade_date='{1}' order by extrs desc 
+    SELECT * from rps_tops where top_type='m{0}' and trade_date='{1}' order by extrs desc LIMIT 10
     """
     for m in [50, 120, 250]:
         sql = sql_template.format(m, today)
@@ -123,7 +123,7 @@ def send_result_mail():
     relative_day = mydate.string_to_relative_days(today, -5)
     sql_template = """
     SELECT ts_code,sum(extrs) 总分,count(0) 出现次数, MAX(trade_date) AS trade_date from rps_tops where top_type='m{0}' and trade_date>'{1}'
-group by ts_code order by sum(extrs) desc;
+group by ts_code order by sum(extrs) desc LIMIT 10;
     """
     for m in [50, 120, 250]:
         sql = sql_template.format(m, relative_day)
