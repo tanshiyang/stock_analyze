@@ -15,6 +15,7 @@ def append_fina_indicator(df):
         ts_code = row["ts_code"]
         trade_date = row["trade_date"]
 
+        print("appending fina indicator:{0},{1}".format(ts_code,trade_date))
         sql = str.format("SELECT end_date 财报周期, netprofit_yoy 净利润增长率, roe_waa AS 加权净资产收益率,debt_to_assets AS 资产负债比率, current_ratio AS "
                          "流动比率, quick_ratio AS 速动比率  FROM fina_indicator WHERE ts_code='{0}' AND end_date < "
                          "'{1}' ORDER BY end_date desc LIMIT 1; ", ts_code, trade_date)

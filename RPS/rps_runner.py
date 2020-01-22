@@ -16,7 +16,7 @@ if __name__ == '__main__':
     daily.collect_daily_qfq()
 
     for m in [10, 20, 30, 60, 100, 250]:
-        ma.calc_ma()
+        ma.calc_ma(m)
         
     for m in [50, 120, 250]:
         cr.calc_uprate(m)

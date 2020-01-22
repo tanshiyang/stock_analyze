@@ -33,7 +33,7 @@ def analyze():
 	  UNION SELECT * FROM standardization_extrs_250 WHERE extrs>870
 	 ) a 
     group by trade_date,ts_code
-    HAVING trade_date > '20150101'
+    HAVING trade_date > '20150101' and COUNT(0)>1
     )a
     group BY a.ts_code, LEFT(a.trade_date,6)
     ) a join daily_basic b on a.trade_date=b.trade_date and a.ts_code=b.ts_code
@@ -41,14 +41,30 @@ def analyze():
     order by trade_date;
     """
     df = pd.read_sql(sql, conn)
+
+    # 30天内同一代码出现的次数
+    df["ts_code_int"] = df.ts_code.str[:6]
+    df.ts_code_int.to_numpy(int)
+    df["rolling_appear_count"] = df.ts_code_int.rolling(window=30).apply(rolling_appear_count, raw=False)
+    df = df.query("rolling_appear_count == 0")
+    df.drop(['ts_code_int', 'rolling_appear_count'], axis=1, inplace=True)
+    file_name = "d:/temp/df{0}-01.csv".format(today)
+    df.to_csv(file_name, encoding="utf_8_sig")
+
     df = append_price(df, 0)
     df = util.df_appender.append_fina_indicator(df)
+    file_name = "d:/temp/df{0}-02.csv".format(today)
+    df.to_csv(file_name, encoding="utf_8_sig")
+
     df = util.df_appender.append_ma_bull_arrange(df)
+    file_name = "d:/temp/df{0}-03.csv".format(today)
+    df.to_csv(file_name, encoding="utf_8_sig")
+
     df = track_n_percent(df, 10)
     # df = track_n_percent(df, -5)
-    df = track_n_percent(df, 30)
+    # df = track_n_percent(df, 30)
     # df = track_n_percent(df, -10)
-    file_name = "d:/temp/df{0}.csv".format(today)
+    file_name = "d:/temp/df{0}-result.csv".format(today)
     df.to_csv(file_name, encoding="utf_8_sig")
     conn.close()
     cursor.close()
@@ -63,6 +79,7 @@ def append_price(df, relative_days):
         ts_code = row["ts_code"]
         trade_date = row["trade_date"]
         trade_date = mydate.string_to_relative_days(trade_date, relative_days)
+        print("append_price,{0},{1}".format(ts_code,trade_date))
         sql = str.format("show tables  like 'daily_{0}'", ts_code)
         cursor.execute(sql)
         table_exists = cursor.fetchall().__len__() > 0
@@ -78,6 +95,13 @@ def append_price(df, relative_days):
     conn.close()
     cursor.close()
     return df
+
+
+def rolling_appear_count(s):
+    index = s.index[-1]
+    value = s.values[-1]
+    s.pop(index)
+    return len(s[s == value])
 
 
 def track_n_percent(df, n_percent):
@@ -137,7 +161,3 @@ def track_n_percent(df, n_percent):
 
 if __name__ == '__main__':
     analyze()
-
-
-
-
