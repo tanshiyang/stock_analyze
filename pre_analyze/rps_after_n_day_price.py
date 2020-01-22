@@ -70,6 +70,13 @@ def analyze():
     cursor.close()
 
 
+def analyze_csv(file_name):
+    df = pd.read_csv(file_name)
+    df = append_price(df, 120)
+    today = time.strftime('%Y%m%d%H%M')
+    file_name = "d:/temp/df{0}.csv".format(today)
+    df.to_csv(file_name, encoding="utf_8_sig")
+
 def append_price(df, relative_days):
     conn = mydb.conn()
     cursor = conn.cursor()
@@ -77,7 +84,7 @@ def append_price(df, relative_days):
     df_util.append_column(df, column_name)
     for index, row in df.iterrows():
         ts_code = row["ts_code"]
-        trade_date = row["trade_date"]
+        trade_date = str(row["trade_date"])
         trade_date = mydate.string_to_relative_days(trade_date, relative_days)
         print("append_price,{0},{1}".format(ts_code,trade_date))
         sql = str.format("show tables  like 'daily_{0}'", ts_code)
@@ -160,4 +167,5 @@ def track_n_percent(df, n_percent):
 
 
 if __name__ == '__main__':
-    analyze()
+    # analyze()
+    analyze_csv("D:\\Temp\\df20200122-result.csv")
