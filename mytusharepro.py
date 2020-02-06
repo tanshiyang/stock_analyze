@@ -71,7 +71,6 @@ class MyTusharePro:
         finally:
             time.sleep(0.3)
 
-
     def daily(self, ts_code=None, trade_date=None, start_date=None, end_date=None, times=1):
         if times > self.max_call_times:
             raise Exception("尝试调用Tushare超出最大次数!", 1)
@@ -85,12 +84,12 @@ class MyTusharePro:
         finally:
             time.sleep(0.3)
 
-
     def daily_basic(self, ts_code=None, trade_date=None, start_date=None, end_date=None, fields=None, times=1):
         if times > self.max_call_times:
             raise Exception("尝试调用Tushare超出最大次数!", 1)
         try:
-            return self.pro.daily_basic(ts_code=ts_code, trade_date=trade_date, start_date=start_date, end_date=end_date, fields=fields)
+            return self.pro.daily_basic(ts_code=ts_code, trade_date=trade_date, start_date=start_date,
+                                        end_date=end_date, fields=fields)
         except Exception as e:
             print(e)
             print(str.format("休息{0}s", self.sleep_time))
@@ -98,7 +97,6 @@ class MyTusharePro:
             return self.daily_basic(ts_code, trade_date, start_date, end_date, fields, times + 1)
         finally:
             time.sleep(0.3)
-
 
     def trade_cal(self, exchange=None, start_date=None, end_date=None, is_open=None, times=1):
         if times > self.max_call_times:
@@ -113,11 +111,11 @@ class MyTusharePro:
         finally:
             time.sleep(0.3)
 
-    def pro_bar(self, ts_code=None, start_date=None,end_date=None,adj=None, times=1):
+    def pro_bar(self, ts_code=None, start_date=None, end_date=None, adj=None, times=1):
         if times > self.max_call_times:
             raise Exception("尝试调用Tushare超出最大次数!", 1)
         try:
-            result = ts.pro_bar(ts_code=ts_code,start_date=start_date,end_date=end_date,adj=adj)
+            result = ts.pro_bar(ts_code=ts_code, start_date=start_date, end_date=end_date, adj=adj)
             if result is None:
                 raise Exception("结果为None.")
             return result
@@ -125,19 +123,33 @@ class MyTusharePro:
             print(e)
             print(str.format("休息{0}s", self.sleep_time))
             time.sleep(self.sleep_time)
-            return self.pro_bar(ts_code=ts_code,start_date=start_date,end_date=end_date,adj=adj, times=times + 1)
+            return self.pro_bar(ts_code=ts_code, start_date=start_date, end_date=end_date, adj=adj, times=times + 1)
         finally:
             time.sleep(0.3)
 
-    def stock_basic(self, is_hs=None, list_status=None,exchange=None, fields=None, times=1):
+    def stock_basic(self, is_hs=None, list_status=None, exchange=None, fields=None, times=1):
         if times > self.max_call_times:
             raise Exception("尝试调用Tushare超出最大次数!", 1)
         try:
-            return self.pro.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange,fields=fields)
+            return self.pro.stock_basic(is_hs=is_hs, list_status=list_status, exchange=exchange, fields=fields)
         except Exception as e:
             print(e)
             print(str.format("休息{0}s", self.sleep_time))
             time.sleep(self.sleep_time)
-            return self.stock_basic(is_hs=is_hs,list_status=list_status,exchange=exchange, fields=fields,times=times + 1)
+            return self.stock_basic(is_hs=is_hs, list_status=list_status, exchange=exchange, fields=fields,
+                                    times=times + 1)
+        finally:
+            time.sleep(0.3)
+
+    def news(self, start_date=None, end_date=None, src=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.news(start_date=start_date, end_date=end_date, src=src)
+        except Exception as e:
+            print(e)
+            print(str.format("休息{0}s", 60))
+            time.sleep(60)
+            return self.news(start_date=start_date, end_date=end_date, src=src, times=times + 1)
         finally:
             time.sleep(0.3)

@@ -9,7 +9,7 @@ def send_rps_mail(mail_content):
     my_sender = '43309251@qq.com'  # 发件人邮箱账号
     my_pass = 'jpbquivmommlbjci'  # 发件人邮箱密码
     my_user = ['43309251@qq.com','19136678@qq.com']  # 收件人邮箱账号
-    # my_user = ['43309251@qq.com']
+    my_user = ['43309251@qq.com']
 
     ret = True
     try:
