@@ -12,12 +12,13 @@ import mydb
 import mytusharepro
 from sqlalchemy import Table, Column, String, Float, MetaData
 from concurrent.futures import ThreadPoolExecutor
+import my_email.sendmail as sendmail
 
 pro = mytusharepro.MyTusharePro()
 
 
 def monitor(file_name):
-    today = time.strftime('%Y%m%d%H%M')
+    today = time.strftime('%Y%m%d')
     now_time = datetime.datetime.now()
     now_hour = time.strftime('%H')
     last_time = (now_time + datetime.timedelta(days=-1)).strftime("%Y-%m-%d 15:00:00")
@@ -31,6 +32,7 @@ def monitor(file_name):
         start_date = last_time
         end_date = time.strftime('%Y-%m-%d %H:%M:%S')
         for src in news_src:
+            print("news: {0}，{1}".format(start_date, end_date))
             news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
             for news_index, news_row in news_df.iterrows():
                 date_time = news_row["datetime"]
@@ -45,6 +47,11 @@ def monitor(file_name):
                         dict["content"] = content
                         dict["src"] = src
                         print(dict)
+                        mail_content = "时间：{0}<br/>".format(date_time)
+                        mail_content += "关键字：{0}<br/>".format(keywords)
+                        mail_content += "内容：{0}<br/>".format(content)
+                        mail_content += "来源：{0}<br/>".format(src)
+                        sendmail.send_news_mail(mail_content)
                         result_df = result_df.append(dict, ignore_index=True)
                         output_file_name = "d:/temp/focus_news_{0}.csv".format(today)
                         result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
