@@ -51,7 +51,7 @@ def monitor(file_name):
                     dict["src"] = src
                     print(dict)
                     mail_content = "时间：{0}<br/>".format(date_time)
-                    mail_content += "关键字：{0}<br/>".format(keywords)
+                    mail_content += "关键字：{0}<br/>".format(matched_keywords)
                     mail_content += "内容：{0}<br/>".format(content)
                     mail_content += "来源：{0}<br/>".format(src)
                     sendmail.send_news_mail(mail_content)
