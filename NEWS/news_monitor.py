@@ -15,16 +15,11 @@ from concurrent.futures import ThreadPoolExecutor
 import my_email.sendmail as sendmail
 
 pro = mytusharepro.MyTusharePro()
+today = time.strftime('%Y%m%d')
 
 
 def monitor(file_name):
-    today = time.strftime('%Y%m%d')
-    now_time = datetime.datetime.now()
-    now_hour = time.strftime('%H')
-    last_time = (now_time + datetime.timedelta(days=-1)).strftime("%Y-%m-%d 15:00:00")
-    if now_hour >= '15':
-        last_time = now_time.strftime("%Y-%m-%d 15:00:00")
-
+    last_time = get_last_news_time()
     news_src = ('sina', 'wallstreetcn', '10jqka', 'eastmoney', 'yuncaijing')
 
     while True:
@@ -42,7 +37,7 @@ def monitor(file_name):
                     keywords = keywords_row["keywords"]
                     if check_contains_keywords(content, keywords):
                         matched_keywords.append(keywords)
-                if len(matched_keywords)>0:
+                if len(matched_keywords) > 0:
                     result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
                     dict = {}
                     dict["date_time"] = date_time
@@ -72,6 +67,22 @@ def check_contains_keywords(content, keywords):
     return True
 
 
+def get_last_news_time():
+    now_time = datetime.datetime.now()
+    now_hour = time.strftime('%H')
+    last_time = (now_time + datetime.timedelta(days=-1)).strftime("%Y-%m-%d 15:00:00")
+    if now_hour >= '15':
+        last_time = now_time.strftime("%Y-%m-%d 15:00:00")
+
+    output_file_name = "d:/temp/focus_news_{0}.csv".format(today)
+    if os.path.exists(output_file_name):
+        columns = ["date_time", "keywords", "content", "src"]
+        df = pd.read_csv(output_file_name, encoding="utf_8_sig", names=columns)
+        if len(df) > 0:
+            return str(pd.to_datetime(df.date_time).max())
+    return last_time
+
+
 if __name__ == '__main__':
     monitor("D:\\Temp\\news_focus_keywords.csv")
-    print('')
+    print()
