@@ -6,17 +6,17 @@ rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
 import re, time, datetime
-import mydate
 import pandas as pd
-import mydb
 import mytusharepro
-from sqlalchemy import Table, Column, String, Float, MetaData
-from concurrent.futures import ThreadPoolExecutor
 import my_email.sendmail as sendmail
 
 pro = mytusharepro.MyTusharePro()
 today = time.strftime('%Y%m%d')
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
 
+data_path = os.path.join(curPath, 'data')
 
 def monitor(file_name):
     last_time = get_last_news_time()
@@ -51,7 +51,7 @@ def monitor(file_name):
                     mail_content += "来源：{0}<br/>".format(src)
                     sendmail.send_news_mail(mail_content)
                     result_df = result_df.append(dict, ignore_index=True)
-                    output_file_name = "d:/temp/focus_news_{0}.csv".format(today)
+                    output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
                     try:
                         result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
                     except Exception as e:
@@ -74,7 +74,7 @@ def get_last_news_time():
     if now_hour >= '15':
         last_time = now_time.strftime("%Y-%m-%d 15:00:00")
 
-    output_file_name = "d:/temp/focus_news_{0}.csv".format(today)
+    output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
     if os.path.exists(output_file_name):
         columns = ["date_time", "keywords", "content", "src"]
         df = pd.read_csv(output_file_name, encoding="utf_8_sig", names=columns)
@@ -84,5 +84,5 @@ def get_last_news_time():
 
 
 if __name__ == '__main__':
-    monitor("D:\\Temp\\news_focus_keywords.csv")
+    monitor(os.path.join(data_path, "news_focus_keywords.csv"))
     print()
