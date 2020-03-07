@@ -56,7 +56,8 @@ def monitor(file_name):
                         result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
                     except Exception as e:
                         print('str(e):\t', str(e))
-        last_time = end_date
+                    last_time = end_date
+
         time.sleep(30)
 
 
