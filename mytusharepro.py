@@ -143,7 +143,7 @@ class MyTusharePro:
 
     def news(self, start_date=None, end_date=None, src=None, times=1):
         if times > self.max_call_times:
-            raise Exception("尝试调用Tushare超出最大次数!", 1)
+            print("尝试调用Tushare超出最大次数!")
         try:
             return self.pro.news(start_date=start_date, end_date=end_date, src=src)
         except Exception as e:
