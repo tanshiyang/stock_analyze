@@ -18,13 +18,16 @@ sys.path.append(rootPath)
 
 data_path = os.path.join(curPath, 'data')
 
+
 def monitor(file_name):
-    last_time = get_last_news_time()
+    last_news_time = get_last_news_time()
+    last_save_time = time.perf_counter()
     news_src = ('sina', 'wallstreetcn', '10jqka', 'eastmoney', 'yuncaijing')
+    result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
 
     while True:
         focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
-        start_date = last_time
+        start_date = last_news_time
         end_date = time.strftime('%Y-%m-%d %H:%M:%S')
         for src in news_src:
             print("news: {0}，{1},{2}".format(start_date, end_date, src))
@@ -38,27 +41,37 @@ def monitor(file_name):
                     if check_contains_keywords(content, keywords):
                         matched_keywords.append(keywords)
                 if len(matched_keywords) > 0:
-                    result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
+                    last_news_time = end_date
                     dict = {}
                     dict["date_time"] = date_time
                     dict["keywords"] = matched_keywords
                     dict["content"] = content
                     dict["src"] = src
                     print(dict)
-                    mail_content = "时间：{0}<br/>".format(date_time)
-                    mail_content += "关键字：{0}<br/>".format(matched_keywords)
-                    mail_content += "内容：{0}<br/>".format(content)
-                    mail_content += "来源：{0}<br/>".format(src)
-                    sendmail.send_news_mail(mail_content)
                     result_df = result_df.append(dict, ignore_index=True)
-                    output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
-                    try:
-                        result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
-                    except Exception as e:
-                        print('str(e):\t', str(e))
-                    last_time = end_date
+
+        output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
+        if len(result_df)>0 and time.perf_counter() - last_save_time > 60:
+            try:
+                save_and_send(result_df, output_file_name)
+                # result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
+                result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
+            except Exception as e:
+                print('str(e):\t', str(e))
 
         time.sleep(30)
+
+
+def save_and_send(result_df=pd.DataFrame, output_file_name=str):
+    mail_content = ""
+    for news_index, news_row in result_df.iterrows():
+        mail_content += "时间：{0}<br/>".format(news_row["date_time"])
+        mail_content += "关键字：{0}<br/>".format(news_row["keywords"])
+        mail_content += "内容：{0}<br/>".format(news_row["content"])
+        mail_content += "来源：{0}<br/>".format(news_row["src"])
+        mail_content += "<p/>"
+    sendmail.send_news_mail(mail_content)
+    result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
 
 
 def check_contains_keywords(content, keywords):
