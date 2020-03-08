@@ -22,14 +22,16 @@ data_path = os.path.join(curPath, 'data')
 def monitor(file_name):
     last_news_time = get_last_news_time()
     last_save_time = time.perf_counter()
-    news_src = ('sina', 'wallstreetcn', '10jqka', 'eastmoney', 'yuncaijing')
+    news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
+                '10jqka': last_news_time, 'eastmoney': last_news_time,
+                'yuncaijing': last_news_time}
     result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
 
     while True:
         focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
-        start_date = last_news_time
-        end_date = time.strftime('%Y-%m-%d %H:%M:%S')
-        for src in news_src:
+        for src in news_src.keys():
+            start_date = news_src[src]
+            end_date = time.strftime('%Y-%m-%d %H:%M:%S')
             print("news: {0}，{1},{2}".format(start_date, end_date, src))
             news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
             for news_index, news_row in news_df.iterrows():
@@ -41,7 +43,10 @@ def monitor(file_name):
                     if check_contains_keywords(content, keywords):
                         matched_keywords.append(keywords)
                 if len(matched_keywords) > 0:
-                    last_news_time = end_date
+                    next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
+                                    datetime.timedelta(seconds=1)
+                    if news_src[src] < next_time.strftime('%Y-%m-%d %H:%M:%S'):
+                        news_src[src] = next_time.strftime('%Y-%m-%d %H:%M:%S')
                     dict = {}
                     dict["date_time"] = date_time
                     dict["keywords"] = matched_keywords
@@ -51,7 +56,7 @@ def monitor(file_name):
                     result_df = result_df.append(dict, ignore_index=True)
 
         output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
-        if len(result_df)>0 and time.perf_counter() - last_save_time > 60:
+        if len(result_df) > 0 and time.perf_counter() - last_save_time > 60:
             try:
                 save_and_send(result_df, output_file_name)
                 # result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
