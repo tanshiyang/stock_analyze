@@ -50,7 +50,7 @@ def monitor(file_name):
                     dict = {}
                     dict["date_time"] = date_time
                     dict["keywords"] = matched_keywords
-                    dict["content"] = content
+                    dict["content"] = mark_content(content,matched_keywords)
                     dict["src"] = src
                     print(dict)
                     result_df = result_df.append(dict, ignore_index=True)
@@ -100,6 +100,13 @@ def get_last_news_time():
         if len(df) > 0:
             return str(pd.to_datetime(df.date_time).max())
     return last_time
+
+
+def mark_content(content=str, keywords_list=[]):
+    for keywords in keywords_list:
+        for keyword in keywords.split(","):
+            content = content.replace(keyword, "<b>"+keyword+"</b>")
+    return content
 
 
 if __name__ == '__main__':
