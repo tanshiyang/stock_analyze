@@ -11,7 +11,6 @@ import mytusharepro
 import my_email.sendmail as sendmail
 
 pro = mytusharepro.MyTusharePro()
-today = time.strftime('%Y%m%d')
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
@@ -55,6 +54,7 @@ def monitor(file_name):
                     print(dict)
                     result_df = result_df.append(dict, ignore_index=True)
 
+        today = time.strftime('%Y%m%d')
         output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
         if len(result_df) > 0 and time.perf_counter() - last_save_time > 60:
             try:
@@ -93,6 +93,7 @@ def get_last_news_time():
     if now_hour >= '15':
         last_time = now_time.strftime("%Y-%m-%d 15:00:00")
 
+    today = time.strftime('%Y%m%d')
     output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
     if os.path.exists(output_file_name):
         columns = ["date_time", "keywords", "content", "src"]
