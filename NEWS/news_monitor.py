@@ -5,6 +5,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
+import difflib
 import re, time, datetime
 import pandas as pd
 import mytusharepro
@@ -33,9 +34,16 @@ def monitor(file_name):
             end_date = time.strftime('%Y-%m-%d %H:%M:%S')
             print("news: {0}，{1},{2}".format(start_date, end_date, src))
             news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
+            temp_last_news = ""
             for news_index, news_row in news_df.iterrows():
                 date_time = news_row["datetime"]
                 content = news_row["content"]
+                # 判断重复性
+                if difflib.SequenceMatcher(None, temp_last_news, content).quick_ratio() >= 0.8:
+                    print("skip:{0}".format(content))
+                    continue
+
+                temp_last_news = content
                 matched_keywords = []
                 for keywords_index, keywords_row in focus_keyword_df.iterrows():
                     keywords = keywords_row["keywords"]
@@ -43,13 +51,13 @@ def monitor(file_name):
                         matched_keywords.append(keywords)
                 if len(matched_keywords) > 0:
                     next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
-                                    datetime.timedelta(seconds=1)
+                                datetime.timedelta(seconds=1)
                     if news_src[src] < next_time.strftime('%Y-%m-%d %H:%M:%S'):
                         news_src[src] = next_time.strftime('%Y-%m-%d %H:%M:%S')
                     dict = {}
                     dict["date_time"] = date_time
                     dict["keywords"] = matched_keywords
-                    dict["content"] = mark_content(content,matched_keywords)
+                    dict["content"] = mark_content(content, matched_keywords)
                     dict["src"] = src
                     print(dict)
                     result_df = result_df.append(dict, ignore_index=True)
@@ -106,7 +114,7 @@ def get_last_news_time():
 def mark_content(content=str, keywords_list=[]):
     for keywords in keywords_list:
         for keyword in keywords.split(","):
-            content = content.replace(keyword, "<b>"+keyword+"</b>")
+            content = content.replace(keyword, "<b>" + keyword + "</b>")
     return content
 
 
