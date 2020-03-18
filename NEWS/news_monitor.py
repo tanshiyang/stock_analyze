@@ -10,6 +10,7 @@ import re, time, datetime
 import pandas as pd
 import mytusharepro
 import my_email.sendmail as sendmail
+from collections import deque
 
 pro = mytusharepro.MyTusharePro()
 curPath = os.path.abspath(os.path.dirname(__file__))
@@ -29,21 +30,20 @@ def monitor(file_name):
 
     while True:
         focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
+        recent_news_deque = deque(maxlen=20)
         for src in news_src.keys():
             start_date = news_src[src]
             end_date = time.strftime('%Y-%m-%d %H:%M:%S')
             print("news: {0}，{1},{2}".format(start_date, end_date, src))
             news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
-            temp_last_news = ""
             for news_index, news_row in news_df.iterrows():
                 date_time = news_row["datetime"]
                 content = news_row["content"]
                 # 判断重复性
-                if difflib.SequenceMatcher(None, temp_last_news, content).quick_ratio() >= 0.8:
-                    print("skip:{0}".format(content))
+                if check_duplicate(recent_news_deque, content):
                     continue
 
-                temp_last_news = content
+                recent_news_deque.append(content)
                 matched_keywords = []
                 for keywords_index, keywords_row in focus_keyword_df.iterrows():
                     keywords = keywords_row["keywords"]
@@ -116,6 +116,14 @@ def mark_content(content=str, keywords_list=[]):
         for keyword in keywords.split(","):
             content = content.replace(keyword, "<b>" + keyword + "</b>")
     return content
+
+
+def check_duplicate(recent_news_deque: deque, content: str):
+    for recent_news in recent_news_deque:
+        if difflib.SequenceMatcher(None, recent_news_deque, content).quick_ratio() >= 0.8:
+            print("skip:{0}".format(content))
+            return True
+    return False
 
 
 if __name__ == '__main__':
