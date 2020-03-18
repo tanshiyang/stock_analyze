@@ -21,6 +21,7 @@ data_path = os.path.join(curPath, 'data')
 
 
 def monitor(file_name):
+    recent_news_deque = deque(maxlen=20)
     last_news_time = get_last_news_time()
     last_save_time = time.perf_counter()
     news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
@@ -30,7 +31,6 @@ def monitor(file_name):
 
     while True:
         focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
-        recent_news_deque = deque(maxlen=20)
         for src in news_src.keys():
             start_date = news_src[src]
             end_date = time.strftime('%Y-%m-%d %H:%M:%S')
