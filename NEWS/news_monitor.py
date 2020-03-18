@@ -39,17 +39,18 @@ def monitor(file_name):
             for news_index, news_row in news_df.iterrows():
                 date_time = news_row["datetime"]
                 content = news_row["content"]
-                # 判断重复性
-                if check_duplicate(recent_news_deque, content):
-                    continue
 
-                recent_news_deque.append(content)
                 matched_keywords = []
                 for keywords_index, keywords_row in focus_keyword_df.iterrows():
                     keywords = keywords_row["keywords"]
                     if check_contains_keywords(content, keywords):
                         matched_keywords.append(keywords)
                 if len(matched_keywords) > 0:
+                    # 判断重复性
+                    if check_duplicate(recent_news_deque, content):
+                        continue
+                    recent_news_deque.append(content)
+
                     next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
                                 datetime.timedelta(seconds=1)
                     if news_src[src] < next_time.strftime('%Y-%m-%d %H:%M:%S'):
@@ -120,7 +121,7 @@ def mark_content(content=str, keywords_list=[]):
 
 def check_duplicate(recent_news_deque: deque, content: str):
     for recent_news in recent_news_deque:
-        if difflib.SequenceMatcher(None, recent_news_deque, content).quick_ratio() >= 0.8:
+        if difflib.SequenceMatcher(None, recent_news, content).quick_ratio() >= 0.8:
             print("skip:{0}".format(content))
             return True
     return False
