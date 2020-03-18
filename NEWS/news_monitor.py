@@ -46,15 +46,14 @@ def monitor(file_name):
                     if check_contains_keywords(content, keywords):
                         matched_keywords.append(keywords)
                 if len(matched_keywords) > 0:
-                    # 判断重复性
-                    if check_duplicate(recent_news_deque, content):
-                        continue
-                    recent_news_deque.append(content)
-
                     next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
                                 datetime.timedelta(seconds=1)
                     if news_src[src] < next_time.strftime('%Y-%m-%d %H:%M:%S'):
                         news_src[src] = next_time.strftime('%Y-%m-%d %H:%M:%S')
+                    # 判断重复性
+                    if check_duplicate(recent_news_deque, content):
+                        continue
+                    recent_news_deque.append(content)
                     dict = {}
                     dict["date_time"] = date_time
                     dict["keywords"] = matched_keywords
