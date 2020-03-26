@@ -107,9 +107,9 @@ class NewsMonitor:
                 try:
                     save_and_send(self.result_df, output_file_name)
                     result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
+                    result_df.drop(index=result_df.index, inplace=True)
                 except Exception as e:
                     print('str(e):\t', str(e))
-
             time.sleep(30)
 
     def check_news(self, src=str, news_df=pd.DataFrame):
