@@ -13,7 +13,6 @@ import my_email.sendmail as sendmail
 from collections import deque
 import NEWS.jrj_news as jrj
 
-
 pro = mytusharepro.MyTusharePro()
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
@@ -46,7 +45,7 @@ def save_and_send(result_df=pd.DataFrame, output_file_name=str):
         mail_content += "内容：{0}<br/>".format(news_row["content"])
         mail_content += "来源：{0}<br/>".format(news_row["src"])
         mail_content += "<p/>"
-    # sendmail.send_news_mail(mail_content)
+    sendmail.send_news_mail(mail_content)
     result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
 
 
@@ -80,28 +79,33 @@ class NewsMonitor:
         last_news_time = get_last_news_time()
         self.last_save_time = time.perf_counter()
         self.news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
-                    '10jqka': last_news_time, 'eastmoney': last_news_time,
-                    'yuncaijing': last_news_time}
+                         '10jqka': last_news_time, 'eastmoney': last_news_time,
+                         'yuncaijing': last_news_time, 'jrj': last_news_time}
         self.result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
-        self.jrj_news = jrj.JRJNews()
         self.focus_keyword_df = pd.DataFrame()
 
-    def monitor(self,file_name):
+    def monitor(self, file_name):
         while True:
             self.focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
             for src in self.news_src.keys():
                 start_date = self.news_src[src]
                 end_date = time.strftime('%Y-%m-%d %H:%M:%S')
                 print("news: {0}，{1},{2}".format(start_date, end_date, src))
-                news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
-                self.check_news(src,news_df)
+                if src == "jrj":
+                    news_df = jrj.JRJNews().get_news(start_date, end_date)
+                else:
+                    news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
+                self.check_news(src, news_df)
 
             today = time.strftime('%Y%m%d')
+            now_hour = time.strftime('%H')
+            time_span = 60
+            if '15' < now_hour < '24':
+                time_span = 60 * 60 * 2
             output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
-            if len(self.result_df) > 0 and time.perf_counter() - self.last_save_time > 60:
+            if len(self.result_df) > 0 and time.perf_counter() - self.last_save_time > time_span:
                 try:
                     save_and_send(self.result_df, output_file_name)
-                    # result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
                     result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
                 except Exception as e:
                     print('str(e):\t', str(e))

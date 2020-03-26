@@ -42,7 +42,7 @@ class JRJNews:
                     continue
                 news = {}
                 news["content"] = news["title"] = child.select("a")[0].getText()
-                news["datetime"] = child.select("span")[0].getText()
+                news["datetime"] = child.select("span")[0].getText().replace("  "," ") + ":00"
                 news["channels"] = ""
                 # print(news)
                 if news["title"] == "":
