@@ -11,7 +11,8 @@ import pandas as pd
 import mytusharepro
 import my_email.sendmail as sendmail
 from collections import deque
-import NEWS.jrj_news as jrj
+import NEWS.site_news_jrj as jrj
+import NEWS.site_news_stockstar as stockstar
 
 pro = mytusharepro.MyTusharePro()
 curPath = os.path.abspath(os.path.dirname(__file__))
@@ -80,7 +81,8 @@ class NewsMonitor:
         self.last_save_time = time.perf_counter()
         self.news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
                          '10jqka': last_news_time, 'eastmoney': last_news_time,
-                         'yuncaijing': last_news_time, 'jrj': last_news_time}
+                         'yuncaijing': last_news_time, 'jrj': last_news_time,
+                         'stockstar': last_news_time}
         self.result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
         self.focus_keyword_df = pd.DataFrame()
 
@@ -92,7 +94,9 @@ class NewsMonitor:
                 end_date = time.strftime('%Y-%m-%d %H:%M:%S')
                 print("news: {0}，{1},{2}".format(start_date, end_date, src))
                 if src == "jrj":
-                    news_df = jrj.JRJNews().get_news(start_date, end_date)
+                    news_df = jrj.News().get_news(start_date, end_date)
+                elif src == "stockstar":
+                    news_df = stockstar.News().get_news(start_date, end_date)
                 else:
                     news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
                 self.check_news(src, news_df)

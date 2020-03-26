@@ -6,7 +6,7 @@ import os
 import time
 
 
-class JRJNews:
+class News:
 
     def get_html(self, url):
         try:
@@ -85,6 +85,6 @@ class JRJNews:
 
 
 if __name__ == '__main__':
-    jrj = JRJNews()
+    jrj = News()
     jrj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
     time.sleep(5)
