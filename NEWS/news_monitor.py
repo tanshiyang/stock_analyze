@@ -13,6 +13,7 @@ import my_email.sendmail as sendmail
 from collections import deque
 import NEWS.site_news_jrj as jrj
 import NEWS.site_news_stockstar as stockstar
+import NEWS.site_news_cfi as cfi
 
 pro = mytusharepro.MyTusharePro()
 curPath = os.path.abspath(os.path.dirname(__file__))
@@ -82,7 +83,7 @@ class NewsMonitor:
         self.news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
                          '10jqka': last_news_time, 'eastmoney': last_news_time,
                          'yuncaijing': last_news_time, 'jrj': last_news_time,
-                         'stockstar': last_news_time}
+                         'stockstar': last_news_time, 'cfi': last_news_time}
         self.result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
         self.focus_keyword_df = pd.DataFrame()
 
@@ -97,6 +98,8 @@ class NewsMonitor:
                     news_df = jrj.News().get_news(start_date, end_date)
                 elif src == "stockstar":
                     news_df = stockstar.News().get_news(start_date, end_date)
+                elif src == "cfi":
+                    news_df = cfi.News().get_news(start_date, end_date)
                 else:
                     news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
                 self.check_news(src, news_df)
@@ -111,6 +114,7 @@ class NewsMonitor:
                 try:
                     save_and_send(self.result_df, output_file_name)
                     self.result_df.drop(index=self.result_df.index, inplace=True)
+                    self.last_save_time = time.perf_counter()
                 except Exception as e:
                     print('str(e):\t', str(e))
             time.sleep(30)

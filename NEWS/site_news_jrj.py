@@ -20,12 +20,17 @@ class News:
         result_df = pd.DataFrame()
         try:
             ssgs = self.get_ssgs_news(start_date, end_date)
+            if len(ssgs) == 0:
+                print("未获取到上市公司新闻。")
             gszx = self.get_gszx_news(start_date, end_date)
+            if len(ssgs) == 0:
+                print("未获取到股市资讯新闻。")
             result_df = pd.concat([result_df, ssgs, gszx])
         except Exception as e:
             print("获取金融界新闻出错。")
         return result_df
 
+    # 首页>股票频道>上市公司
     def get_ssgs_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
@@ -55,6 +60,7 @@ class News:
                     result_df = result_df.append(news, ignore_index=True)
         return result_df
 
+    # 首页>股票频道>股市资讯
     def get_gszx_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
