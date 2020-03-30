@@ -20,11 +20,7 @@ class News:
         result_df = pd.DataFrame()
         try:
             gsxw = self.get_gsxw_news(start_date, end_date)
-            if len(gsxw) == 0:
-                print("未获取到公司新闻。")
             gsgg = self.get_gsgg_news(start_date, end_date)
-            if len(gsgg) == 0:
-                print("未获取到公司公告。")
             result_df = pd.concat([result_df, gsxw, gsgg])
         except Exception as e:
             print("获取证券之星新闻出错。")
@@ -35,6 +31,7 @@ class News:
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        found_page_data = False
         for page in pages:
             url = time.strftime('http://stock.stockstar.com/list/10_{0}.shtml'.format(page))
             html = self.get_html(url)
@@ -52,8 +49,11 @@ class News:
                 # print(news)
                 if news["title"] == "":
                     continue
+                found_page_data = True
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
+        if not found_page_data:
+            print("未获取到公司新闻。")
         return result_df
 
     # 首页 - 股票 - 必读 - 公司公告
@@ -62,6 +62,7 @@ class News:
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        found_page_data = False
         for page in pages:
             url = time.strftime('https://stock.stockstar.com/daily/colist.aspx?id=76&type=1&pageid={0}'.format(page))
             html = self.get_html(url)
@@ -79,8 +80,11 @@ class News:
                 # print(news)
                 if news["title"] == "":
                     continue
+                found_page_data = True
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
+        if not found_page_data:
+            print("未获取到公司公告。")
         return result_df
 
 

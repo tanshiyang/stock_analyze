@@ -77,7 +77,7 @@ def get_last_news_time():
 
 class NewsMonitor:
     def __init__(self):
-        self.recent_news_deque = deque(maxlen=20)
+        self.recent_news_deque = deque(maxlen=50)
         last_news_time = get_last_news_time()
         self.last_save_time = time.perf_counter()
         self.news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,

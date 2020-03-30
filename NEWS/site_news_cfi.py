@@ -24,8 +24,6 @@ class News:
         result_df = pd.DataFrame()
         try:
             gskd = self.get_gskd_news(start_date, end_date)
-            if len(gskd) == 0:
-                print("未获取到公司快递。")
             result_df = pd.concat([result_df, gskd])
         except Exception as e:
             print("获取新闻出错。")
@@ -38,6 +36,7 @@ class News:
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
         url = 'http://stock.cfi.cn/index.aspx?catid=A0A4127A4346A4439&dycatid=&pagepara='
+        found_page_data = False
         for page in pages:
             html = self.get_html(url)
             if html == '':
@@ -60,8 +59,11 @@ class News:
                 # print(news)
                 if news["title"] == "":
                     continue
+                found_page_data = True
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
+        if not found_page_data:
+            print("未获取到公司快递。")
         return result_df
 
 

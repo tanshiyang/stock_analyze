@@ -20,11 +20,7 @@ class News:
         result_df = pd.DataFrame()
         try:
             ssgs = self.get_ssgs_news(start_date, end_date)
-            if len(ssgs) == 0:
-                print("未获取到上市公司新闻。")
             gszx = self.get_gszx_news(start_date, end_date)
-            if len(ssgs) == 0:
-                print("未获取到股市资讯新闻。")
             result_df = pd.concat([result_df, ssgs, gszx])
         except Exception as e:
             print("获取金融界新闻出错。")
@@ -36,6 +32,7 @@ class News:
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        found_page_data = False
         for page in pages:
             url = time.strftime('http://stock.jrj.com.cn/xwk/%Y%m/%Y%m%d_{0}.shtml'.format(page))
             if page != "":
@@ -56,8 +53,11 @@ class News:
                 # print(news)
                 if news["title"] == "":
                     continue
+                found_page_data = True
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
+        if not found_page_data:
+            print("未获取到上市公司资讯。")
         return result_df
 
     # 首页>股票频道>股市资讯
@@ -66,6 +66,7 @@ class News:
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        found_page_data = False
         for page in pages:
             if page != "":
                 page = "-" + page
@@ -85,8 +86,11 @@ class News:
                 # print(news)
                 if news["title"] == "":
                     continue
+                found_page_data = True
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
+        if not found_page_data:
+            print("未获取到股市资讯。")
         return result_df
 
 
