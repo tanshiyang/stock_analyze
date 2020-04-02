@@ -1,4 +1,5 @@
 import tushare as ts
+import pandas as pd
 import time
 
 
@@ -145,11 +146,14 @@ class MyTusharePro:
         if times > self.max_call_times:
             print("尝试调用Tushare超出最大次数!")
         try:
-            return self.pro.news(start_date=start_date, end_date=end_date, src=src)
+            df = self.pro.news(start_date=start_date, end_date=end_date, src=src)
+            if len(df) >= 1000:
+                end_date = df.datetime.min()
+                df2 = self.news(start_date=start_date, end_date=end_date, src=src)
+                df = pd.concat([df, df2])
         except Exception as e:
             print(e)
             print(str.format("休息{0}s", 60))
             time.sleep(60)
             return self.news(start_date=start_date, end_date=end_date, src=src, times=times + 1)
-        finally:
-            time.sleep(0.3)
+        return df

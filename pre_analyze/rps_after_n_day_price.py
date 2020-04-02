@@ -167,5 +167,5 @@ def track_n_percent(df, n_percent):
 
 
 if __name__ == '__main__':
-    # analyze()
-    analyze_csv("D:\\Temp\\df20200122-result.csv")
+    analyze()
+    # analyze_csv("D:\\Temp\\df20200122-result.csv")
