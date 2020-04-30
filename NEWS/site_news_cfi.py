@@ -34,7 +34,7 @@ class News:
         result_df = pd.DataFrame()
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
-        pages = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        pages = ["1"]
         url = 'http://stock.cfi.cn/index.aspx?catid=A0A4127A4346A4439&dycatid=&pagepara='
         found_page_data = False
         for page in pages:

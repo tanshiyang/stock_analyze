@@ -14,6 +14,8 @@ from collections import deque
 import NEWS.site_news_jrj as jrj
 import NEWS.site_news_stockstar as stockstar
 import NEWS.site_news_cfi as cfi
+from NEWS.model import News, Newskeyword
+from NEWS.news_db import save_news_to_db, get_news_keywords
 
 pro = mytusharepro.MyTusharePro()
 curPath = os.path.abspath(os.path.dirname(__file__))
@@ -49,12 +51,20 @@ def save_and_send(result_df=pd.DataFrame, output_file_name=str):
         mail_content += "<p/>"
     sendmail.send_news_mail(mail_content)
     result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
+    save_news_to_db(result_df)
 
 
 def check_contains_keywords(content, keywords):
     for keyword in keywords.split(","):
-        if not re.search(my_decode(keyword), content):  # keyword not in content:
+        try:
+            if not re.search(my_decode(keyword), content):  # keyword not in content:
+                return False
+        except Exception as e:
+            print('正则匹配错误')
+            print(content)
+            print(keyword)
             return False
+
     return True
 
 
@@ -68,7 +78,7 @@ def get_last_news_time():
     today = time.strftime('%Y%m%d')
     output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
     if os.path.exists(output_file_name):
-        columns = ["date_time", "keywords", "content", "src"]
+        columns = ["date_time", "keywords", "keywords_group", "content", "src"]
         df = pd.read_csv(output_file_name, encoding="utf_8_sig", names=columns)
         if len(df) > 0:
             return str(pd.to_datetime(df.date_time).max())
@@ -84,12 +94,12 @@ class NewsMonitor:
                          '10jqka': last_news_time, 'eastmoney': last_news_time,
                          'yuncaijing': last_news_time, 'jrj': last_news_time,
                          'stockstar': last_news_time, 'cfi': last_news_time}
-        self.result_df = pd.DataFrame(columns=["date_time", "keywords", "content", "src"])
-        self.focus_keyword_df = pd.DataFrame()
+        self.result_df = pd.DataFrame(columns=["date_time", "keywords", "keywords_group", "content", "src"])
+        self.focus_keywords: list[Newskeyword] = pd.DataFrame()
 
-    def monitor(self, file_name):
+    def monitor(self):
         while True:
-            self.focus_keyword_df = pd.read_csv(file_name, encoding="gbk")
+            self.focus_keywords = get_news_keywords()  # pd.read_csv(file_name, encoding="gbk")
             for src in self.news_src.keys():
                 start_date = self.news_src[src]
                 end_date = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -107,8 +117,10 @@ class NewsMonitor:
             today = time.strftime('%Y%m%d')
             now_hour = time.strftime('%H')
             time_span = 60
-            if '15' < now_hour < '24':
+            if '15' <= now_hour <= '24':
                 time_span = 60 * 60 * 2
+            if '00' <= now_hour <= '07':
+                time_span = 60 * 60 * 8
             output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
             if len(self.result_df) > 0 and time.perf_counter() - self.last_save_time > time_span:
                 try:
@@ -125,10 +137,13 @@ class NewsMonitor:
             content = news_row["content"]
 
             matched_keywords = []
-            for keywords_index, keywords_row in self.focus_keyword_df.iterrows():
-                keywords = keywords_row["keywords"]
+            matched_keywords_group = []
+            for row in self.focus_keywords:
+                keywords = row.KeywordRule
+                keywords_group = row.KeywordGroup
                 if check_contains_keywords(content, keywords):
                     matched_keywords.append(keywords)
+                    matched_keywords_group.append(keywords_group)
             if len(matched_keywords) > 0:
                 next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
                             datetime.timedelta(seconds=1)
@@ -141,6 +156,7 @@ class NewsMonitor:
                 dict = {}
                 dict["date_time"] = date_time
                 dict["keywords"] = matched_keywords
+                dict["keywords_group"] = matched_keywords_group
                 dict["content"] = mark_content(content, matched_keywords)
                 dict["src"] = src
                 print(dict)
@@ -148,7 +164,7 @@ class NewsMonitor:
 
     def check_duplicate(self, content: str):
         for recent_news in self.recent_news_deque:
-            if difflib.SequenceMatcher(None, recent_news, content).quick_ratio() >= 0.8:
+            if difflib.SequenceMatcher(None, recent_news, content).quick_ratio() >= 0.7:
                 print("skip:{0}".format(content))
                 return True
         return False
@@ -156,5 +172,5 @@ class NewsMonitor:
 
 if __name__ == '__main__':
     monitor = NewsMonitor()
-    monitor.monitor(os.path.join(data_path, "news_focus_keywords.csv"))
+    monitor.monitor()
     print()
