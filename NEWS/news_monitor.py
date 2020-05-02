@@ -41,7 +41,7 @@ def mark_content(content=str, keywords_list=[]):
     return content
 
 
-def save_and_send(result_df=pd.DataFrame, output_file_name=str):
+def send_news_mail(result_df=pd.DataFrame):
     mail_content = ""
     for news_index, news_row in result_df.iterrows():
         mail_content += "时间：{0}<br/>".format(news_row["date_time"])
@@ -50,8 +50,12 @@ def save_and_send(result_df=pd.DataFrame, output_file_name=str):
         mail_content += "来源：{0}<br/>".format(news_row["src"])
         mail_content += "<p/>"
     sendmail.send_news_mail(mail_content)
-    result_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
-    save_news_to_db(result_df)
+
+
+def save_to_csv(temp_df=pd.DataFrame):
+    today = time.strftime('%Y%m%d')
+    output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
+    temp_df.to_csv(output_file_name, mode='a', header=False, encoding="utf_8_sig")
 
 
 def check_contains_keywords(content, keywords):
@@ -114,17 +118,16 @@ class NewsMonitor:
                     news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
                 self.check_news(src, news_df)
 
-            today = time.strftime('%Y%m%d')
             now_hour = time.strftime('%H')
             time_span = 60
             if '15' <= now_hour <= '24':
                 time_span = 60 * 60 * 2
             if '00' <= now_hour <= '07':
                 time_span = 60 * 60 * 8
-            output_file_name = os.path.join(data_path, "result", "focus_news_{0}.csv".format(today))
+
             if len(self.result_df) > 0 and time.perf_counter() - self.last_save_time > time_span:
                 try:
-                    save_and_send(self.result_df, output_file_name)
+                    send_news_mail(self.result_df)
                     self.result_df.drop(index=self.result_df.index, inplace=True)
                     self.last_save_time = time.perf_counter()
                 except Exception as e:
@@ -160,6 +163,10 @@ class NewsMonitor:
                 dict["content"] = mark_content(content, matched_keywords)
                 dict["src"] = src
                 print(dict)
+                temp_df = pd.DataFrame(columns=["date_time", "keywords", "keywords_group", "content", "src"])
+                temp_df = temp_df.append(dict, ignore_index=True)
+                save_news_to_db(temp_df)
+                save_to_csv(temp_df)
                 self.result_df = self.result_df.append(dict, ignore_index=True)
 
     def check_duplicate(self, content: str):
