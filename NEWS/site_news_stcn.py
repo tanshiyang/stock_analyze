@@ -18,44 +18,46 @@ class News:
             html = html.decode('utf-8')
             return html
         except Exception as e:
+            print(url)
             print(e)
             return ""
 
     def get_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         try:
-            gskd = self.get_gskd_news(start_date, end_date)
-            result_df = pd.concat([result_df, gskd])
+            gsdt = self.get_gsdt_news(start_date, end_date)
+            result_df = pd.concat([result_df, gsdt])
         except Exception as e:
             print("获取新闻出错。")
         return result_df
 
-    # 公司快递
-    def get_gskd_news(self, start_date, end_date):
+    # 公司动态
+    def get_gsdt_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         start_time = time.strptime(start_date, "%Y-%m-%d %H:%M:%S")
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         pages = ["1"]
-        url = 'http://stock.cfi.cn/index.aspx?catid=A0A4127A4346A4439&dycatid=&pagepara='
+        pages = ["", "1", "2", "3", "4", "5"]
         found_page_data = False
         for page in pages:
+            if page != "":
+                page = "_" + page
+            url = time.strftime('https://company.stcn.com/gsdt/index{0}.html'.format(page))
             html = self.get_html(url)
             if html == '':
                 break
             soup = BeautifulSoup(html, 'html.parser')
-            links = soup.select('div[class="xinwen"] > a')
-            for link in links:
-                span = link.previous_sibling.previous_sibling
+            li = soup.select('div[class="content clearfix"]>div>ul>li')
+            for child in li:
+                if len(child.select("a")) == 0:
+                    continue
                 news = {}
-                news["content"] = news["title"] = link.getText()
-                datetime = span.getText()
-                today = time.strftime('%Y-%m-%d')
-                year = time.strftime('%Y')
-                if ":" in datetime:
-                    datetime = today + " " + datetime + ":00"
-                else:
-                    datetime = year + datetime.replace("/", "-") + " 24:00:00"
-                news["datetime"] = datetime
+                news["content"] = news["title"] = child.select("a")[1].getText()
+                date_time_text = child.select("span")[0].getText()
+                date_time_text = date_time_text.replace("\n","").replace("\t","")
+                time_text = child.select("span>i")[0].getText()
+                date_text = date_time_text.replace(time_text,"")
+                news["datetime"] = "{0} {1}".format(date_text, time_text)
                 news["channels"] = ""
                 # print(news)
                 if news["title"] == "":
@@ -64,7 +66,7 @@ class News:
                 if start_date <= news["datetime"] <= end_date:
                     result_df = result_df.append(news, ignore_index=True)
         if not found_page_data:
-            print("未获取到公司快递。")
+            print("未获取到公司动态。")
         return result_df
 
 

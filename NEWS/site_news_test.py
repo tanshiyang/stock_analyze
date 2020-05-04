@@ -1,4 +1,4 @@
-import urllib
+import urllib.request as urllibreq
 import re
 import socket
 from bs4 import BeautifulSoup
@@ -11,7 +11,7 @@ class News:
 
     def get_html(self, url):
         try:
-            html = urllib.request.urlopen(url).read()
+            html = urllibreq.request.urlopen(url).read()
             html = html.decode('gbk')
             return html
         except Exception as e:
@@ -19,18 +19,17 @@ class News:
 
 
     def get_html2(self, url):
-        # 写入User-Agent，采用字典形式
-        head = {}
-        head[
-            'User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0'
-        # 创建Request对象并添加heads
-        req = urllib.request.Request(url, headers=head)
-        # 传入创建好的Request对象
-        response = urllib.request.urlopen(req)
-        # 读取响应信息并解码
-        html = response.read()
-        html = html.decode('utf-8')
-        return html
+        try:
+            head = {}
+            head['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0'
+            req = urllibreq.Request(url, headers=head)
+            response = urllibreq.urlopen(req)
+            html = response.read()
+            html = html.decode('utf-8')
+            return html
+        except Exception as e:
+            print(e)
+            return ''
 
     def get_news(self, start_date, end_date):
         result_df = pd.DataFrame()
@@ -53,9 +52,14 @@ class News:
         html = self.get_html2(url)
         print("html:" + html)
 
+    def stcn_test(self, start_date, end_date):
+        page = 1
+        url = time.strftime('http://company.stcn.com/gsdt/index.html'.format(page))
+        html = self.get_html2(url)
+        print("html:" + html)
+
 
 if __name__ == '__main__':
-    while True:
-        obj = News()
-        obj.cfi_test('2019-01-17 20:58:32', '2022-01-17 20:58:32')
-        time.sleep(5)
+    obj = News()
+    obj.stcn_test('2019-01-17 20:58:32', '2022-01-17 20:58:32')
+    time.sleep(5)

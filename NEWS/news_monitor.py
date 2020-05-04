@@ -14,6 +14,7 @@ from collections import deque
 import NEWS.site_news_jrj as jrj
 import NEWS.site_news_stockstar as stockstar
 import NEWS.site_news_cfi as cfi
+import NEWS.site_news_stcn as stcn
 from NEWS.model import News, Newskeyword
 from NEWS.news_db import save_news_to_db, get_news_keywords
 
@@ -97,7 +98,9 @@ class NewsMonitor:
         self.news_src = {'sina': last_news_time, 'wallstreetcn': last_news_time,
                          '10jqka': last_news_time, 'eastmoney': last_news_time,
                          'yuncaijing': last_news_time, 'jrj': last_news_time,
-                         'stockstar': last_news_time, 'cfi': last_news_time}
+                         'stockstar': last_news_time, 'cfi': last_news_time,
+                         'stcn': last_news_time, 'stcn': last_news_time,
+                         }
         self.result_df = pd.DataFrame(columns=["date_time", "keywords", "keywords_group", "content", "src"])
         self.focus_keywords: list[Newskeyword] = pd.DataFrame()
 
