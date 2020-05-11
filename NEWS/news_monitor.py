@@ -15,6 +15,7 @@ import NEWS.site_news_jrj as jrj
 import NEWS.site_news_stockstar as stockstar
 import NEWS.site_news_cfi as cfi
 import NEWS.site_news_stcn as stcn
+import NEWS.site_news_jfinfo as jfinfo
 from NEWS.model import News, Newskeyword
 from NEWS.news_db import save_news_to_db, get_news_keywords
 
@@ -100,6 +101,7 @@ class NewsMonitor:
                          'yuncaijing': last_news_time, 'jrj': last_news_time,
                          'stockstar': last_news_time, 'cfi': last_news_time,
                          'stcn': last_news_time, 'stcn': last_news_time,
+                         'jfinfo': last_news_time, 'jfinfo': last_news_time,
                          }
         self.result_df = pd.DataFrame(columns=["date_time", "keywords", "keywords_group", "content", "src"])
         self.focus_keywords: list[Newskeyword] = pd.DataFrame()
@@ -117,6 +119,10 @@ class NewsMonitor:
                     news_df = stockstar.News().get_news(start_date, end_date)
                 elif src == "cfi":
                     news_df = cfi.News().get_news(start_date, end_date)
+                elif src == "stcn":
+                    news_df = stcn.News().get_news(start_date, end_date)
+                elif src == "jfinfo":
+                    news_df = jfinfo.News().get_news(start_date, end_date)
                 else:
                     news_df = pro.news(src=src, start_date=start_date, end_date=end_date)
                 self.check_news(src, news_df)

@@ -1,5 +1,5 @@
 from NEWS.model import News, Newskeyword, StockBasic
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_, or_
 from sqlalchemy.orm import sessionmaker
 from pandas import DataFrame, read_sql
 import uuid
@@ -25,7 +25,11 @@ def save_news_to_db(result_df=DataFrame):
         news.Src = news_row["src"]
         news.CreateBy = "system"
         news.CreateTime = datetime.datetime.utcnow()
-        session.add(news)
+
+        check_exist_rows = session.query(News).filter(and_(News.Title == news.Title,
+                                                           News.Content == news.Content)).all()
+        if len(check_exist_rows) == 0:
+            session.add(news)
 
     session.commit()
     conn.close()
@@ -51,9 +55,10 @@ def save_stock_basic_to_db(result_df=DataFrame):
         stock.CreateTime = datetime.datetime.utcnow()
         session.add(stock)
 
-    session.commit()
-    conn.close()
-    engine.dispose()
+        session.commit()
+        conn.close()
+        engine.dispose()
+
 
 def get_news_keywords():
     engine = create_engine(conn_string)
@@ -66,3 +71,19 @@ def get_news_keywords():
     conn.close()
     engine.dispose()
     return result
+
+
+def query_test():
+    engine = create_engine(conn_string)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    a = session.query(News).filter(News.Title == '').all()
+    a = session.query(News).filter(News.Title != 'jingqi').all()
+    print(len(a))
+    conn.close()
+    engine.dispose()
+
+
+if __name__ == '__main__':
+    query_test()
