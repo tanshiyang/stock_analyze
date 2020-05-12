@@ -58,7 +58,7 @@ class News:
                 date_time_text = date_time_text.replace("\n","").replace("\t","")
                 time_text = child.select("span>i")[0].getText()
                 date_text = date_time_text.replace(time_text,"")
-                news["datetime"] = "{0} {1}".format(date_text, time_text)
+                news["datetime"] = "{0} {1}:00".format(date_text, time_text)
                 news["channels"] = ""
                 # print(news)
                 if news["title"] == "":
@@ -96,7 +96,7 @@ class News:
                 date_time_text = date_time_text.replace("\n", "").replace("\t", "")
                 time_text = child.select("span>i")[0].getText()
                 date_text = date_time_text.replace(time_text, "")
-                news["datetime"] = "{0} {1}".format(date_text, time_text)
+                news["datetime"] = "{0} {1}:00".format(date_text, time_text)
                 news["channels"] = ""
                 # print(news)
                 if news["title"] == "":

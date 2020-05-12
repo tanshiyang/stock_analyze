@@ -25,9 +25,8 @@ class News:
     def get_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         try:
-            gsdt = self.get_gsdt_news(start_date, end_date)
-            gsxw = self.get_gsxw_news(start_date, end_date)
-            result_df = pd.concat([result_df, gsdt, gsxw])
+            jgyc = self.get_jgyc(start_date, end_date)
+            result_df = pd.concat([result_df, jgyc])
         except Exception as e:
             print("获取巨丰资讯出错。")
         return result_df
@@ -43,16 +42,18 @@ class News:
         soup = BeautifulSoup(html, 'html.parser')
         childrens = soup.select('div[class="p-content"]>div>div>div:nth-of-type(1)>dl')
         for child in childrens:
-            print(child)
+            news = {}
             href = child.select("a")[0]["href"]
             title = child.select("a")[0].text
-            content = self.get_content_detail(href)
-            news = {}
+            detail_html = self.get_html(href)
+            detail_soap = BeautifulSoup(detail_html, 'html.parser')
+            div_context = detail_soap.select('div[class="t-context f16 picture"]')
+            if len(div_context) > 0:
+                news["content"] = div_context[0].prettify()
+            div_date_time = detail_soap.select('div[class="t-tit"]>span')
+            if len(div_date_time) > 0:
+                news["datetime"] = "{0}:00".format(div_date_time[0].text)
             news["title"] = title
-            news["content"] = content
-            date_time_text = child.select("span")[0].getText()
-            date_time_text = date_time_text.replace("\n","").replace("\t","")
-            news["datetime"] = "{0}-{1}".format(time.strftime('%Y'), date_time_text)
             news["channels"] = ""
             # print(news)
             if news["title"] == "":
@@ -60,20 +61,13 @@ class News:
             found_page_data = True
             if start_date <= news["datetime"] <= end_date:
                 result_df = result_df.append(news, ignore_index=True)
+            print(result_df)
         if not found_page_data:
             print("未获取到金股预测。")
         return result_df
 
-    def get_content_detail(self, url):
-        html = self.get_html(url)
-        soup = BeautifulSoup(html, 'html.parser')
-        div_context = soup.select('div[class="t-context f16 picture"]')
-        if len(div_context)>0:
-            return div_context[0]
-        return ""
-
 
 if __name__ == '__main__':
     obj = News()
-    obj.get_jgyc('2019-01-17 20:58:32', '2022-01-17 20:58:32')
+    obj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
     time.sleep(5)
