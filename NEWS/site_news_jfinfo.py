@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
+from util.dispacher import Dispacher
 
 
 class News:
@@ -22,6 +23,16 @@ class News:
             print(e)
             return ""
 
+    def get_html_with_timeout(self, url):
+        c = Dispacher(self.get_html, url)
+        c.join(5)
+
+        if c.isAlive():
+            return ""
+        elif c.error:
+            return c.error[1]
+        return c.result
+
     def get_news(self, start_date, end_date):
         result_df = pd.DataFrame()
         try:
@@ -38,14 +49,14 @@ class News:
         end_time = time.strptime(end_date, "%Y-%m-%d %H:%M:%S")
         found_page_data = False
         url = time.strftime('http://www.jfinfo.com/reference/jgyc')
-        html = self.get_html(url)
+        html = self.get_html_with_timeout(url)
         soup = BeautifulSoup(html, 'html.parser')
         childrens = soup.select('div[class="p-content"]>div>div>div:nth-of-type(1)>dl')
         for child in childrens:
             news = {}
             href = child.select("a")[0]["href"]
             title = child.select("a")[0].text
-            detail_html = self.get_html(href)
+            detail_html = self.get_html_with_timeout(href)
             detail_soap = BeautifulSoup(detail_html, 'html.parser')
             div_context = detail_soap.select('div[class="t-context f16 picture"]')
             if len(div_context) > 0:
@@ -69,5 +80,5 @@ class News:
 
 if __name__ == '__main__':
     obj = News()
-    obj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
-    time.sleep(5)
+    df = obj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
+    print(df)

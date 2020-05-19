@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
+from util.dispacher import Dispacher
 
 
 class News:
@@ -20,6 +21,16 @@ class News:
         except Exception as e:
             print(e)
             return ""
+
+    def get_html_with_timeout(self, url):
+        c = Dispacher(self.get_html, url)
+        c.join(5)
+
+        if c.isAlive():
+            return ""
+        elif c.error:
+            return c.error[1]
+        return c.result
 
     def get_news(self, start_date, end_date):
         result_df = pd.DataFrame()
@@ -39,7 +50,7 @@ class News:
         url = 'http://stock.cfi.cn/index.aspx?catid=A0A4127A4346A4439&dycatid=&pagepara='
         found_page_data = False
         for page in pages:
-            html = self.get_html(url)
+            html = self.get_html_with_timeout(url)
             if html == '':
                 break
             soup = BeautifulSoup(html, 'html.parser')
@@ -70,5 +81,5 @@ class News:
 
 if __name__ == '__main__':
     obj = News()
-    obj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
-    time.sleep(5)
+    df = obj.get_news('2019-01-17 20:58:32', '2022-01-17 20:58:32')
+    print(df)
