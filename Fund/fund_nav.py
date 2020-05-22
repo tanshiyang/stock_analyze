@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import create_engine, and_, or_
 from sqlalchemy.orm import sessionmaker
 from Fund.model import FundNav
+import numpy as np
 
 pro = mytusharepro.MyTusharePro()
 
@@ -66,21 +67,21 @@ def collect_one(ts_code):
         nav.ts_code = row["ts_code"]
         nav.ann_date = row["ann_date"]
         nav.end_date = row["end_date"]
-        nav.unit_nav = row["unit_nav"]
-        nav.accum_nav = row["accum_nav"]
-        nav.accum_div = row["accum_div"]
-        nav.net_asset = row["net_asset"]
-        nav.total_netasset = row["total_netasset"]
-        nav.adj_nav = row["adj_nav"]
+        nav.unit_nav = None if row["unit_nav"] is None or np.isnan(row["unit_nav"]) else row["unit_nav"]
+        nav.accum_nav = None if row["accum_nav"] is None or np.isnan(row["accum_nav"]) else row["accum_nav"]
+        nav.accum_div = None if row["accum_div"] is None or np.isnan(row["accum_div"]) else row["accum_div"]
+        nav.net_asset = None if row["net_asset"] is None or np.isnan(row["net_asset"]) else row["net_asset"]
+        nav.total_netasset = None if row["total_netasset"] is None or np.isnan(row["total_netasset"]) else row["total_netasset"]
+        nav.adj_nav = None if np.isnan(row["adj_nav"]) else row["adj_nav"]
         check_exist_rows = session.query(FundNav).filter(and_(FundNav.ts_code == nav.ts_code,
                                                               FundNav.end_date == nav.end_date)).all()
         if len(check_exist_rows) == 0:
-            print("insert {0},{1},{2}".format(nav.ts_code, nav.end_date))
+            print("insert {0},{1}".format(nav.ts_code, nav.end_date))
             session.add(nav)
             session.commit()
         # else:
-        #     print("skipped {0},{1},{2}".format(nav.ts_code, nav.end_date))
-        
+        #     print("skipped {0},{1}".format(nav.ts_code, nav.end_date))
+
     conn.close()
     engine.dispose()
 
