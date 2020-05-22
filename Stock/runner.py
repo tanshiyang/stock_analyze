@@ -1,5 +1,6 @@
 # 总的运行文件，实现将统计报告发送邮件到自己的邮箱，将这个文件放到Jenkin上每个交易日下午3点之后运行就可以收到当天满足行情的股票了
-import stock_analyze_01
+from Stock import stock_analyze_01
+from util import mydate
 import time
 import os
 import smtplib
@@ -7,7 +8,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
 import mysql.connector
-import mydate
+
 
 def filter_stock():
     # 连接数据库

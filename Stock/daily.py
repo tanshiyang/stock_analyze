@@ -1,11 +1,8 @@
-import pandas as pd
-import mysql.connector
-import re, time
-import mydate
-import mydb
+import time
+from Stock import mydb
+from util import mydate
 import mytusharepro
-import tradeday
-from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
+from sqlalchemy import Table, Column, String, Float, MetaData
 from concurrent.futures import ThreadPoolExecutor
 
 pro = mytusharepro.MyTusharePro()

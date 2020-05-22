@@ -2,8 +2,8 @@ import tushare as ts
 import pandas as pd
 import mysql.connector
 import re, time
-import mydate
-import tradeday
+from Stock import tradeday
+from util import mydate
 
 pro = ts.pro_api("0577694ff6087849a141deb1c12ddf8566710906b8f64548f03183ce")
 

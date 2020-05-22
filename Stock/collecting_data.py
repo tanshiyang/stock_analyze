@@ -1,14 +1,9 @@
 import traceback
 import mytusharepro
-import mydb
+from Stock import mydb, daily
+from util import mydate
 import pandas as pd
 import re, time
-import mydate
-import price_period
-import daily
-import daily_basic
-import RPS.calc_rps as cr
-import RPS.query_rps as qr
 from concurrent.futures import ThreadPoolExecutor
 
 pro = mytusharepro.MyTusharePro()

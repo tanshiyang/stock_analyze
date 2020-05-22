@@ -1,4 +1,4 @@
-import mydb
+from Stock import mydb
 from util.df_util import append_column
 from MA.bull_arrange import get_rolling_bull_arrange
 

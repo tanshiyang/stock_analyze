@@ -1,6 +1,8 @@
 import mysql.connector
 from sqlalchemy import create_engine
 
+conn_string = 'mysql://root:123123@localhost/mystock?charset=utf8'
+
 def conn():
     return mysql.connector.connect(user='root', password='123123', database='mystock', auth_plugin='mysql_native_password')
 

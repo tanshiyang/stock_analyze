@@ -1,10 +1,8 @@
 import pandas as pd
-import mysql.connector
 import re, time
-import mydate
-import mydb
+from Stock import mydb, tradeday
+from util import mydate
 import mytusharepro
-import tradeday
 
 pro = mytusharepro.MyTusharePro()
 

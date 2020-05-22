@@ -157,3 +157,45 @@ class MyTusharePro:
             time.sleep(60)
             return self.news(start_date=start_date, end_date=end_date, src=src, times=times + 1)
         return df
+
+    def fund_basic(self, market=None, fields=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.fund_basic(market=market, fields=fields)
+        except Exception as e:
+            print(e)
+            print(str.format("休息{0}s", self.sleep_time))
+            time.sleep(self.sleep_time)
+            return self.fund_basic(market=market, fields=fields,
+                                    times=times + 1)
+        finally:
+            time.sleep(0.3)
+
+    def fund_nav(self, ts_code=None, end_date=None, market=None, fields=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.fund_nav(ts_code=ts_code, end_date=end_date, market=market, fields=fields)
+        except Exception as e:
+            print(e)
+            print(str.format("休息{0}s", self.sleep_time))
+            time.sleep(self.sleep_time)
+            return self.fund_nav(ts_code=ts_code, end_date=end_date, market=market, fields=fields,
+                                    times=times + 1)
+        finally:
+            time.sleep(0.3)
+
+    def fund_portfolio(self, ts_code=None, fields=None, times=1):
+        if times > self.max_call_times:
+            raise Exception("尝试调用Tushare超出最大次数!", 1)
+        try:
+            return self.pro.fund_portfolio(ts_code=ts_code, fields=fields)
+        except Exception as e:
+            print(e)
+            print(str.format("休息{0}s", self.sleep_time))
+            time.sleep(self.sleep_time)
+            return self.fund_portfolio(ts_code=ts_code, fields=fields,
+                                    times=times + 1)
+        finally:
+            time.sleep(0.3)

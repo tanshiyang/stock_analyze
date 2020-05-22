@@ -5,10 +5,10 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
-import re, time
-import mydate
+import time
 import pandas as pd
-import mydb
+from Stock import mydb
+from util import mydate
 import mytusharepro
 from sqlalchemy import Table, Column, String, Float, MetaData
 from concurrent.futures import ThreadPoolExecutor

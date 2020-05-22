@@ -7,16 +7,10 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
-from pylab import *
 import pandas as pd
-import numpy as np
-import copy
-import mysql.connector
-import re, time
-import mydate
-import mydb
-import mytusharepro
-import tradeday
+import time
+from Stock import mydb
+from util import mydate
 import util.df_util as df_util
 
 

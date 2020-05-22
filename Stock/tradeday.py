@@ -1,6 +1,6 @@
 import urllib.request as request
 import datetime
-import mydate
+from util import mydate
 import mytusharepro
 
 '''

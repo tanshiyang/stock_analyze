@@ -5,8 +5,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
-import daily
-import daily_basic
+from Stock import daily, daily_basic
 import RPS.calc_rps as cr
 import RPS.query_rps as qr
 import MA.calc_ma as ma

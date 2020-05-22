@@ -1,16 +1,10 @@
 import pandas as pd
-import numpy as np
-import copy
-import mysql.connector
-import re, time
-import mydate
-import mydb
-import mytusharepro
-import tradeday
-from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
+import time
+from Stock import mydb
+from util import mydate
+from sqlalchemy import Table, Column, String, Float, MetaData
 import my_email.sendmail as sm
 import util.df_appender
-import util.df_util as df_util
 from concurrent.futures import ThreadPoolExecutor
 
 def init_rps_top_table(tablename):

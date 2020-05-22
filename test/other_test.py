@@ -1,10 +1,8 @@
-import re, time
-import mydate
+import time
 import pandas as pd
-import mydb
+from Stock import mydb
 import threading
 import mytusharepro
-from sqlalchemy import Table, Column, String, Float, MetaData
 from concurrent.futures import ThreadPoolExecutor
 import util.df_util as df_util
 
