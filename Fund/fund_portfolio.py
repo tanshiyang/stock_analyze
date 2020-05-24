@@ -46,6 +46,7 @@ def collect_fund_portfolio():
 
 
 def collect_one(ts_code):
+    print(ts_code)
     df_portfolio = pro.fund_portfolio(ts_code=ts_code, fields='ts_code,ann_date,end_date,symbol,'
                                                               'mkv,amount,stk_mkv_ratio,stk_float_ratio')
 
@@ -79,8 +80,8 @@ def collect_one(ts_code):
             print("insert {0},{1},{2}".format(portfolio.ts_code,portfolio.end_date,portfolio.symbol))
             session.add(portfolio)
             session.commit()
-        # else:
-        #     print("skipped {0},{1},{2}".format(portfolio.ts_code,portfolio.end_date,portfolio.symbol))
+        else:
+            print("skipped {0},{1},{2}".format(portfolio.ts_code,portfolio.end_date,portfolio.symbol))
 
     conn.close()
     engine.dispose()
