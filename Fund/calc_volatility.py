@@ -26,7 +26,12 @@ def calc_volatility(ts_code):
     # 股票波动率：是对价格变动的一种衡量。
     # 年股票波动率：对数收益率的标准差除以对数收益率的平均值，然后再除以252个工作日的倒数的平方根。
     annualVolatility = std(logreturns) / mean(logreturns)
-    annualVolatility = annualVolatility / sqrt(1 / len(data))
+    periods = 252 / 4 #len(data)
+    annualVolatility = annualVolatility / sqrt(1 / periods)
+
+    sql = "delete from fund_volatility where ts_code='{0}'"
+    sql = sql.format(ts_code)
+    cursor.execute(sql)
 
     sql = "insert into fund_volatility(ts_code, volatility) values('{0}',{1})"
     sql = sql.format(ts_code, annualVolatility)
@@ -47,6 +52,7 @@ def do_work():
     sql = """
     SELECT b.ts_code from fund_basic  as b 
     where b.due_date is  null and b.fund_type in ('股票型','混合型')
+    AND b.found_date <= '2018' 
     """
     funds = pd.read_sql(sql, conn)
     today = time.strftime('%Y%m%d')
@@ -62,5 +68,6 @@ def do_work():
 
 
 if __name__ == '__main__':
+    calc_volatility('540008.OF')
     do_work()
 
