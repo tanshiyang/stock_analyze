@@ -10,7 +10,7 @@ def calc(period1, period2):
     conn = mydb.conn()
     year = int(time.strftime('%Y')) - 2
     sql = """
-     SELECT  a.symbol,b.name,sum(mkv)
+     SELECT  a.symbol,b.name,b.industry,sum(mkv)
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
     where a.ts_code in
     ( select * from (SELECT
@@ -42,28 +42,30 @@ def calc(period1, period2):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', None)
     pd.set_option('max_colwidth', 100)
+    pd.set_option('display.width', 5000)
 
-    print("\n{0},{1}:".format(period1, period2))
-    print("\n交集:")
+    print("<p/>{0},{1}:".format(period1, period2))
+    print("<p/>交集:")
     df = compare.intersect_rows
     df_util.append_column(df, 'test')
     df["diff"] = (df["sum(mkv)_df2"] - df["sum(mkv)_df1"]) / df["sum(mkv)_df1"]
     df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
+    df.drop(columns=['industry_df2','industry_match'], inplace=True)
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
-    print(df)
+    print(df.to_html())
 
     df = compare.df1_unq_rows
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
-    print("\n只在{0}中出现（转仓减仓）：".format(period1))
-    print(df)
+    print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
+    print(df.to_html())
 
     df = compare.df2_unq_rows
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
-    print("\n只在{0}中出现（转仓加仓）：".format(period2))
-    print(df)
+    print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
+    print(df.to_html())
     conn.close()
 
 
@@ -110,5 +112,5 @@ def append_price(df, period, relative_days):
 
 
 if __name__ == '__main__':
-    calc('20190930', '20191231')
-    # calc('20191231', '20200331')
+    # calc('20190930', '20191231')
+    calc('20191231', '20200331')
