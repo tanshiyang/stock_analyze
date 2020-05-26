@@ -12,13 +12,17 @@ def calc_volatility(ts_code):
     # 连接数据库
     conn = mydb.conn()
     cursor = conn.cursor()
+    year = int(time.strftime('%Y')) - 2
     sql= """
     SELECT a.ts_code,a.end_date, a.unit_nav from fund_nav as a 
-    where a.ts_code='{0}'
-    order by a.end_date
+    WHERE a.ts_code='{0}'
+    AND a.end_date <='{1}'
+    ORDER BY a.end_date
     """
-    sql = sql.format(ts_code)
+    sql = sql.format(ts_code, year)
     df_nav = pd.read_sql(sql, conn)
+    if len(df_nav) == 0:
+        return
     data = df_nav["unit_nav"]
     returns = diff(data) / data[:-1]
     # 计算对数收益率
@@ -61,6 +65,7 @@ def do_work():
             ts_code = row["ts_code"]
             calc_volatility(ts_code)
         except Exception as e:
+            print(ts_code)
             print(e)
 
     conn.close()
