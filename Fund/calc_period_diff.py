@@ -22,6 +22,7 @@ def calc(period1, period2):
             a.volatility > 0 
             AND b.found_date <= '{0}' 
             AND due_date IS NULL 
+            AND b.fund_type ='股票型'
         ORDER BY
             a.volatility 
         limit 20) as tscodes
@@ -44,30 +45,46 @@ def calc(period1, period2):
 
     print("\n{0},{1}:".format(period1, period2))
     print("\n交集:")
-    df_util.append_column(compare.intersect_rows, 'test')
-    compare.intersect_rows["diff"] = (compare.intersect_rows["sum(mkv)_df2"] - compare.intersect_rows[
-        "sum(mkv)_df1"]) / compare.intersect_rows["sum(mkv)_df1"]
-    compare.intersect_rows.drop(columns=['_merge', 'sum(mkv)_match','name_df2','name_match'], inplace=True)
-    compare.intersect_rows = append_price(compare.intersect_rows, period1, 30)
-    compare.intersect_rows = append_price(compare.intersect_rows, period1, 60)
-    print(compare.intersect_rows)
+    df = compare.intersect_rows
+    df_util.append_column(df, 'test')
+    df["diff"] = (df["sum(mkv)_df2"] - df["sum(mkv)_df1"]) / df["sum(mkv)_df1"]
+    df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
+    df = append_price(df, period2, 1)
+    df = append_price(df, period2, 60)
+    print(df)
+
+    df = compare.df1_unq_rows
+    df = append_price(df, period2, 1)
+    df = append_price(df, period2, 60)
     print("\n只在{0}中出现（转仓减仓）：".format(period1))
-    print(compare.df1_unq_rows)
+    print(df)
+
+    df = compare.df2_unq_rows
+    df = append_price(df, period2, 1)
+    df = append_price(df, period2, 60)
     print("\n只在{0}中出现（转仓加仓）：".format(period2))
-    print(compare.df2_unq_rows)
+    print(df)
     conn.close()
 
 
 def append_price(df, period, relative_days):
     conn = mydb.conn()
     cursor = conn.cursor()
-    column_name = '收盘价%s' % relative_days
+
+    trade_date = period
+    trade_date = trade_date.replace("0331", "0416")
+    trade_date = trade_date.replace("0630", "0716")
+    trade_date = trade_date.replace("0930", "1022")
+    if "1231" in trade_date:
+        trade_date = mydate.string_to_relative_years(trade_date, 1)
+        trade_date = trade_date.replace("1231", "0116")
+    trade_date = mydate.string_to_relative_days(trade_date, relative_days)
+
+    column_name = '%s' % trade_date
     df_util.append_column(df, column_name)
     for index, row in df.iterrows():
         ts_code = row["symbol"]
-        trade_date = period
-        trade_date = mydate.string_to_relative_days(trade_date, relative_days)
-        print("append_price,{0},{1}".format(ts_code, trade_date))
+        # print("append_price,{0},{1}".format(ts_code, trade_date))
         sql = str.format("show tables  like 'daily_{0}'", ts_code)
         cursor.execute(sql)
         table_exists = cursor.fetchall().__len__() > 0
@@ -80,10 +97,18 @@ def append_price(df, period, relative_days):
         price_row = cursor.fetchone()
         if price_row is not None:
             df.loc[index, column_name] = price_row[0]
+        else:
+            sql = str.format("select close from `daily_{0}` where trade_date<='{1}' order by trade_date desc limit 1",
+                             ts_code, trade_date)
+            cursor.execute(sql)
+            price_row = cursor.fetchone()
+            if price_row is not None:
+                df.loc[index, column_name] = price_row[0]
     conn.close()
     cursor.close()
     return df
 
 
 if __name__ == '__main__':
-    calc('20191231', '20200331')
+    calc('20190930', '20191231')
+    # calc('20191231', '20200331')

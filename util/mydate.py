@@ -30,6 +30,10 @@ def string_to_relative_days(string, days=1):
     return date_to_string(string_to_date(string) + relativedelta(days=days))
 
 
+def string_to_relative_years(string, years=1):
+    return date_to_string(string_to_date(string) + relativedelta(years=years))
+
+
 def get_quarter():
     month = time.strftime('%m', time.localtime(time.time()))
     if '01' <= month <= '03':
