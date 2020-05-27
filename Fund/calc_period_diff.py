@@ -8,7 +8,7 @@ from util import mydate
 
 def calc(period1, period2):
     conn = mydb.conn()
-    year = int(time.strftime('%Y')) - 2
+    year = int(period1[0:4]) - 2
     sql = """
      SELECT  a.symbol,b.name,b.industry,sum(mkv)
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
@@ -25,7 +25,7 @@ def calc(period1, period2):
             AND b.fund_type ='股票型'
         ORDER BY
             a.volatility 
-        limit 20) as tscodes
+        limit 80) as tscodes
         )
     and end_date = '{1}'
     group by a.symbol  
@@ -50,20 +50,26 @@ def calc(period1, period2):
     df_util.append_column(df, 'test')
     df["diff"] = (df["sum(mkv)_df2"] - df["sum(mkv)_df1"]) / df["sum(mkv)_df1"]
     df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
-    df.drop(columns=['industry_df2','industry_match'], inplace=True)
+    df.drop(columns=['industry_df2', 'industry_match'], inplace=True)
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
+    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+        get_period_ann_date(period2, 1)]
     print(df.to_html())
 
     df = compare.df1_unq_rows
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
+    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+        get_period_ann_date(period2, 1)]
     print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
     print(df.to_html())
 
     df = compare.df2_unq_rows
     df = append_price(df, period2, 1)
     df = append_price(df, period2, 60)
+    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+        get_period_ann_date(period2, 1)]
     print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
     print(df.to_html())
     conn.close()
@@ -73,14 +79,7 @@ def append_price(df, period, relative_days):
     conn = mydb.conn()
     cursor = conn.cursor()
 
-    trade_date = period
-    trade_date = trade_date.replace("0331", "0416")
-    trade_date = trade_date.replace("0630", "0716")
-    trade_date = trade_date.replace("0930", "1022")
-    if "1231" in trade_date:
-        trade_date = mydate.string_to_relative_years(trade_date, 1)
-        trade_date = trade_date.replace("1231", "0116")
-    trade_date = mydate.string_to_relative_days(trade_date, relative_days)
+    trade_date = get_period_ann_date(period, relative_days)
 
     column_name = '%s' % trade_date
     df_util.append_column(df, column_name)
@@ -111,6 +110,24 @@ def append_price(df, period, relative_days):
     return df
 
 
+def get_period_ann_date(period, relative_days):
+    period = period.replace("0331", "0416")
+    period = period.replace("0630", "0716")
+    period = period.replace("0930", "1022")
+    if "1231" in period:
+        period = mydate.string_to_relative_years(period, 1)
+        period = period.replace("1231", "0116")
+    period = mydate.string_to_relative_days(period, relative_days)
+    return period
+
+
 if __name__ == '__main__':
+    calc('20171231', '20180331')
+    # calc('20180331', '20180630')
+    # calc('20180630', '20180930')
+    # calc('20180930', '20181231')
+    # calc('20181231', '20190331')
+    # calc('20190331', '20190630')
+    # calc('20190630', '20190930')
     # calc('20190930', '20191231')
-    calc('20191231', '20200331')
+    # calc('20191231', '20200331')
