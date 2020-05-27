@@ -39,7 +39,7 @@ def calc(period1, period2):
     and end_date = '{2}'
     group by a.symbol  
     order by sum(mkv) desc
-    -- limit 30
+    limit 20
     """
     df1 = pd.read_sql(sql.format(from_year, to_year, period2), conn)
     df2 = pd.read_sql(sql.format(from_year, to_year, period1), conn)
@@ -54,6 +54,14 @@ def calc(period1, period2):
     pd.set_option('display.width', 5000)
 
     print("<p/>{0},{1}:".format(period1, period2))
+    print("<p/>{0} Top 10:".format(period2))
+    df = df1
+    df = append_price(df, period2, 1)
+    df = append_price(df, period2, 60)
+    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+        get_period_ann_date(period2, 1)]
+    print(df.to_html())
+
     print("<p/>交集:")
     df = compare.intersect_rows
     df_util.append_column(df, 'test')
@@ -71,7 +79,7 @@ def calc(period1, period2):
     df = append_price(df, period2, 60)
     df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
         get_period_ann_date(period2, 1)]
-    print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
+    print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
     print(df.to_html())
 
     df = compare.df2_unq_rows
@@ -79,7 +87,7 @@ def calc(period1, period2):
     df = append_price(df, period2, 60)
     df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
         get_period_ann_date(period2, 1)]
-    print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
+    print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
     print(df.to_html())
     conn.close()
 

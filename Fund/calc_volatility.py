@@ -16,7 +16,7 @@ def calc_volatility(ts_code, from_year, to_year):
     SELECT a.ts_code,a.end_date, a.unit_nav from fund_nav as a 
     WHERE a.ts_code='{0}'
     AND a.end_date >='{1}'
-    AND a.end_date >='{2}'
+    AND a.end_date <='{2}'
     ORDER BY a.end_date
     """
     sql = sql.format(ts_code, from_year, to_year)
@@ -31,7 +31,7 @@ def calc_volatility(ts_code, from_year, to_year):
     # 年股票波动率：对数收益率的标准差除以对数收益率的平均值，然后再除以252个工作日的倒数的平方根。
     uprate = (data[len(data) - 1] - data[0]) / data[0]
     if mean(logreturns * 100) == 0:
-        print('{0} 的波动平均为0'.format(ts_code))
+        print('{0} {1} {2} 的波动平均为0'.format(ts_code, from_year, to_year))
         return
     annualVolatility = std(logreturns * 100) / mean(logreturns * 100)
     quarter_days = 252 / 4  # len(data)
@@ -63,8 +63,9 @@ def do_work(from_year, to_year):
     sql = """
     SELECT b.ts_code from fund_basic  as b 
     where b.due_date is  null and b.fund_type in ('股票型','混合型')
-    AND b.found_date <= '2018' 
-    """
+    AND b.found_date >= '{0}' 
+    AND b.found_date <= '{1}' 
+    """.format(from_year, to_year)
     funds = pd.read_sql(sql, conn)
     today = time.strftime('%Y%m%d')
     for index, row in funds.iterrows():
@@ -72,7 +73,7 @@ def do_work(from_year, to_year):
             ts_code = row["ts_code"]
             calc_volatility(ts_code, from_year, to_year)
         except Exception as e:
-            print(ts_code)
+            print(ts_code, from_year, to_year)
             print(e)
 
     conn.close()
