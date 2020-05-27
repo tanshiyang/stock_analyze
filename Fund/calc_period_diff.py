@@ -1,3 +1,9 @@
+import os
+import sys
+
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
 import Stock.mydb as mydb
 import pandas as pd
 import datacompy
@@ -8,9 +14,10 @@ from util import mydate
 
 def calc(period1, period2):
     conn = mydb.conn()
-    year = int(period1[0:4]) - 2
+    from_year = int(period2[0:4]) - 2
+    to_year = int(period2[0:4])
     sql = """
-     SELECT  a.symbol,b.name,b.industry,sum(mkv)
+     SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
     where a.ts_code in
     ( select * from (SELECT
@@ -20,20 +27,22 @@ def calc(period1, period2):
             JOIN fund_basic b ON a.ts_code = b.ts_code 
         WHERE
             a.volatility > 0 
+            AND a.from_year = {0}
+            AND a.to_year = {1}
             AND b.found_date <= '{0}' 
             AND due_date IS NULL 
             AND b.fund_type ='股票型'
         ORDER BY
             a.volatility 
-        limit 80) as tscodes
+        limit 60) as tscodes
         )
-    and end_date = '{1}'
+    and end_date = '{2}'
     group by a.symbol  
     order by sum(mkv) desc
     -- limit 30
     """
-    df1 = pd.read_sql(sql.format(year, period1), conn)
-    df2 = pd.read_sql(sql.format(year, period2), conn)
+    df1 = pd.read_sql(sql.format(from_year, to_year, period2), conn)
+    df2 = pd.read_sql(sql.format(from_year, to_year, period1), conn)
 
     compare = datacompy.Compare(df1=df1, df2=df2, join_columns='symbol')
     # print(compare.report())
@@ -48,7 +57,7 @@ def calc(period1, period2):
     print("<p/>交集:")
     df = compare.intersect_rows
     df_util.append_column(df, 'test')
-    df["diff"] = (df["sum(mkv)_df2"] - df["sum(mkv)_df1"]) / df["sum(mkv)_df1"]
+    df["diff"] = (df["sum(mkv)_df1"] - df["sum(mkv)_df2"]) / df["sum(mkv)_df1"]
     df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
     df.drop(columns=['industry_df2', 'industry_match'], inplace=True)
     df = append_price(df, period2, 1)
@@ -122,12 +131,22 @@ def get_period_ann_date(period, relative_days):
 
 
 if __name__ == '__main__':
-    calc('20171231', '20180331')
-    # calc('20180331', '20180630')
-    # calc('20180630', '20180930')
-    # calc('20180930', '20181231')
-    # calc('20181231', '20190331')
-    # calc('20190331', '20190630')
-    # calc('20190630', '20190930')
-    # calc('20190930', '20191231')
-    # calc('20191231', '20200331')
+    if len(sys.argv) == 3:
+        calc(sys.argv[1], sys.argv[2])
+    else:
+        calc('20160331', '20160630')
+        calc('20160630', '20160930')
+        calc('20160930', '20161231')
+        calc('20161231', '20170331')
+        calc('20170331', '20170630')
+        calc('20170630', '20170930')
+        calc('20170930', '20171231')
+        calc('20171231', '20180331')
+        calc('20180331', '20180630')
+        calc('20180630', '20180930')
+        calc('20180930', '20181231')
+        calc('20181231', '20190331')
+        calc('20190331', '20190630')
+        calc('20190630', '20190930')
+        calc('20190930', '20191231')
+        calc('20191231', '20200331')
