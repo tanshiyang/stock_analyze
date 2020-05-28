@@ -144,7 +144,7 @@ class MyTusharePro:
 
     def news(self, start_date=None, end_date=None, src=None, times=1):
         if times > self.max_call_times:
-            print("尝试调用Tushare超出最大次数!")
+            print("尝试调用Tushare超出最大次数!继续尝试。")
         try:
             df = self.pro.news(start_date=start_date, end_date=end_date, src=src)
             if len(df) >= 1000:
@@ -160,7 +160,7 @@ class MyTusharePro:
 
     def fund_basic(self, market=None, fields=None, times=1):
         if times > self.max_call_times:
-            raise Exception("尝试调用Tushare超出最大次数!", 1)
+            print("尝试调用Tushare超出最大次数!继续尝试。")
         try:
             return self.pro.fund_basic(market=market, fields=fields)
         except Exception as e:
@@ -174,7 +174,7 @@ class MyTusharePro:
 
     def fund_nav(self, ts_code=None, end_date=None, market=None, fields=None, times=1):
         if times > self.max_call_times:
-            raise Exception("尝试调用Tushare超出最大次数!", 1)
+            print("尝试调用Tushare超出最大次数!继续尝试。")
         try:
             return self.pro.fund_nav(ts_code=ts_code, end_date=end_date, market=market, fields=fields)
         except Exception as e:
@@ -188,7 +188,7 @@ class MyTusharePro:
 
     def fund_portfolio(self, ts_code=None, fields=None, times=1):
         if times > self.max_call_times:
-            raise Exception("尝试调用Tushare超出最大次数!", 1)
+            print("尝试调用Tushare超出最大次数!继续尝试。")
         try:
             return self.pro.fund_portfolio(ts_code=ts_code, fields=fields)
         except Exception as e:
