@@ -14,8 +14,6 @@ from util import mydate
 
 def calc(period1, period2):
     conn = mydb.conn()
-    from_year = int(period2[0:4]) - 2
-    to_year = int(period2[0:4])
     sql = """
      SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
@@ -41,7 +39,11 @@ def calc(period1, period2):
     order by sum(mkv) desc
     limit 20
     """
+    from_year = int(period2[0:4]) - 2
+    to_year = int(period2[0:4])
     df1 = pd.read_sql(sql.format(from_year, to_year, period2), conn)
+    from_year = int(period1[0:4]) - 2
+    to_year = int(period1[0:4])
     df2 = pd.read_sql(sql.format(from_year, to_year, period1), conn)
 
     compare = datacompy.Compare(df1=df1, df2=df2, join_columns='symbol')
