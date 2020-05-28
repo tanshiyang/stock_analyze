@@ -80,10 +80,15 @@ def do_work(from_year, to_year):
     cursor.close()
 
 
-def calc_recent_2_year():
+def calc_recent_year():
     now_year = time.strftime('%Y')
     from_year = str(int(now_year) - 1)
     do_work(from_year, now_year)
+
+    now_year = time.strftime('%Y')
+    from_year = str(int(now_year) - 2)
+    do_work(from_year, now_year)
+
 
 if __name__ == '__main__':
     # calc_volatility('540008.OF')

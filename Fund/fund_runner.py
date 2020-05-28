@@ -10,4 +10,4 @@ if __name__ == '__main__':
     fund_basic.collect_fund_basic()
     fund_nav.collect_fund_nav()
     fund_portfolio.collect_fund_portfolio()
-    calc_volatility.calc_recent_2_year()
+    calc_volatility.calc_recent_year()
