@@ -97,3 +97,4 @@ if __name__ == '__main__':
     do_work('2016', '2018')
     do_work('2017', '2019')
     do_work('2018', '2020')
+    calc_recent_year()

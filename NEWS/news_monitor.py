@@ -63,10 +63,14 @@ def save_to_csv(temp_df=pd.DataFrame):
 def check_contains_keywords(content, keywords):
     for keyword in keywords.split(","):
         try:
-            if not re.search(my_decode(keyword), content):  # keyword not in content:
-                return False
+            if keyword.startswith("^"):
+                if re.search(my_decode(keyword.replace("^", "")), content):
+                    return False
+            else:
+                if not re.search(my_decode(keyword), content):  # keyword not in content:
+                    return False
         except Exception as e:
-            print('正则匹配错误')
+            print('正则匹配错误,{0}'.format(e))
             print(content)
             print(keyword)
             return False
