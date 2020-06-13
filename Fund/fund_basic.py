@@ -1,15 +1,22 @@
 from Stock import mydb
 import mytusharepro
+import pandas as pd
 from sqlalchemy import create_engine, Table, Column, Integer, String, Float, MetaData, ForeignKey
 pro = mytusharepro.MyTusharePro()
 
 
 def collect_fund_basic_work():
-    fund_basic = pro.fund_basic(market='O', fields='ts_code,name,management,custodian,fund_type,'
+    fund_basic_o = pro.fund_basic(market='O', fields='ts_code,name,management,custodian,fund_type,'
                                                     'found_date,due_date,list_date,issue_date,delist_date,'
                                                     'issue_amount,m_fee,c_fee,duration_year,p_value,'
                                                     'min_amount,exp_return,benchmark,status,invest_type,'
                                                     'type,trustee,purc_startdate,redm_startdate,market')
+    fund_basic_e = pro.fund_basic(market='E', fields='ts_code,name,management,custodian,fund_type,'
+                                                     'found_date,due_date,list_date,issue_date,delist_date,'
+                                                     'issue_amount,m_fee,c_fee,duration_year,p_value,'
+                                                     'min_amount,exp_return,benchmark,status,invest_type,'
+                                                     'type,trustee,purc_startdate,redm_startdate,market')
+    fund_basic = pd.concat([fund_basic_o, fund_basic_e])
     engine = mydb.engine()
     fund_basic.to_sql('fund_basic', engine, index=False, if_exists='replace')
 
