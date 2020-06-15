@@ -46,7 +46,7 @@ def collect_fund_portfolio():
 
 
 def collect_one(ts_code):
-    print(ts_code)
+    print("portfolio {0}".format(ts_code))
     df_portfolio = pro.fund_portfolio(ts_code=ts_code, fields='ts_code,ann_date,end_date,symbol,'
                                                               'mkv,amount,stk_mkv_ratio,stk_float_ratio')
 
@@ -77,7 +77,7 @@ def collect_one(ts_code):
                                                                     FundPortfolio.symbol == portfolio.symbol,
                                                                     )).all()
         if len(exist_rows) == 0:
-            print("insert {0},{1},{2}".format(portfolio.ts_code,portfolio.end_date,portfolio.symbol))
+            print("insert fund portfolio {0},{1},{2}".format(portfolio.ts_code,portfolio.end_date,portfolio.symbol))
             session.add(portfolio)
             session.commit()
         else:

@@ -48,7 +48,7 @@ def collect_fund_nav():
 
 
 def collect_one(ts_code):
-    print(ts_code)
+    print("fund nav {0}".format(ts_code))
     df_nav = pro.fund_nav(ts_code=ts_code, fields='ts_code, ann_date, end_date, unit_nav, accum_nav, '
                                                   'accum_div, net_asset, total_netasset, adj_nav')
     engine = mydb.engine()
@@ -77,7 +77,7 @@ def collect_one(ts_code):
         check_exist_rows = session.query(FundNav).filter(and_(FundNav.ts_code == nav.ts_code,
                                                               FundNav.end_date == nav.end_date)).all()
         if len(check_exist_rows) == 0:
-            print("insert {0},{1}".format(nav.ts_code, nav.end_date))
+            print("insert fund nav {0},{1}".format(nav.ts_code, nav.end_date))
             session.add(nav)
             session.commit()
         else:
