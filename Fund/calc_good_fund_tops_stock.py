@@ -55,42 +55,46 @@ def calc(period1, period2):
     pd.set_option('max_colwidth', 100)
     pd.set_option('display.width', 5000)
 
-    print("<p/>{0},{1}:".format(period1, period2))
-    print("<p/>{0} Top 10:".format(period2))
     df = df1
-    df = append_price(df, period2, 1)
-    df = append_price(df, period2, 60)
-    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
-        get_period_ann_date(period2, 1)]
-    print(df.to_html())
+    if len(df) > 0:
+        df = append_price(df, period2, 1)
+        df = append_price(df, period2, 60)
+        df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+            get_period_ann_date(period2, 1)]
+        print("<p/>{0},{1}:".format(period1, period2))
+        print("<p/>{0} Top 10:".format(period2))
+        print(df.to_html())
 
-    print("<p/>交集:")
     df = compare.intersect_rows
-    df_util.append_column(df, 'test')
-    df["diff"] = (df["sum(mkv)_df1"] - df["sum(mkv)_df2"]) / df["sum(mkv)_df1"]
-    df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
-    df.drop(columns=['industry_df2', 'industry_match'], inplace=True)
-    df = append_price(df, period2, 1)
-    df = append_price(df, period2, 60)
-    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
-        get_period_ann_date(period2, 1)]
-    print(df.to_html())
+    if len(df) > 0:
+        df_util.append_column(df, 'test')
+        df["diff"] = (df["sum(mkv)_df1"] - df["sum(mkv)_df2"]) / df["sum(mkv)_df1"]
+        df.drop(columns=['_merge', 'sum(mkv)_match', 'name_df2', 'name_match'], inplace=True)
+        df.drop(columns=['industry_df2', 'industry_match'], inplace=True)
+        df = append_price(df, period2, 1)
+        df = append_price(df, period2, 60)
+        df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+            get_period_ann_date(period2, 1)]
+        print("<p/>交集:")
+        print(df.to_html())
 
     df = compare.df1_unq_rows
-    df = append_price(df, period2, 1)
-    df = append_price(df, period2, 60)
-    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
-        get_period_ann_date(period2, 1)]
-    print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
-    print(df.to_html())
+    if len(df) > 0:
+        df = append_price(df, period2, 1)
+        df = append_price(df, period2, 60)
+        df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+            get_period_ann_date(period2, 1)]
+        print("<p/>只在{0}中出现（转仓加仓）：".format(period2))
+        print(df.to_html())
 
     df = compare.df2_unq_rows
-    df = append_price(df, period2, 1)
-    df = append_price(df, period2, 60)
-    df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
-        get_period_ann_date(period2, 1)]
-    print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
-    print(df.to_html())
+    if len(df) > 0:
+        df = append_price(df, period2, 1)
+        df = append_price(df, period2, 60)
+        df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+            get_period_ann_date(period2, 1)]
+        print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
+        print(df.to_html())
     conn.close()
 
 
@@ -144,19 +148,9 @@ if __name__ == '__main__':
     if len(sys.argv) == 3:
         calc(sys.argv[1], sys.argv[2])
     else:
-        calc('20160331', '20160630')
-        calc('20160630', '20160930')
-        calc('20160930', '20161231')
-        calc('20161231', '20170331')
-        calc('20170331', '20170630')
-        calc('20170630', '20170930')
-        calc('20170930', '20171231')
-        calc('20171231', '20180331')
-        calc('20180331', '20180630')
-        calc('20180630', '20180930')
-        calc('20180930', '20181231')
-        calc('20181231', '20190331')
-        calc('20190331', '20190630')
-        calc('20190630', '20190930')
-        calc('20190930', '20191231')
-        calc('20191231', '20200331')
+        now_year = int(time.strftime('%Y'))
+        for year in range(2006, now_year):
+            calc('{0}0331'.format(year), '{0}0630'.format(year))
+            calc('{0}0630'.format(year), '{0}0930'.format(year))
+            calc('{0}0930'.format(year), '{0}1231'.format(year))
+            calc('{0}1231'.format(year), '{0}0331'.format(year + 1))
