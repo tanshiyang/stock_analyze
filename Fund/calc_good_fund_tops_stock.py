@@ -32,6 +32,7 @@ def calc(period1, period2):
             AND b.found_date <= '{0}' 
             AND due_date IS NULL 
             AND b.fund_type in ('股票型')
+            AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
         ORDER BY
             a.volatility 
         limit 30) as tscodes
@@ -39,19 +40,19 @@ def calc(period1, period2):
     and end_date = '{2}'
     group by a.symbol  
     order by sum(mkv) desc
-    limit 30
+    limit 60
     """
     from_year = int(period2[0:4]) - 1
     to_year = int(period2[0:4])
     df2 = pd.read_sql(sql.format(from_year, to_year, period2), conn)
     if len(df2) == 0:
-        print(sql)
+        print(sql.format(from_year, to_year, period2))
 
     from_year = int(period1[0:4]) - 1
     to_year = int(period1[0:4])
     df1 = pd.read_sql(sql.format(from_year, to_year, period1), conn)
     if len(df1) == 0:
-        print(sql)
+        print(sql.format(from_year, to_year, period1))
 
     compare = datacompy.Compare(df1=df2, df2=df1, join_columns='symbol')
     # print(compare.report())
@@ -115,7 +116,7 @@ def append_price(df, period, relative_days):
     df_util.append_column(df, column_name)
     for index, row in df.iterrows():
         ts_code = row["symbol"]
-        price = get_price(ts_code,trade_date)
+        price = get_price(ts_code, trade_date)
         df.loc[index, column_name] = price
     return df
 
@@ -162,8 +163,7 @@ def get_period_ann_date(period, relative_days):
 
 
 def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None):
-    if len(period2df) == 0:
-        return my_stocks_df
+    my_stock_max_counts = 2
 
     if my_stocks_df is None:
         my_stocks_df = pd.DataFrame(
@@ -183,7 +183,7 @@ def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None)
             my_stocks_df.at[index, 'uprate'] = (my_stocks_df.at[index, 'out_price'] - my_stocks_df.at[
                 index, 'in_price']) / my_stocks_df.at[index, 'out_price']
 
-    while len(my_stocks_df[pd.isna(my_stocks_df["out_date"])]) < 3:
+    while len(period2df) > 0 and len(my_stocks_df[pd.isna(my_stocks_df["out_date"])]) < my_stock_max_counts:
         for index, row in period2df.iterrows():
             criterion = my_stocks_df['symbol'].map(lambda x: x == row["symbol"])
             filter_df = my_stocks_df[criterion & pd.isna(my_stocks_df["out_date"])]
