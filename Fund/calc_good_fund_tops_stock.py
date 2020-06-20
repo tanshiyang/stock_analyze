@@ -18,7 +18,8 @@ def calc(period1, period2):
     sql = """
      SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
-    where a.ts_code in
+    where 1=1
+    and a.ts_code in
     ( select * from (SELECT
         a.ts_code
         FROM
