@@ -38,9 +38,10 @@ def calc(period1, period2):
         limit 30) as tscodes
         )
     and end_date = '{2}'
+    and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{2}' GROUP BY symbol having count(0)>1)
     group by a.symbol  
     order by sum(mkv) desc
-    limit 60
+    limit 30
     """
     from_year = int(period2[0:4]) - 1
     to_year = int(period2[0:4])
@@ -163,7 +164,7 @@ def get_period_ann_date(period, relative_days):
 
 
 def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None):
-    my_stock_max_counts = 2
+    my_stock_max_counts = 3
 
     if my_stocks_df is None:
         my_stocks_df = pd.DataFrame(
@@ -181,7 +182,7 @@ def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None)
             my_stocks_df.at[index, 'out_date'] = out_date
             my_stocks_df.at[index, 'out_price'] = get_price(symbol, out_date)
             my_stocks_df.at[index, 'uprate'] = (my_stocks_df.at[index, 'out_price'] - my_stocks_df.at[
-                index, 'in_price']) / my_stocks_df.at[index, 'out_price']
+                index, 'in_price']) / my_stocks_df.at[index, 'in_price']
 
     while len(period2df) > 0 and len(my_stocks_df[pd.isna(my_stocks_df["out_date"])]) < my_stock_max_counts:
         for index, row in period2df.iterrows():
