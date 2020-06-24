@@ -46,24 +46,20 @@ def compute_volatility2(data):
     return year_volatility
 
 
-def calc_volatility(ts_code, from_year, to_year):
+def calc_volatility(ts_code, from_date, to_date):
     # 连接数据库
     conn = mydb.conn()
     cursor = conn.cursor()
 
     try:
-        sql = "delete from fund_volatility where ts_code='{0}' and from_year='{1}' and to_year='{2}'"
-        sql = sql.format(ts_code, from_year, to_year)
-        cursor.execute(sql)
-
         sql = """
         SELECT a.ts_code,a.end_date, a.unit_nav from fund_nav as a 
         WHERE a.ts_code='{0}'
-        AND a.end_date >='{1}0101'
-        AND a.end_date <='{2}1231'
+        AND a.end_date >='{1}'
+        AND a.end_date <='{2}'
         ORDER BY a.end_date
         """
-        sql = sql.format(ts_code, from_year, to_year)
+        sql = sql.format(ts_code, from_date, to_date)
         df_nav = pd.read_sql(sql, conn)
         if len(df_nav) == 0:
             return
@@ -71,11 +67,15 @@ def calc_volatility(ts_code, from_year, to_year):
 
         volatility = compute_volatility(data)
 
+        sql = "delete from fund_volatility where ts_code='{0}' and from_year='{1}' and to_year='{2}'"
+        sql = sql.format(ts_code, from_date, to_date)
+        cursor.execute(sql)
+
         sql = "insert into fund_volatility(ts_code, volatility,from_year,to_year) values('{0}',{1},{2},{3})"
-        sql = sql.format(ts_code, volatility, from_year, to_year)
+        sql = sql.format(ts_code, volatility, from_date, to_date)
         cursor.execute(sql)
     except Exception as ex:
-        print('{0},{1},{2}'.format(ts_code, from_year, to_year))
+        print('{0},{1},{2}'.format(ts_code, from_date, to_date))
         print(ex)
     finally:
         conn.commit()
@@ -91,6 +91,7 @@ def do_work(from_year, to_year):
     conn = mydb.conn()
     cursor = conn.cursor()
 
+    print("calc_volatility {0},{1}".format(from_year, to_year))
     sql = """
     SELECT b.ts_code from fund_basic  as b 
     where b.due_date is  null and b.fund_type in ('股票型','混合型')
@@ -111,12 +112,26 @@ def do_work(from_year, to_year):
     cursor.close()
 
 
-def calc_recent_year(now_year=time.strftime('%Y')):
-    from_year = str(int(now_year) - 1)
-    do_work(from_year, now_year)
+def get_period_ann_date(period):
+    period = period.replace("0331", "0416")
+    period = period.replace("0630", "0716")
+    period = period.replace("0930", "1022")
+    if "1231" in period:
+        period = mydate.string_to_relative_years(period, 1)
+        period = period.replace("1231", "0116")
+    return period
 
-    from_year = str(int(now_year) - 2)
-    do_work(from_year, now_year)
+
+def calc_year_data(calc_year=int(time.strftime('%Y'))):
+    # do_work(get_period_ann_date("{0}0331".format(calc_year)), get_period_ann_date("{0}0331".format(calc_year + 1)))
+    # do_work(get_period_ann_date("{0}0630".format(calc_year)), get_period_ann_date("{0}0630".format(calc_year + 1)))
+    # do_work(get_period_ann_date("{0}0930".format(calc_year)), get_period_ann_date("{0}0930".format(calc_year + 1)))
+    # do_work(get_period_ann_date("{0}1231".format(calc_year)), get_period_ann_date("{0}1231".format(calc_year + 1)))
+
+    do_work(get_period_ann_date("{0}0331".format(calc_year)), get_period_ann_date("{0}0630".format(calc_year + 1)))
+    do_work(get_period_ann_date("{0}0630".format(calc_year)), get_period_ann_date("{0}0930".format(calc_year + 1)))
+    do_work(get_period_ann_date("{0}0930".format(calc_year)), get_period_ann_date("{0}1231".format(calc_year + 1)))
+    do_work(get_period_ann_date("{0}1231".format(calc_year)), get_period_ann_date("{0}0331".format(calc_year + 2)))
 
 
 def test():
@@ -133,7 +148,6 @@ def test():
     df = pd.read_sql(sql, conn)
     # print(df["unit_nav"])
     print(compute_volatility(df["unit_nav"]))
-    print(xxx(df["unit_nav"]))
 
     sql = """
                 SELECT a.ts_code,a.end_date, a.unit_nav from fund_nav as a 
@@ -145,13 +159,9 @@ def test():
     df = pd.read_sql(sql, conn)
     # print(df["unit_nav"])
     print(compute_volatility(df["unit_nav"]))
-    print(xxx(df["unit_nav"]))
 
     conn.close()
     cursor.close()
-
-
-
 
 
 if __name__ == '__main__':
@@ -170,14 +180,14 @@ if __name__ == '__main__':
     # print(compute_volatility(data))
     # print(xxx(data))
     # exit(0)
-    calc_volatility('540008.OF', '2018', '2019')
+    # calc_volatility('540008.OF', '2018', '2019')
     # calc_recent_year(2020)
-    exit(0)
+    # exit(0)
     # do_work('2015', '2017')
     # do_work('2016', '2018')
     # do_work('2017', '2019')
     # do_work('2018', '2020')
     now_year = int(time.strftime('%Y'))
     for year in range(2000, now_year):
-        calc_recent_year(year)
-    calc_recent_year()
+        calc_year_data(year)
+    calc_year_data()

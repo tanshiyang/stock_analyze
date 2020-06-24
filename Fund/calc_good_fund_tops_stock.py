@@ -19,41 +19,66 @@ def calc(period1, period2):
      SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
     from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
     where 1=1
-    and a.ts_code in
-    ( select * from (SELECT
-        a.ts_code
-        FROM
-            fund_volatility a
-            JOIN fund_basic b ON a.ts_code = b.ts_code 
-        WHERE
-            a.volatility > 0 
-            AND a.from_year = {0}
-            AND a.to_year = {1}
-            AND b.found_date <= '{0}' 
-            AND due_date IS NULL 
-            AND b.fund_type in ('股票型')
-            AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
-        ORDER BY
-            a.volatility 
-        limit 30) as tscodes
-        )
-    and end_date = '{2}'
-    and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{2}' GROUP BY symbol having count(0)>1)
+    and (a.ts_code in
+        ( select * from (SELECT
+            a.ts_code
+            FROM
+                fund_volatility a
+                JOIN fund_basic b ON a.ts_code = b.ts_code 
+            WHERE
+                a.volatility > 0  and a.volatility <=100 
+                AND a.from_year = {0}
+                AND a.to_year = {1}
+                AND b.found_date <= '{0}' 
+                AND due_date IS NULL 
+                AND b.fund_type in ('股票型')
+                AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
+            ORDER BY
+                a.volatility 
+            limit 30) as tscodes
+            )
+        or a.ts_code in
+        ( select * from (SELECT
+            a.ts_code
+            FROM
+                fund_volatility a
+                JOIN fund_basic b ON a.ts_code = b.ts_code 
+            WHERE
+                a.volatility > 0 and a.volatility <=100 
+                AND a.from_year = {2}
+                AND a.to_year = {3}
+                AND b.found_date <= '{2}' 
+                AND due_date IS NULL 
+                AND b.fund_type in ('股票型')
+                AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
+            ORDER BY
+                a.volatility 
+            limit 30) as tscodes
+            ))
+    and end_date = '{4}'
+    -- and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{4}' GROUP BY symbol having count(0)>1)
     group by a.symbol  
     order by sum(mkv) desc
-    limit 30
+    limit 60
     """
-    from_year = int(period2[0:4]) - 1
-    to_year = int(period2[0:4])
-    df2 = pd.read_sql(sql.format(from_year, to_year, period2), conn)
-    if len(df2) == 0:
-        print(sql.format(from_year, to_year, period2))
 
-    from_year = int(period1[0:4]) - 1
-    to_year = int(period1[0:4])
-    df1 = pd.read_sql(sql.format(from_year, to_year, period1), conn)
+    from1 = str(int(period1[0:4]) - 1) + period1[4:8]
+    to1 = period1
+    from1 = get_period_ann_date(from1, 0)
+    to1 = get_period_ann_date(to1, 0)
+
+    from2 = str(int(period2[0:4]) - 1) + period2[4:8]
+    to2 = period2
+    from2 = get_period_ann_date(from2, 0)
+    to2 = get_period_ann_date(to2, 0)
+
+    df2 = pd.read_sql(sql.format(from1, to1, from2, to2, period2), conn)
+    if len(df2) == 0:
+        print(sql.format(from1, to1, from2, to2, period2))
+
+    df1 = pd.read_sql(sql.format(from1, to1, from1, to1, period1), conn)
     if len(df1) == 0:
-        print(sql.format(from_year, to_year, period1))
+        print(sql.format(from1, to1, from1, to1, period1))
 
     compare = datacompy.Compare(df1=df2, df2=df1, join_columns='symbol')
     # print(compare.report())
@@ -163,6 +188,16 @@ def get_period_ann_date(period, relative_days):
     return period
 
 
+def get_prev_period(period):
+    period = period.replace("0331", "1231")
+    period = period.replace("0630", "0331")
+    period = period.replace("0930", "0630")
+    period = period.replace("1231", "0930")
+    if "0331" in period:
+        period = str(int(period[0:4]) - 1) + period[4:8]
+    return period
+
+
 def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None):
     my_stock_max_counts = 3
 
@@ -204,7 +239,7 @@ if __name__ == '__main__':
     else:
         my_stocks_df = None
         now_year = int(time.strftime('%Y'))
-        for year in range(2006, now_year):
+        for year in range(2007, now_year):
             ret = calc('{0}0331'.format(year), '{0}0630'.format(year))
             my_stocks_df = process_my_stocks('{0}0331'.format(year), '{0}0630'.format(year), ret[0], ret[1],
                                              my_stocks_df)
