@@ -53,6 +53,24 @@ class FundNav(Base):
     total_netasset = Column(Float)
 
 
+class FundManager(Base):
+    __tablename__ = 'fund_manager'
+    __table_args__ = (
+        Index('ts_code', 'ts_code', 'ann_date', unique=True),
+    )
+
+    ts_code = Column(VARCHAR(20), primary_key=True, nullable=False)
+    ann_date = Column(VARCHAR(20), primary_key=True, nullable=False)
+    name = Column(VARCHAR(20))
+    gender = Column(VARCHAR(20))
+    birth_year = Column(VARCHAR(20))
+    edu = Column(VARCHAR(20))
+    nationality = Column(VARCHAR(20))
+    begin_date = Column(VARCHAR(20))
+    end_date = Column(VARCHAR(20))
+    resume = Column(VARCHAR(20))
+
+
 class FundPortfolio(Base):
     __tablename__ = 'fund_portfolio'
     __table_args__ = (

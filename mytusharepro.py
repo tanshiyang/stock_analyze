@@ -199,3 +199,17 @@ class MyTusharePro:
                                     times=times + 1)
         finally:
             time.sleep(0.3)
+
+    def fund_manager(self, ts_code=None, fields=None, times=1):
+        if times > self.max_call_times:
+            print("尝试调用Tushare超出最大次数!继续尝试。")
+        try:
+            return self.pro.fund_manager(ts_code=ts_code, fields=fields)
+        except Exception as e:
+            print(e)
+            print(str.format("休息{0}s", self.sleep_time))
+            time.sleep(self.sleep_time)
+            return self.fund_manager(ts_code=ts_code, fields=fields,
+                                    times=times + 1)
+        finally:
+            time.sleep(0.3)

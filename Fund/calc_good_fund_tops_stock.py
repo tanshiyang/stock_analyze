@@ -13,54 +13,23 @@ import util.df_util as df_util
 from util import mydate
 
 
-def calc(period1, period2):
+def get_calc_df(period1, period2):
     conn = mydb.conn()
     sql = """
-     SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
-    from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
-    where 1=1
-    and (a.ts_code in
-        ( select * from (SELECT
-            a.ts_code
-            FROM
-                fund_volatility a
-                JOIN fund_basic b ON a.ts_code = b.ts_code 
-            WHERE
-                a.volatility > 0  and a.volatility <=100 
-                AND a.from_year = {0}
-                AND a.to_year = {1}
-                AND b.found_date <= '{0}' 
-                AND due_date IS NULL 
-                AND b.fund_type in ('股票型')
-                AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
-            ORDER BY
-                a.volatility 
-            limit 30) as tscodes
-            )
-        or a.ts_code in
-        ( select * from (SELECT
-            a.ts_code
-            FROM
-                fund_volatility a
-                JOIN fund_basic b ON a.ts_code = b.ts_code 
-            WHERE
-                a.volatility > 0 and a.volatility <=100 
-                AND a.from_year = {2}
-                AND a.to_year = {3}
-                AND b.found_date <= '{2}' 
-                AND due_date IS NULL 
-                AND b.fund_type in ('股票型')
-                AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
-            ORDER BY
-                a.volatility 
-            limit 30) as tscodes
-            ))
-    and end_date = '{4}'
-    -- and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{4}' GROUP BY symbol having count(0)>1)
-    group by a.symbol  
-    order by sum(mkv) desc
-    limit 60
-    """
+         SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
+        from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
+        where 1=1
+         and a.ts_code in
+             ( SELECT ts_code from fund_basic a where 1=1
+                  AND `name` like '%交银%'
+                 AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
+                 )
+        and end_date = '{4}'
+        -- and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{4}' GROUP BY symbol having count(0)>1)
+        group by a.symbol  
+        order by sum(mkv) desc
+        limit 100
+        """
 
     from1 = str(int(period1[0:4]) - 1) + period1[4:8]
     to1 = period1
@@ -79,6 +48,12 @@ def calc(period1, period2):
     df1 = pd.read_sql(sql.format(from1, to1, from1, to1, period1), conn)
     if len(df1) == 0:
         print(sql.format(from1, to1, from1, to1, period1))
+    conn.close()
+    return df1, df2
+
+
+def calc(period1, period2):
+    df1, df2 = get_calc_df(period1, period2)
 
     compare = datacompy.Compare(df1=df2, df2=df1, join_columns='symbol')
     # print(compare.report())
@@ -89,19 +64,21 @@ def calc(period1, period2):
     pd.set_option('max_colwidth', 100)
     pd.set_option('display.width', 5000)
 
-    df1 = append_price(df1, period2, 1)
-    df1 = append_price(df1, period2, 60)
+    # df1 = append_price(df1, period2, 1)
+    # df1 = append_price(df1, period2, 60)
 
     df = df2
     if len(df) > 0:
-        df = append_price(df, period2, 1)
-        df = append_price(df, period2, 60)
-        df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
-            get_period_ann_date(period2, 1)]
+        # df = append_price(df, period2, 1)
+        #         # df = append_price(df, period2, 60)
+        #         # df["uprate"] = (df[get_period_ann_date(period2, 60)] - df[get_period_ann_date(period2, 1)]) / df[
+        #         #     get_period_ann_date(period2, 1)]
+        df = add_compare_position(df1, df)
         print("<p/>{0},{1}:".format(period1, period2))
         print("<p/>{0} Top 10:".format(period2))
         print(df.to_html())
 
+    '''
     df = compare.intersect_rows
     if len(df) > 0:
         df_util.append_column(df, 'test')
@@ -132,8 +109,20 @@ def calc(period1, period2):
             get_period_ann_date(period2, 1)]
         print("<p/>只在{0}中出现（转仓减仓）：".format(period1))
         print(df.to_html())
-    conn.close()
-    return [df1, df2]
+    '''
+    return df1, df2
+
+
+def add_compare_position(df1, df2):
+    df_util.append_column(df2, "position")
+    for index, row in df2.iterrows():
+        criterion = df1['symbol'].map(lambda x: x == row["symbol"])
+        filter_df = df1[criterion]
+        if len(filter_df) == 1:
+            df2.at[index, 'position'] = filter_df.index[0] - index
+        else:
+            df2.at[index, 'position'] = 999
+    return df2
 
 
 def append_price(df, period, relative_days):
@@ -198,6 +187,25 @@ def get_prev_period(period):
     return period
 
 
+def process_industry_trend(period_df, result_df):
+    industry_grouped = period_df.groupby(['industry'], as_index=False)
+    industry_df = industry_grouped.agg({'sum(mkv)': ['count', 'max', 'sum']})  # grouped.aggregate(np.count_nonzero)
+    industry_df = industry_df.sort_values(by=('sum(mkv)', 'sum'), axis=0, ascending=False, inplace=False)
+    # print(aggr_df.to_html())
+
+    if result_df is None:
+        result_df = pd.DataFrame(columns=[])
+    new_row = pd.DataFrame([{}])
+    result_df = result_df.append(new_row, ignore_index=True)
+    for index in range(0, 3):
+        industry = industry_df['industry'][index]
+        sum_value = industry_df['sum(mkv)']['sum'][index]
+        if industry not in industry_df.columns:
+            df_util.append_column(result_df, industry)
+        result_df.at[len(result_df) - 1, industry] = sum_value
+    return result_df
+
+
 def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None):
     my_stock_max_counts = 3
 
@@ -225,8 +233,9 @@ def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None)
             filter_df = my_stocks_df[criterion & pd.isna(my_stocks_df["out_date"])]
             if len(filter_df) == 0:
                 in_date = get_period_ann_date(period2, 1)
+                in_price = get_price(row["symbol"], in_date)
                 new = pd.DataFrame({'symbol': row["symbol"], 'name': row["name"],
-                                    'in_price': row[in_date], 'in_date': in_date}, index=[0])
+                                    'in_price': in_price, 'in_date': in_date}, index=[0])
                 my_stocks_df = my_stocks_df.append(new, ignore_index=True)
                 break
 
@@ -238,18 +247,27 @@ if __name__ == '__main__':
         calc(sys.argv[1], sys.argv[2])
     else:
         my_stocks_df = None
+        industry_trend_df = None
         now_year = int(time.strftime('%Y'))
-        for year in range(2007, now_year):
-            ret = calc('{0}0331'.format(year), '{0}0630'.format(year))
-            my_stocks_df = process_my_stocks('{0}0331'.format(year), '{0}0630'.format(year), ret[0], ret[1],
+        for year in range(2017, now_year):
+            df1, df2 = calc('{0}0331'.format(year), '{0}0630'.format(year))
+            my_stocks_df = process_my_stocks('{0}0331'.format(year), '{0}0630'.format(year), df1, df2,
                                              my_stocks_df)
-            ret = calc('{0}0630'.format(year), '{0}0930'.format(year))
-            my_stocks_df = process_my_stocks('{0}0630'.format(year), '{0}0930'.format(year), ret[0], ret[1],
+            industry_trend_df = process_industry_trend(df2, industry_trend_df)
+
+            df1, df2 = calc('{0}0630'.format(year), '{0}0930'.format(year))
+            my_stocks_df = process_my_stocks('{0}0630'.format(year), '{0}0930'.format(year), df1, df2,
                                              my_stocks_df)
-            ret = calc('{0}0930'.format(year), '{0}1231'.format(year))
-            my_stocks_df = process_my_stocks('{0}0930'.format(year), '{0}1231'.format(year), ret[0], ret[1],
+            industry_trend_df = process_industry_trend(df2, industry_trend_df)
+
+            df1, df2 = calc('{0}0930'.format(year), '{0}1231'.format(year))
+            my_stocks_df = process_my_stocks('{0}0930'.format(year), '{0}1231'.format(year), df1, df2,
                                              my_stocks_df)
-            ret = calc('{0}1231'.format(year), '{0}0331'.format(year + 1))
-            my_stocks_df = process_my_stocks('{0}1231'.format(year), '{0}0331'.format(year + 1), ret[0], ret[1],
+            industry_trend_df = process_industry_trend(df2, industry_trend_df)
+
+            df1, df2 = calc('{0}1231'.format(year), '{0}0331'.format(year + 1))
+            my_stocks_df = process_my_stocks('{0}1231'.format(year), '{0}0331'.format(year + 1), df1, df2,
                                              my_stocks_df)
+            industry_trend_df = process_industry_trend(df2, industry_trend_df)
+        print(industry_trend_df.to_html())
         print(my_stocks_df.to_html())
