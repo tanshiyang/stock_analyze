@@ -11,6 +11,7 @@ import datacompy
 import time
 import util.df_util as df_util
 from util import mydate
+import matplotlib.pyplot as plt
 
 
 def get_calc_df(period1, period2):
@@ -19,11 +20,11 @@ def get_calc_df(period1, period2):
          SELECT  a.symbol,b.name,b.industry,sum(mkv) -- ,GROUP_CONCAT(CONCAT(' ',a.ts_code))
         from fund_portfolio a join stock_basic b on a.symbol=b.ts_code
         where 1=1
-         and a.ts_code in
-             ( SELECT ts_code from fund_basic a where 1=1
-                  AND `name` like '%交银%'
-                 AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
-                 )
+        -- and a.ts_code in
+        --     ( SELECT ts_code from fund_basic a where 1=1
+        --          AND `name` like '%交银%'
+        --         AND EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code)
+        --         )
         and end_date = '{4}'
         -- and EXISTS(select 1 from fund_portfolio c where c.ts_code=a.ts_code and end_date <= '{4}' GROUP BY symbol having count(0)>1)
         group by a.symbol  
@@ -197,13 +198,24 @@ def process_industry_trend(period_df, result_df):
         result_df = pd.DataFrame(columns=[])
     new_row = pd.DataFrame([{}])
     result_df = result_df.append(new_row, ignore_index=True)
-    for index in range(0, 3):
+    for index in range(0, len(industry_df)):
         industry = industry_df['industry'][index]
         sum_value = industry_df['sum(mkv)']['sum'][index]
         if industry not in industry_df.columns:
             df_util.append_column(result_df, industry)
         result_df.at[len(result_df) - 1, industry] = sum_value
     return result_df
+
+
+def print_industry_trend(df):
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    plt.figure()
+
+    for column in df.columns:
+        line = plt.plot(df[column])
+        plt.title(column)
+        plt.show()
 
 
 def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None):
@@ -243,13 +255,14 @@ def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None)
 
 
 if __name__ == '__main__':
+    print(len(sys.argv))
     if len(sys.argv) == 3:
         calc(sys.argv[1], sys.argv[2])
     else:
         my_stocks_df = None
         industry_trend_df = None
         now_year = int(time.strftime('%Y'))
-        for year in range(2017, now_year):
+        for year in range(2020, now_year+1):
             df1, df2 = calc('{0}0331'.format(year), '{0}0630'.format(year))
             my_stocks_df = process_my_stocks('{0}0331'.format(year), '{0}0630'.format(year), df1, df2,
                                              my_stocks_df)
