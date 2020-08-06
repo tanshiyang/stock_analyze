@@ -120,6 +120,7 @@ class Newskeyword(Base):
     UpdateBy = Column(VARCHAR(50))
     KeywordGroup = Column(LONGTEXT)
     KeywordRule = Column(LONGTEXT)
+    KeywordLevel = Column(INTEGER(11))
 
 
 class Persistedgrant(Base):

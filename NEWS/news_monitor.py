@@ -154,12 +154,15 @@ class NewsMonitor:
 
             matched_keywords = []
             matched_keywords_group = []
+            matched_keywords_level = []
             for row in self.focus_keywords:
                 keywords = row.KeywordRule
                 keywords_group = row.KeywordGroup
+                keywords_level = row.KeywordLevel
                 if check_contains_keywords(content, keywords):
                     matched_keywords.append(keywords)
                     matched_keywords_group.append(keywords_group)
+                    matched_keywords_level.append(keywords_level)
             if len(matched_keywords) > 0:
                 next_time = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S') + \
                             datetime.timedelta(seconds=1)
@@ -180,7 +183,8 @@ class NewsMonitor:
                 temp_df = temp_df.append(dict, ignore_index=True)
                 save_news_to_db(temp_df)
                 save_to_csv(temp_df)
-                self.result_df = self.result_df.append(dict, ignore_index=True)
+                if 1 in matched_keywords_level:
+                    self.result_df = self.result_df.append(dict, ignore_index=True)
 
     def check_duplicate(self, content: str):
         for recent_news in self.recent_news_deque:
