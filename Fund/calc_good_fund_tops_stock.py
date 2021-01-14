@@ -253,7 +253,12 @@ def process_my_stocks(period1, period2, period1df, period2df, my_stocks_df=None)
 
     return my_stocks_df
 
-
+'''
+一季度: 4.16 - 4.22
+二季度: 7.16 - 8.30
+三季度：10.22 - 10.25
+四季度：1.16 - 3.31
+'''
 if __name__ == '__main__':
     print(len(sys.argv))
     if len(sys.argv) == 3:
